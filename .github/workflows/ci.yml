@@ -38,3 +38,48 @@ jobs:
 
       - name: Build
         run: pnpm run build
+
+  database-integrity:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: wealthspace_ci
+          POSTGRES_PASSWORD: wealthspace_ci_secret
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U wealthspace_ci -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      INTEGRATION_DATABASE_URL: postgresql://wealthspace_ci:wealthspace_ci_secret@127.0.0.1:5432/wealthspace_migration_test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.16.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create disposable test database
+        env:
+          PGPASSWORD: wealthspace_ci_secret
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y postgresql-client
+          psql -h 127.0.0.1 -U wealthspace_ci -d postgres -v ON_ERROR_STOP=1 \
+            -c "CREATE DATABASE wealthspace_migration_test;"
+
+      - name: PostgreSQL integrity tests
+        run: pnpm --filter @wealthspace/api test:db

@@ -26,7 +26,9 @@ Desde la raíz del monorepo: `pnpm --filter @wealthspace/api dev`.
 
 ## Prisma
 
-Dependencias **Prisma 7** instaladas; esquema y migraciones de dominio aún no implementados.
+- Versión **7.10.1**; esquema inicial en [`prisma/schema.prisma`](./prisma/schema.prisma).
+- Validación: `DATABASE_URL=... pnpm prisma:validate` (ver [`prisma/README.md`](./prisma/README.md)).
+- **Migraciones no aplicadas** hasta revisión explícita.
 
 ## Documentación
 
