@@ -1,0 +1,34 @@
+---
+description: Contexto global de Wealthspace, stack y principios de trabajo
+alwaysApply: true
+---
+
+# Wealthspace — reglas globales
+
+Wealthspace gestiona finanzas personales y compartidas mediante **Spaces** (espacios aislados). Cada usuario tiene espacio personal y puede participar en espacios compartidos.
+
+## Stack
+
+- Monorepo pnpm: `apps/web` (Next.js App Router), `apps/api` (NestJS REST), `packages/contracts`. Node 24 LTS, pnpm 12.x.
+- Producto: SHARED (EXPENSE con/sin cuenta + `SharedExpense`); saldos de cuenta on-read; integridad en `docs/architecture/database-design.md` y plan `first-migration-design.md`; Prisma Decimal + UUID — ver `docs/product/` y `apps/api/prisma/schema.prisma`.
+- PostgreSQL + Prisma (solo backend). Tests: Jest/Supertest, Vitest/RTL, Playwright (E2E).
+
+## Principios
+
+- Backend es autoridad de negocio, permisos y cálculos financieros.
+- Aislamiento estricto por `spaceId`; evitar IDOR.
+- Sin funcionalidad fuera del alcance pedido en la tarea.
+- Revisar código y docs existentes (`docs/`, ADRs) antes de cambiar comportamiento.
+- No inventar reglas de negocio: usar `docs/product/domain-model.md` y marcar gaps como **PENDIENTE DE DECISIÓN**.
+- Preferir cambios pequeños; no microservicios ni abstracciones prematuras.
+
+## Convenciones
+
+- TypeScript strict; Conventional Commits (mensajes en inglés).
+- Documentación en español en `docs/`; código e identificadores en inglés salvo copy de UI acordado.
+
+## Referencias
+
+- Producto: `docs/product/`
+- Arquitectura: `docs/architecture/`
+- Desarrollo: `docs/development/`

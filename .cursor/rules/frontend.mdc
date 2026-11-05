@@ -1,0 +1,31 @@
+---
+description: Next.js, React y TypeScript en apps/web
+globs: apps/web/**/*
+alwaysApply: false
+---
+
+# Frontend (apps/web)
+
+## Stack
+
+- Next.js App Router, React, TypeScript strict bajo `src/`.
+
+## Responsabilidades
+
+- Presentación y flujos de usuario; **no** reglas de negocio críticas ni acceso a DB.
+- No confiar en permisos calculados solo en cliente; la API debe denegar acciones no autorizadas.
+
+## Prácticas
+
+- Capa API centralizada (cliente fetch o módulo `lib/api`) con manejo de errores tipado.
+- Estados loading / empty / error en pantallas con datos remotos.
+- Accesibilidad (labels, foco, contraste) y diseño responsive por defecto.
+- Componentes pequeños; hooks para lógica reutilizable de UI.
+- Server Components cuando no haga falta interactividad; `"use client"` solo donde corresponda.
+
+## Prohibido
+
+- Duplicar algoritmos de reparto o saldos como fuente de verdad.
+- Secretos o credenciales en el bundle (`NEXT_PUBLIC_*` solo datos públicos).
+
+Ver `docs/architecture/api-design.md`.

@@ -1,0 +1,42 @@
+---
+description: NestJS, Prisma y PostgreSQL en apps/api
+globs: apps/api/**/*
+alwaysApply: false
+---
+
+# Backend (apps/api)
+
+## Responsabilidades
+
+- Lógica de negocio, validación, autorización, persistencia y cálculos financieros.
+- Organización por **módulos** Nest (`*.module`, `*.controller`, `*.service`).
+
+## Prácticas
+
+- Validar todos los inputs (DTOs + class-validator).
+- Guards/policies para autenticación y permisos por espacio antes de servicios.
+- Queries Prisma siempre acotadas al espacio autorizado; tests de aislamiento cross-space.
+- Dinero: sin float; ISO 4217 + reparto mayor resto; ver `docs/architecture/database-design.md`.
+- Informes/presupuestos: periodo en `User.timezone`; `occurredAt` UTC.
+- Atribución EXPENSE: matriz Owner/Admin/Member en `docs/architecture/security.md`.
+- `SharedExpense`/`Settlement` solo en espacios SHARED.
+- EXPENSE SHARED: `accountId` opcional (sin cuenta no afecta saldo); PERSONAL: cuenta obligatoria.
+- OPENING_BALANCE: signo libre; pago SPACE_ACCOUNT sin `attributedToUserId`.
+- Integridad SQL: `docs/architecture/database-design.md` + `first-migration-design.md`.
+- `$transaction` para invariantes multi-tabla (alta usuario, edición shared, etc.).
+- Ediciones: `expectedVersion` → 409 Conflict.
+- Excepciones HTTP con `code` estable para el cliente.
+
+## Finanzas compartidas
+
+- `SharedExpense` = coste + reparto; cuenta solo en tx vinculada (`SPACE_ACCOUNT`). EXPENSE en SHARED usa `attributedToUserId`. Revisiones con FK explícita (no polimórfica). Schema: `apps/api/prisma/schema.prisma`.
+- Tests unitarios para redondeo, porcentajes (suma 100 %) y repartos (Jest ESM en Nest 12).
+
+## Prohibido
+
+- Exponer Prisma o SQL al frontend.
+- Alterar liquidaciones confirmadas sin dejar revisión en historial (`FinancialRevision`).
+- Endpoints sin comprobar membresía activa del espacio (anti-IDOR).
+- Modelar cobros, reclamaciones o `EconomicParty` en MVP.
+
+Ver `docs/architecture/security.md` y `docs/development/testing-strategy.md`.

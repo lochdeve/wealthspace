@@ -1,0 +1,36 @@
+---
+description: Arquitectura monorepo, capas y límites de responsabilidad
+alwaysApply: true
+---
+
+# Arquitectura Wealthspace
+
+## Monorepo
+
+- `apps/web` y `apps/api` son desplegables independientes.
+- Compartir tipos vía `packages/contracts` cuando haya duplicación real; no acoplar apps por imports directos de código de dominio.
+
+## Comunicación
+
+- Frontend → Backend únicamente por **REST** (JSON).
+- OpenAPI documentará contratos en el API.
+
+## Capas
+
+| Capa | Responsabilidad                              |
+| ---- | -------------------------------------------- |
+| Web  | UI, UX, llamadas API, estados de carga/error |
+| API  | Validación, autorización, dominio, Prisma    |
+| DB   | PostgreSQL, acceso solo desde API            |
+
+## Backend
+
+- Monolito **modular** NestJS; un módulo por capacidad de producto.
+- Transacciones DB para operaciones multi-entidad (gastos compartidos, liquidaciones).
+
+## Seguridad
+
+- Autorización en servidor en cada acceso a datos de espacio.
+- Nunca confiar en filtros de espacio aplicados solo en cliente.
+
+Ver `docs/architecture/system-architecture.md` y `docs/architecture/security.md`.
