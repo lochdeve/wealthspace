@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: wealthspace-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-wealthspace}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wealthspace_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-wealthspace}
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - wealthspace_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-wealthspace} -d ${POSTGRES_DB:-wealthspace}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  wealthspace_pg_data:

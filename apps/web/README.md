@@ -1,0 +1,25 @@
+# @wealthspace/web
+
+Frontend de Wealthspace (Next.js App Router).
+
+## Scripts
+
+| Comando          | Descripción                                                 |
+| ---------------- | ----------------------------------------------------------- |
+| `pnpm dev`       | Servidor de desarrollo (puerto `3000`)                      |
+| `pnpm build`     | Build de producción                                         |
+| `pnpm test`      | Vitest + React Testing Library                              |
+| `pnpm test:e2e`  | Playwright (requiere app levantada o `webServer` en config) |
+| `pnpm lint`      | ESLint (Next.js)                                            |
+| `pnpm typecheck` | `tsc --noEmit`                                              |
+
+Desde la raíz: `pnpm --filter @wealthspace/web dev`.
+
+## Variables de entorno
+
+- `NEXT_PUBLIC_API_URL` — URL base de la API (default documentado en `.env.example` raíz).
+
+## Documentación
+
+- [Visión de producto](../../docs/product/product-overview.md)
+- [Frontend rules](../../.cursor/rules/frontend.mdc)

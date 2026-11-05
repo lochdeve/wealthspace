@@ -1,0 +1,25 @@
+{
+  "name": "wealthspace",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Personal and shared finance management — monorepo",
+  "packageManager": "pnpm@12.16.1",
+  "scripts": {
+    "dev": "concurrently -n web,api -c blue,green \"pnpm --filter @wealthspace/web dev\" \"pnpm --filter @wealthspace/api dev\"",
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yml,yaml,mdc}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md,yml,yaml,mdc}\"",
+    "test:e2e": "pnpm --filter @wealthspace/web test:e2e"
+  },
+  "devDependencies": {
+    "concurrently": "9.2.1",
+    "prettier": "3.6.2"
+  },
+  "engines": {
+    "node": ">=24.0.0",
+    "pnpm": ">=12.0.0 <13.0.0"
+  }
+}
