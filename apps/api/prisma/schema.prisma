@@ -1,0 +1,348 @@
+// Wealthspace — esquema MVP (sin migraciones aplicadas).
+// Integridad SQL (FK compuestas, triggers deferidos INITIALLY DEFERRED): docs/architecture/database-design.md
+// Plan primera migración — SQL manual obligatorio en cada migrate: docs/architecture/first-migration-design.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum SpaceType {
+  PERSONAL
+  SHARED
+}
+
+enum MembershipRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum MembershipStatus {
+  ACTIVE
+  LEFT
+  REMOVED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  REVOKED
+  EXPIRED
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+enum PaymentSource {
+  SPACE_ACCOUNT
+  CASH
+  EXTERNAL_PERSONAL
+}
+
+enum SplitMode {
+  EQUAL
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+  OPENING_BALANCE
+}
+
+enum SettlementStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+model User {
+  id              String   @id @default(uuid()) @db.Uuid
+  email           String   @unique
+  displayName     String   @map("display_name")
+  passwordHash    String?  @map("password_hash")
+  /// IANA timezone id (e.g. Europe/Madrid). Informes/presupuestos mensuales se interpretan en esta zona; occurredAt sigue en UTC.
+  timezone        String   @default("UTC")
+  personalSpaceId String   @unique @map("personal_space_id") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  personalSpace Space @relation("UserPersonalSpace", fields: [personalSpaceId], references: [id], onDelete: Restrict)
+
+  memberships              SpaceMembership[]
+  invitationsSent          SpaceInvitation[]      @relation("InvitationInviter")
+  recordedTransactions     FinancialTransaction[] @relation("TransactionRecorder")
+  attributedTransactions   FinancialTransaction[] @relation("TransactionAttributed")
+  recordedSharedExpenses   SharedExpense[]        @relation("SharedExpenseRecorder")
+  paidSharedExpenses       SharedExpense[]        @relation("SharedExpensePayer")
+  recordedSettlements      Settlement[]           @relation("SettlementRecorder")
+  expenseParticipations    ExpenseParticipant[]
+  settlementsFrom          Settlement[]           @relation("SettlementFrom")
+  settlementsTo            Settlement[]           @relation("SettlementTo")
+  financialRevisions       FinancialRevision[]    @relation("RevisionAuthor")
+
+  @@map("users")
+}
+
+model Space {
+  id              String    @id @default(uuid()) @db.Uuid
+  type            SpaceType
+  name            String
+  displayCurrency String?   @map("display_currency") @db.Char(3)
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  personalSpaceOwner User? @relation("UserPersonalSpace")
+
+  memberships           SpaceMembership[]
+  invitations           SpaceInvitation[]
+  accounts              Account[]
+  categories            Category[]
+  budgets               Budget[]
+  financialTransactions FinancialTransaction[]
+  sharedExpenses        SharedExpense[]
+  settlements           Settlement[]
+
+  @@map("spaces")
+}
+
+model SpaceMembership {
+  id        String           @id @default(uuid()) @db.Uuid
+  spaceId   String           @map("space_id") @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  role      MembershipRole
+  status    MembershipStatus @default(ACTIVE)
+  joinedAt  DateTime         @default(now()) @map("joined_at") @db.Timestamptz(6)
+  leftAt    DateTime?        @map("left_at") @db.Timestamptz(6)
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  space Space @relation(fields: [spaceId], references: [id], onDelete: Restrict)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([spaceId, status])
+  @@index([userId, status])
+  @@map("space_memberships")
+}
+
+model SpaceInvitation {
+  id               String           @id @default(uuid()) @db.Uuid
+  spaceId          String           @map("space_id") @db.Uuid
+  email            String
+  role             MembershipRole   @default(MEMBER)
+  status           InvitationStatus @default(PENDING)
+  invitedByUserId  String           @map("invited_by_user_id") @db.Uuid
+  expiresAt        DateTime?        @map("expires_at") @db.Timestamptz(6)
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  space     Space @relation(fields: [spaceId], references: [id], onDelete: Restrict)
+  invitedBy User  @relation("InvitationInviter", fields: [invitedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([spaceId, status])
+  @@index([email, status])
+  @@map("space_invitations")
+}
+
+model Account {
+  id         String    @id @default(uuid()) @db.Uuid
+  spaceId    String    @map("space_id") @db.Uuid
+  name       String
+  currency   String    @db.Char(3)
+  archivedAt DateTime? @map("archived_at") @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  space Space @relation(fields: [spaceId], references: [id], onDelete: Restrict)
+
+  transactionsAsAccount     FinancialTransaction[] @relation("TransactionAccount")
+  transactionsAsSource      FinancialTransaction[] @relation("TransferSource")
+  transactionsAsDestination FinancialTransaction[] @relation("TransferDestination")
+
+  @@index([spaceId, archivedAt])
+  @@map("accounts")
+}
+
+model Category {
+  id        String       @id @default(uuid()) @db.Uuid
+  spaceId   String       @map("space_id") @db.Uuid
+  type      CategoryType
+  name      String
+  parentId  String?      @map("parent_id") @db.Uuid
+  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  space    Space      @relation(fields: [spaceId], references: [id], onDelete: Restrict)
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: Restrict)
+  children Category[] @relation("CategoryHierarchy")
+
+  transactions   FinancialTransaction[]
+  sharedExpenses SharedExpense[]
+  budgets        Budget[]
+
+  @@index([spaceId, type])
+  @@map("categories")
+}
+
+model Budget {
+  id          String   @id @default(uuid()) @db.Uuid
+  spaceId     String   @map("space_id") @db.Uuid
+  categoryId  String?  @map("category_id") @db.Uuid
+  name        String
+  amount      Decimal  @db.Decimal(19, 4)
+  currency    String   @db.Char(3)
+  periodStart DateTime @map("period_start") @db.Date
+  periodEnd   DateTime @map("period_end") @db.Date
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  space    Space     @relation(fields: [spaceId], references: [id], onDelete: Restrict)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@index([spaceId, periodStart, periodEnd])
+  @@map("budgets")
+}
+
+/// Reglas por type: docs/architecture/database-design.md (EXPENSE sin cuenta solo en SHARED; pago SPACE_ACCOUNT sin attributedToUserId).
+model FinancialTransaction {
+  id                   String          @id @default(uuid()) @db.Uuid
+  spaceId              String          @map("space_id") @db.Uuid
+  type                 TransactionType
+  /// INCOME/EXPENSE/TRANSFER: > 0. OPENING_BALANCE: signo = saldo inicial (cero permitido).
+  amount               Decimal         @db.Decimal(19, 4)
+  currency             String          @db.Char(3)
+  description          String?
+  occurredAt           DateTime        @map("occurred_at") @db.Timestamptz(6)
+  recordedByUserId     String          @map("recorded_by_user_id") @db.Uuid
+  attributedToUserId   String?         @map("attributed_to_user_id") @db.Uuid
+  accountId            String?         @map("account_id") @db.Uuid
+  sourceAccountId      String?         @map("source_account_id") @db.Uuid
+  destinationAccountId String?         @map("destination_account_id") @db.Uuid
+  categoryId           String?         @map("category_id") @db.Uuid
+  version              Int             @default(1)
+  createdAt            DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  space        Space     @relation(fields: [spaceId], references: [id], onDelete: Restrict)
+  recordedBy   User      @relation("TransactionRecorder", fields: [recordedByUserId], references: [id], onDelete: Restrict)
+  attributedTo User?     @relation("TransactionAttributed", fields: [attributedToUserId], references: [id], onDelete: Restrict)
+  account            Account?  @relation("TransactionAccount", fields: [accountId], references: [id], onDelete: Restrict)
+  sourceAccount      Account?  @relation("TransferSource", fields: [sourceAccountId], references: [id], onDelete: Restrict)
+  destinationAccount Account?  @relation("TransferDestination", fields: [destinationAccountId], references: [id], onDelete: Restrict)
+  category           Category? @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  sharedExpensePayment SharedExpense?      @relation("SharedExpensePayment")
+  revisions            FinancialRevision[] @relation("TransactionRevisions")
+
+  @@index([spaceId, occurredAt])
+  @@index([spaceId, type, occurredAt])
+  @@index([accountId, occurredAt])
+  @@index([attributedToUserId, occurredAt])
+  @@map("financial_transactions")
+}
+
+model SharedExpense {
+  id                     String        @id @default(uuid()) @db.Uuid
+  spaceId                String        @map("space_id") @db.Uuid
+  paymentSource          PaymentSource @map("payment_source")
+  totalAmount            Decimal       @map("total_amount") @db.Decimal(19, 4)
+  currency               String        @db.Char(3)
+  description            String?
+  occurredAt             DateTime      @map("occurred_at") @db.Timestamptz(6)
+  splitMode              SplitMode     @map("split_mode")
+  recordedByUserId       String        @map("recorded_by_user_id") @db.Uuid
+  paidByUserId           String?       @map("paid_by_user_id") @db.Uuid
+  financialTransactionId String?       @unique @map("financial_transaction_id") @db.Uuid
+  categoryId             String?       @map("category_id") @db.Uuid
+  version                Int           @default(1)
+  createdAt              DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  space                Space                 @relation(fields: [spaceId], references: [id], onDelete: Restrict)
+  recordedBy           User                  @relation("SharedExpenseRecorder", fields: [recordedByUserId], references: [id], onDelete: Restrict)
+  paidBy               User?                 @relation("SharedExpensePayer", fields: [paidByUserId], references: [id], onDelete: Restrict)
+  financialTransaction FinancialTransaction? @relation("SharedExpensePayment", fields: [financialTransactionId], references: [id], onDelete: Restrict)
+  category             Category?             @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  participants ExpenseParticipant[]
+  revisions    FinancialRevision[]  @relation("SharedExpenseRevisions")
+
+  @@index([spaceId, occurredAt])
+  @@index([spaceId, paymentSource])
+  @@map("shared_expenses")
+}
+
+model ExpenseParticipant {
+  id                  String   @id @default(uuid()) @db.Uuid
+  sharedExpenseId     String   @map("shared_expense_id") @db.Uuid
+  userId              String   @map("user_id") @db.Uuid
+  displayNameSnapshot String   @map("display_name_snapshot")
+  allocatedAmount     Decimal  @map("allocated_amount") @db.Decimal(19, 4)
+  sharePercent        Decimal? @map("share_percent") @db.Decimal(7, 4)
+
+  sharedExpense SharedExpense @relation(fields: [sharedExpenseId], references: [id], onDelete: Restrict)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([sharedExpenseId, userId])
+  @@index([userId])
+  @@map("expense_participants")
+}
+
+model Settlement {
+  id               String           @id @default(uuid()) @db.Uuid
+  spaceId          String           @map("space_id") @db.Uuid
+  fromUserId       String           @map("from_user_id") @db.Uuid
+  toUserId         String           @map("to_user_id") @db.Uuid
+  amount           Decimal          @db.Decimal(19, 4)
+  currency         String           @db.Char(3)
+  status           SettlementStatus @default(CONFIRMED)
+  occurredAt       DateTime         @map("occurred_at") @db.Timestamptz(6)
+  recordedByUserId String           @map("recorded_by_user_id") @db.Uuid
+  version          Int              @default(1)
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  space      Space @relation(fields: [spaceId], references: [id], onDelete: Restrict)
+  fromUser   User  @relation("SettlementFrom", fields: [fromUserId], references: [id], onDelete: Restrict)
+  toUser     User  @relation("SettlementTo", fields: [toUserId], references: [id], onDelete: Restrict)
+  recordedBy User  @relation("SettlementRecorder", fields: [recordedByUserId], references: [id], onDelete: Restrict)
+
+  revisions FinancialRevision[] @relation("SettlementRevisions")
+
+  @@index([spaceId, occurredAt])
+  @@index([spaceId, status])
+  @@map("settlements")
+}
+
+model FinancialRevision {
+  id                     String   @id @default(uuid()) @db.Uuid
+  revisionNumber         Int      @map("revision_number")
+  snapshot               Json     @db.JsonB
+  changedByUserId        String   @map("changed_by_user_id") @db.Uuid
+  changedAt              DateTime @default(now()) @map("changed_at") @db.Timestamptz(6)
+  reason                 String?
+  financialTransactionId String?  @map("financial_transaction_id") @db.Uuid
+  sharedExpenseId        String?  @map("shared_expense_id") @db.Uuid
+  settlementId           String?  @map("settlement_id") @db.Uuid
+
+  changedBy            User                 @relation("RevisionAuthor", fields: [changedByUserId], references: [id], onDelete: Restrict)
+  financialTransaction FinancialTransaction? @relation("TransactionRevisions", fields: [financialTransactionId], references: [id], onDelete: Restrict)
+  sharedExpense        SharedExpense?        @relation("SharedExpenseRevisions", fields: [sharedExpenseId], references: [id], onDelete: Restrict)
+  settlement           Settlement?           @relation("SettlementRevisions", fields: [settlementId], references: [id], onDelete: Restrict)
+
+  @@unique([financialTransactionId, revisionNumber])
+  @@unique([sharedExpenseId, revisionNumber])
+  @@unique([settlementId, revisionNumber])
+  @@index([financialTransactionId])
+  @@index([sharedExpenseId])
+  @@index([settlementId])
+  @@map("financial_revisions")
+}
