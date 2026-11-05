@@ -112,4 +112,6 @@ pnpm test:e2e
 
 ## Licencia
 
-Ver [LICENSE](./LICENSE).
+Wealthspace es **software propietario**. El código en este repositorio es visible de forma pública únicamente para consulta y referencia; **no se concede licencia** de uso, copia, modificación, distribución, sublicencia ni explotación comercial sin autorización escrita del titular de los derechos.
+
+Los detalles completos están en [LICENSE](./LICENSE). Las dependencias de terceros conservan sus propias licencias.
