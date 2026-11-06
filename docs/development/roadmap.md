@@ -26,9 +26,9 @@ The product will be developed as a modular monolith.
 ### Backend
 - [x] NestJS application bootstrap
 - [x] Health endpoint
-- [ ] Prisma integration
-- [ ] Environment validation
-- [ ] Database health check
+- [x] Prisma integration
+- [x] Environment validation
+- [x] Database health check
 - [ ] Users module
 - [ ] Authentication module
 - [ ] Registration
@@ -36,7 +36,7 @@ The product will be developed as a modular monolith.
 - [ ] Logout
 - [ ] Authenticated user profile
 - [ ] Authorization and security tests
-- [ ] OpenAPI documentation
+- [x] OpenAPI documentation (health + Swagger UI)
 
 ### Frontend
 - [x] Next.js application bootstrap
@@ -156,4 +156,4 @@ A deliverable is complete only when:
 
 ## 6. Current priority
 
-The next implementation task is Phase 1: Backend foundation, starting with environment validation and Prisma integration in NestJS.
+The next implementation task is Phase 2: Authentication and users (Users module, Auth module, registration, login, sessions).

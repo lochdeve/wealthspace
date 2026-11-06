@@ -19,7 +19,7 @@ Prisma **no** modela: FK compuestas, índice parcial ACTIVE, CHECK/triggers manu
 
 ## Pruebas de integridad
 
-Base desechable `wealthspace_migration_test` (no usar la BD habitual del proyecto):
+Base desechable `wealthspace_migration_test` (no usar la BD habitual del proyecto). `pnpm test:db` la crea en el servidor local si no existe.
 
 ```bash
 pnpm test:db

@@ -27,7 +27,7 @@
 
 Referencia: [first-migration-design](../architecture/first-migration-design.md) §12.
 
-Implementación automatizada: `apps/api/test/database/*.integration.spec.ts` (`pnpm test:db` en `@wealthspace/api`). Usar `INTEGRATION_DATABASE_URL` apuntando a una base **desechable** (p. ej. `wealthspace_migration_test`). CI: job `database-integrity` (PostgreSQL 17, credenciales propias del runner).
+Implementación automatizada: `apps/api/test/database/*.integration.spec.ts` (`pnpm test:db` en `@wealthspace/api`). Usar `INTEGRATION_DATABASE_URL` apuntando a una base **desechable** (p. ej. `wealthspace_migration_test`). Jest crea esa base contra el servidor local si no existe (ver `test/database/jest-db-global-setup.ts`). CI: job `database-integrity` (PostgreSQL 17, credenciales propias del runner; el job crea `wealthspace_migration_test` explícitamente).
 
 ### TypeScript (API)
 

@@ -1,5 +1,6 @@
 /** @type {import('jest').Config} */
 const config = {
+  globalSetup: '<rootDir>/database/jest-db-global-setup.ts',
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: '.',
   testMatch: ['<rootDir>/database/**/*.integration.spec.ts'],

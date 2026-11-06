@@ -17,12 +17,15 @@ Desde la raíz del monorepo: `pnpm --filter @wealthspace/api dev`.
 
 ## Endpoints
 
-- `GET /api/v1/health` — comprobación de disponibilidad.
+- `GET /api/v1/health` — liveness (el proceso responde; no consulta la BD).
+- `GET /api/v1/health/ready` — readiness (PostgreSQL accesible vía `SELECT 1`).
+- `GET /api/v1/docs` — OpenAPI (Swagger UI).
+- `GET /api/v1/docs-json` — especificación OpenAPI en JSON.
 
 ## Variables de entorno
 
 - `API_PORT` — puerto HTTP (default `3001`).
-- `DATABASE_URL` — se usará cuando Prisma esté configurado (ver `.env.example` en la raíz).
+- `DATABASE_URL` — **obligatoria** para arrancar (PostgreSQL; ver `.env.example` en la raíz).
 
 ## Prisma
 

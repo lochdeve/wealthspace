@@ -3,9 +3,14 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Client } from 'pg';
 
+/**
+ * Disposable DB for integration tests (`pnpm test:db`). Override with `INTEGRATION_DATABASE_URL`.
+ * `pg` 8 + SCRAM requires a non-empty password; include one in the URL. Matches docker-compose
+ * defaults (user/password) against a DB named `wealthspace_migration_test` you create locally.
+ */
 export const TEST_DB =
   process.env['INTEGRATION_DATABASE_URL'] ??
-  'postgresql://lauragonzalez@127.0.0.1:5432/wealthspace_migration_test';
+  'postgresql://wealthspace:wealthspace_dev@127.0.0.1:5432/wealthspace_migration_test';
 
 /** Jest runs with cwd `apps/api`; paths must not rely on `import.meta` (CommonJS typecheck). */
 export const MIGRATION_SQL = readFileSync(
