@@ -35,10 +35,7 @@ type TextInputProps = InputHTMLAttributes<HTMLInputElement> & {
 };
 
 export function TextInput({ className, hasError, ...props }: TextInputProps) {
-  const describedBy = [
-    props['aria-describedby'],
-    hasError ? `${props.id}-error` : undefined,
-  ]
+  const describedBy = [props['aria-describedby'], hasError ? `${props.id}-error` : undefined]
     .filter(Boolean)
     .join(' ');
 

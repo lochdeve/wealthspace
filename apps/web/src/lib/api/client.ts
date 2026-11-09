@@ -16,7 +16,11 @@ function serializeBody(body: ApiRequestOptions['body']): BodyInit | undefined {
   if (body === undefined || body === null) {
     return undefined;
   }
-  if (typeof body === 'object' && !(body instanceof FormData) && !(body instanceof URLSearchParams)) {
+  if (
+    typeof body === 'object' &&
+    !(body instanceof FormData) &&
+    !(body instanceof URLSearchParams)
+  ) {
     return JSON.stringify(body);
   }
   return body as BodyInit;

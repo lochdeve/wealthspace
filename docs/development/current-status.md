@@ -17,15 +17,15 @@
 
 ## Backend
 
-| Área              | Estado                                      |
-| ----------------- | ------------------------------------------- |
-| NestJS bootstrap  | Hecho                                       |
-| Health liveness   | `GET /api/v1/health`                        |
-| Health readiness  | `GET /api/v1/health/ready`                  |
-| Prisma en NestJS  | Hecho                                       |
-| Env validation    | Hecho (`AppConfigModule`)                   |
-| Auth / usuarios   | Registro + login/sesión/me; guards básicos  |
-| OpenAPI           | Swagger UI + health documentados            |
+| Área             | Estado                                     |
+| ---------------- | ------------------------------------------ |
+| NestJS bootstrap | Hecho                                      |
+| Health liveness  | `GET /api/v1/health`                       |
+| Health readiness | `GET /api/v1/health/ready`                 |
+| Prisma en NestJS | Hecho                                      |
+| Env validation   | Hecho (`AppConfigModule`)                  |
+| Auth / usuarios  | Registro + login/sesión/me; guards básicos |
+| OpenAPI          | Swagger UI + health documentados           |
 
 ## Siguiente tarea
 

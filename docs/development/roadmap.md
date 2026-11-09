@@ -11,6 +11,7 @@ The product will be developed as a modular monolith.
 ## 2. Current project status
 
 ### Technical foundation
+
 - [x] pnpm monorepo
 - [x] Next.js frontend bootstrap
 - [x] NestJS backend bootstrap
@@ -24,6 +25,7 @@ The product will be developed as a modular monolith.
 - [ ] Confirm proprietary license changes
 
 ### Backend
+
 - [x] NestJS application bootstrap
 - [x] Health endpoint
 - [x] Prisma integration
@@ -40,6 +42,7 @@ The product will be developed as a modular monolith.
 - [x] OpenAPI documentation (health + Swagger UI)
 
 ### Frontend
+
 - [x] Next.js application bootstrap
 - [x] Static landing page
 - [x] API integration (client + CORS)
@@ -53,6 +56,7 @@ The product will be developed as a modular monolith.
 ## 3. Development phases
 
 ### Phase 0 — Project closure
+
 - Verify Git status and remote.
 - Publish initial commits when ready.
 - Verify GitHub Actions.
@@ -60,6 +64,7 @@ The product will be developed as a modular monolith.
 - Verify local development environment.
 
 ### Phase 1 — Backend foundation
+
 - Environment configuration and validation.
 - PrismaService and PrismaModule.
 - PostgreSQL connection lifecycle.
@@ -67,6 +72,7 @@ The product will be developed as a modular monolith.
 - Integration tests for API and database.
 
 ### Phase 2 — Authentication and users
+
 - Users module.
 - Auth module.
 - Registration with secure password hashing.
@@ -80,6 +86,7 @@ The product will be developed as a modular monolith.
 - OpenAPI documentation.
 
 ### Phase 3 — Frontend authentication
+
 - API client.
 - Registration and login forms.
 - Form validation.
@@ -90,6 +97,7 @@ The product will be developed as a modular monolith.
 - End-to-end authentication tests.
 
 ### Phase 4 — Spaces and memberships
+
 - Personal space.
 - Shared spaces.
 - Invitations.
@@ -98,6 +106,7 @@ The product will be developed as a modular monolith.
 - Active space selection.
 
 ### Phase 5 — Accounts and financial transactions
+
 - Accounts.
 - Categories.
 - Income.
@@ -108,6 +117,7 @@ The product will be developed as a modular monolith.
 - Transaction history and revisions.
 
 ### Phase 6 — Shared expenses and settlements
+
 - Shared expense creation.
 - Equal, percentage and custom splits.
 - Participants and attribution.
@@ -116,6 +126,7 @@ The product will be developed as a modular monolith.
 - Historical revisions.
 
 ### Phase 7 — Budgets, reports and dashboards
+
 - Personal dashboard.
 - Shared dashboard.
 - Global dashboard.
@@ -125,6 +136,7 @@ The product will be developed as a modular monolith.
 - Basic exports.
 
 ### Phase 8 — Production readiness
+
 - Security review.
 - Rate limiting.
 - Logging and monitoring.
@@ -149,6 +161,7 @@ The product will be developed as a modular monolith.
 ## 5. Definition of done
 
 A deliverable is complete only when:
+
 1. The implementation works.
 2. Relevant tests pass.
 3. Lint, typecheck and formatting checks pass where applicable.

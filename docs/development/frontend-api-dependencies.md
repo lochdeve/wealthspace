@@ -4,21 +4,21 @@ El frontend (`apps/web`) consume únicamente la API REST (`apps/api`) bajo el pr
 
 ## Configuración
 
-| Variable | App | Uso |
-| -------- | --- | --- |
-| `NEXT_PUBLIC_API_URL` | web | Base URL de la API (p. ej. `http://localhost:3001`) |
-| `WEB_ORIGIN` | api | Origen permitido en CORS con credenciales (p. ej. `http://localhost:3000`) |
+| Variable              | App | Uso                                                                        |
+| --------------------- | --- | -------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL` | web | Base URL de la API (p. ej. `http://localhost:3001`)                        |
+| `WEB_ORIGIN`          | api | Origen permitido en CORS con credenciales (p. ej. `http://localhost:3000`) |
 
 Sesión: cookie HttpOnly `wealthspace_session` (JWT), establecida por `POST /auth/login`. Las peticiones del navegador usan `credentials: 'include'`. En Server Components se reenvía la cookie hacia la API.
 
 ## Auth (Fase 3)
 
-| Recurso | Método | Ruta | UI / uso | Estado backend |
-| ------- | ------ | ---- | -------- | -------------- |
-| Registro | POST | `/auth/register` | `/register` | Implementado |
-| Login | POST | `/auth/login` | `/login` | Implementado |
-| Logout | POST | `/auth/logout` | Botón en layout `(app)` | Implementado |
-| Perfil | GET | `/auth/me` | Layout `(app)`, `/dashboard` | Implementado |
+| Recurso  | Método | Ruta             | UI / uso                     | Estado backend |
+| -------- | ------ | ---------------- | ---------------------------- | -------------- |
+| Registro | POST   | `/auth/register` | `/register`                  | Implementado   |
+| Login    | POST   | `/auth/login`    | `/login`                     | Implementado   |
+| Logout   | POST   | `/auth/logout`   | Botón en layout `(app)`      | Implementado   |
+| Perfil   | GET    | `/auth/me`       | Layout `(app)`, `/dashboard` | Implementado   |
 
 ### Códigos de error usados en UX
 
