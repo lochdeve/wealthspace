@@ -17,6 +17,7 @@ Desde la raíz del monorepo: `pnpm --filter @wealthspace/api dev`.
 
 ## Endpoints
 
+- `POST /api/v1/auth/register` — alta de usuario (transacción: usuario + espacio PERSONAL + membresía OWNER).
 - `GET /api/v1/health` — liveness (el proceso responde; no consulta la BD).
 - `GET /api/v1/health/ready` — readiness (PostgreSQL accesible vía `SELECT 1`).
 - `GET /api/v1/docs` — OpenAPI (Swagger UI).

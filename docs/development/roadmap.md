@@ -30,8 +30,8 @@ The product will be developed as a modular monolith.
 - [x] Environment validation
 - [x] Database health check
 - [ ] Users module
-- [ ] Authentication module
-- [ ] Registration
+- [x] Authentication module (register; login/sessions pending)
+- [x] Registration (atomic user + PERSONAL space + OWNER membership)
 - [ ] Login and session management
 - [ ] Logout
 - [ ] Authenticated user profile
@@ -156,4 +156,4 @@ A deliverable is complete only when:
 
 ## 6. Current priority
 
-The next implementation task is Phase 2: Authentication and users (Users module, Auth module, registration, login, sessions).
+The next implementation task is Phase 2: login, secure session management, profile, and guards (registration is implemented).
