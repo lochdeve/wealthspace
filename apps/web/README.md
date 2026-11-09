@@ -30,6 +30,11 @@ Desde la raíz: `pnpm --filter @wealthspace/web dev`.
 ## Variables de entorno
 
 - `NEXT_PUBLIC_API_URL` — URL base de la API (default documentado en `.env.example` raíz).
+- En la API, `WEB_ORIGIN=http://localhost:3000` (CORS con credenciales para la cookie de sesión).
+
+## Auth (Fase 3)
+
+Rutas: `/login`, `/register`, `/dashboard` (protegida). Dependencias con endpoints: [frontend-api-dependencies.md](../../docs/development/frontend-api-dependencies.md).
 
 ## Documentación
 

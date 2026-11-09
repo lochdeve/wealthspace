@@ -42,12 +42,13 @@ The product will be developed as a modular monolith.
 ### Frontend
 - [x] Next.js application bootstrap
 - [x] Static landing page
-- [ ] API integration
-- [ ] Registration page
-- [ ] Login page
-- [ ] Session management
-- [ ] Protected routes
-- [ ] Authenticated application layout
+- [x] API integration (client + CORS)
+- [x] Registration page
+- [x] Login page
+- [x] Session management (cookie + `/auth/me`)
+- [x] Protected routes (`(app)`)
+- [x] Authenticated application layout
+- [ ] End-to-end authentication flow against live API (optional CI)
 
 ## 3. Development phases
 
@@ -157,4 +158,4 @@ A deliverable is complete only when:
 
 ## 6. Current priority
 
-The next implementation task is Phase 2 continuation: space-scoped authorization guards and Users module wiring, then Phase 3 frontend auth.
+The next implementation task is Phase 2 continuation (space-scoped guards, Users module) or Phase 4 spaces UI once backend endpoints exist.

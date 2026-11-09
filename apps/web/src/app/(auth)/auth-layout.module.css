@@ -1,0 +1,23 @@
+.page {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-geist-sans);
+}
+
+.header {
+  padding: 1.25rem 1.5rem;
+}
+
+.brand {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}

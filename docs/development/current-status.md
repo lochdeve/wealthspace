@@ -1,9 +1,10 @@
 # Estado actual del desarrollo
 
-Última actualización: auth (registro + login/sesión).
+Última actualización: Fase 3 frontend (auth UI + cliente API).
 
 ## Completado recientemente
 
+- **Frontend auth (Fase 3):** `lib/api`, login/registro, layout `(app)` con `/dashboard`, CORS `WEB_ORIGIN`, doc [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 - **`POST /api/v1/auth/login`**, **`POST /api/v1/auth/logout`**, **`GET /api/v1/auth/me`**: sesión con JWT en cookie HttpOnly (`wealthspace_session`), `JwtAuthGuard`; **401** `INVALID_CREDENTIALS` / sin filtrar existencia de email.
 - **`POST /api/v1/auth/register`**: hash Argon2id, transacción atómica `Space` PERSONAL + `User` + `SpaceMembership` OWNER ACTIVE; **409** si el email ya existe; validación global con `class-validator`.
 - `JWT_SECRET` (mín. 32 caracteres) obligatorio en `parseEnv`.
@@ -28,7 +29,7 @@
 
 ## Siguiente tarea
 
-Fase 2 (continuación): reutilizar `JwtAuthGuard` en rutas de espacio, módulo Users explícito si hace falta, OpenAPI auth completo; **PENDIENTE DE DECISIÓN**: refresh tokens y revocación de sesiones (hoy JWT stateless sin lista negra).
+Fase 2 (continuación): guards por espacio y módulo Users; E2E auth web+API en CI (**PENDIENTE**). Fase 4 cuando existan endpoints de espacios.
 
 ## Notas
 

@@ -1,0 +1,40 @@
+.shell {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-geist-sans);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+.brandRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+}
+
+.brand {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.userLabel {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+.main {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 48rem;
+  width: 100%;
+  margin: 0 auto;
+}
