@@ -4,13 +4,13 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../../src/app.module';
 import { TEST_DB } from './helpers';
+import { applyTestApiEnv } from './test-api-env';
 
 describe('Prisma connectivity (integration)', () => {
   let app: INestApplication<App>;
 
   beforeAll(async () => {
-    process.env['DATABASE_URL'] = TEST_DB;
-    process.env['API_PORT'] = '3001';
+    applyTestApiEnv(TEST_DB);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],

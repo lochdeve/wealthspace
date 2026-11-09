@@ -18,6 +18,10 @@ Desde la raíz del monorepo: `pnpm --filter @wealthspace/api dev`.
 ## Endpoints
 
 - `POST /api/v1/auth/register` — alta de usuario (transacción: usuario + espacio PERSONAL + membresía OWNER).
+- `POST /api/v1/auth/login` — credenciales; cookie HttpOnly `wealthspace_session` (JWT).
+- `POST /api/v1/auth/logout` — borra la cookie de sesión.
+- `GET /api/v1/auth/me` — perfil del usuario autenticado (requiere cookie).
+- Variable obligatoria: `JWT_SECRET` (mín. 32 caracteres).
 - `GET /api/v1/health` — liveness (el proceso responde; no consulta la BD).
 - `GET /api/v1/health/ready` — readiness (PostgreSQL accesible vía `SELECT 1`).
 - `GET /api/v1/docs` — OpenAPI (Swagger UI).

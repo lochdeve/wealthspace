@@ -30,12 +30,13 @@ The product will be developed as a modular monolith.
 - [x] Environment validation
 - [x] Database health check
 - [ ] Users module
-- [x] Authentication module (register; login/sessions pending)
+- [x] Authentication module (register, login, session cookie, profile)
 - [x] Registration (atomic user + PERSONAL space + OWNER membership)
-- [ ] Login and session management
-- [ ] Logout
-- [ ] Authenticated user profile
-- [ ] Authorization and security tests
+- [x] Login and session management (JWT HttpOnly cookie)
+- [x] Logout
+- [x] Authenticated user profile (`GET /auth/me`)
+- [x] JwtAuthGuard (base for protected routes)
+- [ ] Authorization and security tests (space-scoped guards pending)
 - [x] OpenAPI documentation (health + Swagger UI)
 
 ### Frontend
@@ -156,4 +157,4 @@ A deliverable is complete only when:
 
 ## 6. Current priority
 
-The next implementation task is Phase 2: login, secure session management, profile, and guards (registration is implemented).
+The next implementation task is Phase 2 continuation: space-scoped authorization guards and Users module wiring, then Phase 3 frontend auth.

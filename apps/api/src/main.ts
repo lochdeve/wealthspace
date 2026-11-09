@@ -1,5 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { AppEnv, ENV_TOKEN, loadEnvFiles } from './config/env';
 import { setupSwagger } from './swagger/setup-swagger';
@@ -7,6 +8,7 @@ import { setupSwagger } from './swagger/setup-swagger';
 async function bootstrap() {
   loadEnvFiles();
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
   app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(
     new ValidationPipe({

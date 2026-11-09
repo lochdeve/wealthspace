@@ -1,10 +1,16 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadEnvFile } from 'node:process';
+const DEFAULT_AUTH_COOKIE_NAME = 'wealthspace_session';
 
 export type AppEnv = {
   databaseUrl: string;
   port: number;
+  jwtSecret: string;
+  jwtExpiresIn: string;
+  jwtCookieName: string;
+  jwtCookieMaxAgeMs: number;
+  cookieSecure: boolean;
 };
 
 /** Injection token for validated environment (not a string to avoid collisions). */
@@ -40,6 +46,29 @@ function validateDatabaseUrl(raw: string | undefined): string {
   return raw;
 }
 
+function validateJwtSecret(raw: string | undefined): string {
+  const value = raw?.trim() ?? '';
+  if (value.length < 32) {
+    throw new Error('JWT_SECRET must be at least 32 characters');
+  }
+  return value;
+}
+
+/** Supports `Nd` day suffix (default auth cookie max-age aligns with JWT expiry). */
+export function parseJwtMaxAgeMs(expiresIn: string): number {
+  const trimmed = expiresIn.trim();
+  const dayMatch = /^(\d+)d$/i.exec(trimmed);
+  if (dayMatch !== null) {
+    const days = Number.parseInt(dayMatch[1] ?? '', 10);
+    if (Number.isInteger(days) && days > 0) {
+      return days * 24 * 60 * 60 * 1000;
+    }
+  }
+  throw new Error(
+    `JWT_EXPIRES_IN must use a positive day suffix (e.g. 7d): ${expiresIn}`,
+  );
+}
+
 function parsePort(
   raw: string | undefined,
   fallback: string | undefined,
@@ -53,8 +82,15 @@ function parsePort(
 }
 
 export function parseEnv(source: NodeJS.ProcessEnv = process.env): AppEnv {
+  const jwtExpiresIn = source['JWT_EXPIRES_IN']?.trim() || '7d';
   return {
     databaseUrl: validateDatabaseUrl(source['DATABASE_URL']),
     port: parsePort(source['API_PORT'], source['PORT']),
+    jwtSecret: validateJwtSecret(source['JWT_SECRET']),
+    jwtExpiresIn,
+    jwtCookieName:
+      source['JWT_COOKIE_NAME']?.trim() || DEFAULT_AUTH_COOKIE_NAME,
+    jwtCookieMaxAgeMs: parseJwtMaxAgeMs(jwtExpiresIn),
+    cookieSecure: source['NODE_ENV'] === 'production',
   };
 }

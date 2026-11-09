@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import cookieParser from 'cookie-parser';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../../src/app.module';
@@ -12,6 +13,7 @@ import {
   truncateFinancialData,
   withClient,
 } from './helpers';
+import { applyTestApiEnv } from './test-api-env';
 
 type RegisterResponseBody = {
   id: string;
@@ -29,8 +31,7 @@ describe('POST /auth/register (integration)', () => {
   let app: INestApplication<App>;
 
   beforeAll(async () => {
-    process.env['DATABASE_URL'] = TEST_DB;
-    process.env['API_PORT'] = '3001';
+    applyTestApiEnv(TEST_DB);
 
     await resetSchema();
 
@@ -39,6 +40,7 @@ describe('POST /auth/register (integration)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.use(cookieParser());
     app.setGlobalPrefix('api/v1');
     app.useGlobalPipes(
       new ValidationPipe({

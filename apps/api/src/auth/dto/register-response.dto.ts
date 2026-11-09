@@ -1,18 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { UserProfileDto } from './user-profile.dto';
 
-export class RegisterResponseDto {
-  @ApiProperty({ format: 'uuid' })
-  id!: string;
-
-  @ApiProperty()
-  email!: string;
-
-  @ApiProperty()
-  displayName!: string;
-
-  @ApiProperty()
-  timezone!: string;
-
-  @ApiProperty({ format: 'uuid' })
-  personalSpaceId!: string;
-}
+/** Same shape as login and GET /auth/me. */
+export class RegisterResponseDto extends UserProfileDto {}

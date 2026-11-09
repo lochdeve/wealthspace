@@ -13,6 +13,8 @@ describe('Health (e2e)', () => {
     process.env['DATABASE_URL'] =
       process.env['DATABASE_URL'] ??
       'postgresql://wealthspace:wealthspace_dev@127.0.0.1:5432/wealthspace';
+    process.env['JWT_SECRET'] =
+      process.env['JWT_SECRET'] ?? 'e2e-test-jwt-secret-32-characters-min!!';
 
     const prismaStub: Pick<
       PrismaService,

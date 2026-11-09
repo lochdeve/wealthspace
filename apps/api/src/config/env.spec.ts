@@ -1,15 +1,22 @@
 import { parseEnv } from './env';
 
 describe('parseEnv', () => {
+  const jwtSecret = 'abcdefghijklmnopqrstuvwxyz123456';
   const base: NodeJS.ProcessEnv = {
     DATABASE_URL: 'postgresql://user:pass@localhost:5432/wealthspace',
     API_PORT: '3001',
+    JWT_SECRET: jwtSecret,
   };
 
   it('returns validated config', () => {
     expect(parseEnv(base)).toEqual({
       databaseUrl: base['DATABASE_URL'],
       port: 3001,
+      jwtSecret,
+      jwtExpiresIn: '7d',
+      jwtCookieName: 'wealthspace_session',
+      jwtCookieMaxAgeMs: 7 * 24 * 60 * 60 * 1000,
+      cookieSecure: false,
     });
   });
 
@@ -27,8 +34,14 @@ describe('parseEnv', () => {
   });
 
   it('rejects missing DATABASE_URL', () => {
-    expect(() => parseEnv({ API_PORT: '3001' })).toThrow(
+    expect(() => parseEnv({ API_PORT: '3001', JWT_SECRET: jwtSecret })).toThrow(
       'DATABASE_URL is required',
+    );
+  });
+
+  it('rejects short JWT_SECRET', () => {
+    expect(() => parseEnv({ ...base, JWT_SECRET: 'too-short' })).toThrow(
+      'JWT_SECRET must be at least 32 characters',
     );
   });
 
