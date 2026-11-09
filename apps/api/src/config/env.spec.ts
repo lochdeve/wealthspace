@@ -17,6 +17,7 @@ describe('parseEnv', () => {
       jwtCookieName: 'wealthspace_session',
       jwtCookieMaxAgeMs: 7 * 24 * 60 * 60 * 1000,
       cookieSecure: false,
+      webOrigin: 'http://localhost:3000',
     });
   });
 

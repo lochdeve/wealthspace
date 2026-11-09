@@ -22,6 +22,11 @@ async function bootstrap() {
   setupSwagger(app);
 
   const env = app.get<AppEnv>(ENV_TOKEN);
+  app.enableCors({
+    origin: env.webOrigin,
+    credentials: true,
+    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  });
   await app.listen(env.port);
 }
 void bootstrap();

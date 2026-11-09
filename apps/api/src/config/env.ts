@@ -11,6 +11,8 @@ export type AppEnv = {
   jwtCookieName: string;
   jwtCookieMaxAgeMs: number;
   cookieSecure: boolean;
+  /** Browser origin allowed for credentialed CORS (Next.js dev default). */
+  webOrigin: string;
 };
 
 /** Injection token for validated environment (not a string to avoid collisions). */
@@ -69,6 +71,20 @@ export function parseJwtMaxAgeMs(expiresIn: string): number {
   );
 }
 
+function validateWebOrigin(raw: string | undefined): string {
+  const value = raw?.trim() || 'http://localhost:3000';
+  let parsed: URL;
+  try {
+    parsed = new URL(value);
+  } catch {
+    throw new Error(`WEB_ORIGIN must be a valid URL: ${value}`);
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    throw new Error('WEB_ORIGIN must use http:// or https://');
+  }
+  return parsed.origin;
+}
+
 function parsePort(
   raw: string | undefined,
   fallback: string | undefined,
@@ -92,5 +108,6 @@ export function parseEnv(source: NodeJS.ProcessEnv = process.env): AppEnv {
       source['JWT_COOKIE_NAME']?.trim() || DEFAULT_AUTH_COOKIE_NAME,
     jwtCookieMaxAgeMs: parseJwtMaxAgeMs(jwtExpiresIn),
     cookieSecure: source['NODE_ENV'] === 'production',
+    webOrigin: validateWebOrigin(source['WEB_ORIGIN']),
   };
 }
