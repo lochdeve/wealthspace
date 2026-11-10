@@ -21,6 +21,8 @@ Desde la raíz del monorepo: `pnpm --filter @wealthspace/api dev`.
 - `POST /api/v1/auth/login` — credenciales; cookie HttpOnly `wealthspace_session` (JWT).
 - `POST /api/v1/auth/logout` — borra la cookie de sesión.
 - `GET /api/v1/auth/me` — perfil del usuario autenticado (requiere cookie).
+- `GET /api/v1/spaces` — espacios con membresía ACTIVE del usuario (sesión).
+- `GET /api/v1/spaces/:spaceId` — detalle si membresía ACTIVE; **404** `SPACE_NOT_FOUND` si no aplica (anti-IDOR).
 - Variable obligatoria: `JWT_SECRET` (mín. 32 caracteres).
 - `GET /api/v1/health` — liveness (el proceso responde; no consulta la BD).
 - `GET /api/v1/health/ready` — readiness (PostgreSQL accesible vía `SELECT 1`).

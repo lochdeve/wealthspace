@@ -38,7 +38,11 @@ The product will be developed as a modular monolith.
 - [x] Logout
 - [x] Authenticated user profile (`GET /auth/me`)
 - [x] JwtAuthGuard (base for protected routes)
-- [ ] Authorization and security tests (space-scoped guards pending)
+- [x] List user spaces (ACTIVE memberships)
+- [x] Space-scoped guard (`SpaceMembershipGuard`) for `GET /spaces/:spaceId`
+- [ ] Create shared space
+- [ ] Invitations and membership lifecycle
+- [ ] Authorization tests for shared-space mutations
 - [x] OpenAPI documentation (health + Swagger UI)
 
 ### Frontend
@@ -171,4 +175,4 @@ A deliverable is complete only when:
 
 ## 6. Current priority
 
-The next implementation task is Phase 2 continuation (space-scoped guards, Users module) or Phase 4 spaces UI once backend endpoints exist.
+The next implementation task is Phase 4 continuation: create SHARED space, invitations, and membership lifecycle; then spaces UI in the web app.
