@@ -41,7 +41,8 @@ The product will be developed as a modular monolith.
 - [x] List user spaces (ACTIVE memberships)
 - [x] Space-scoped guard (`SpaceMembershipGuard`) for `GET /spaces/:spaceId`
 - [x] Create shared space (`POST /spaces`)
-- [ ] Invitations and membership lifecycle
+- [x] Invitations (create, list, accept, reject, revoke)
+- [ ] Membership lifecycle (leave / remove)
 - [ ] Authorization tests for shared-space mutations
 - [x] OpenAPI documentation (health + Swagger UI)
 

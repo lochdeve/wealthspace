@@ -1,5 +1,9 @@
 import { randomUUID } from 'node:crypto';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   MembershipRole,
   MembershipStatus,
@@ -91,6 +95,24 @@ export class SpacesService {
       throw this.spaceNotFound();
     }
     return membership;
+  }
+
+  /** OWNER/ADMIN management actions on SHARED spaces (invitations, etc.). */
+  assertSharedSpaceManagement(membership: ActiveSpaceMembership): void {
+    if (membership.space.type !== SpaceType.SHARED) {
+      throw new ForbiddenException({
+        statusCode: 403,
+        code: 'SPACE_NOT_SHARED',
+        message: 'Invitations are only available for shared spaces',
+      });
+    }
+    if (membership.role === MembershipRole.MEMBER) {
+      throw new ForbiddenException({
+        statusCode: 403,
+        code: 'INSUFFICIENT_ROLE',
+        message: 'Only owners and admins can manage invitations',
+      });
+    }
   }
 
   private async findActiveMembership(

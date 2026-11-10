@@ -4,7 +4,7 @@
 
 ## Completado recientemente
 
-- **Espacios (Fase 4):** `GET`/`POST /api/v1/spaces`, `GET /api/v1/spaces/:spaceId`, `SpaceMembershipGuard`; `POST` crea SHARED + OWNER.
+- **Espacios e invitaciones (Fase 4):** espacios (list/create/detail), flujo de invitaciones (OWNER/ADMIN en SHARED); TTL invitación **7 días por defecto** (PENDIENTE DE DECISIÓN en producto).
 - **Frontend auth (Fase 3):** `lib/api`, login/registro, layout `(app)` con `/dashboard`, CORS `WEB_ORIGIN`, doc [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 - **`POST /api/v1/auth/login`**, **`POST /api/v1/auth/logout`**, **`GET /api/v1/auth/me`**: sesión con JWT en cookie HttpOnly (`wealthspace_session`), `JwtAuthGuard`; **401** `INVALID_CREDENTIALS` / sin filtrar existencia de email.
 - **`POST /api/v1/auth/register`**: hash Argon2id, transacción atómica `Space` PERSONAL + `User` + `SpaceMembership` OWNER ACTIVE; **409** si el email ya existe; validación global con `class-validator`.
@@ -31,7 +31,7 @@
 
 ## Siguiente tarea
 
-Fase 4 (continuación): invitaciones y ciclo de membresía; UI de selector / crear espacio en web. Opcional: módulo Users, E2E auth en CI.
+Fase 4 (continuación): ciclo LEFT/REMOVED en membresías; UI de espacios e invitaciones en web.
 
 ## Notas
 

@@ -24,6 +24,11 @@ Desde la raíz del monorepo: `pnpm --filter @wealthspace/api dev`.
 - `GET /api/v1/spaces` — espacios con membresía ACTIVE del usuario (sesión).
 - `POST /api/v1/spaces` — crea espacio **SHARED** + membresía OWNER ACTIVE (transacción).
 - `GET /api/v1/spaces/:spaceId` — detalle si membresía ACTIVE; **404** `SPACE_NOT_FOUND` si no aplica (anti-IDOR).
+- `POST /api/v1/spaces/:spaceId/invitations` — invitar por email (SHARED; OWNER/ADMIN).
+- `GET /api/v1/spaces/:spaceId/invitations` — pendientes del espacio (OWNER/ADMIN).
+- `POST /api/v1/spaces/:spaceId/invitations/:id/revoke` — revocar pendiente.
+- `GET /api/v1/invitations` — pendientes para el email del usuario autenticado.
+- `POST /api/v1/invitations/:id/accept` | `reject` — responder invitación.
 - Variable obligatoria: `JWT_SECRET` (mín. 32 caracteres).
 - `GET /api/v1/health` — liveness (el proceso responde; no consulta la BD).
 - `GET /api/v1/health/ready` — readiness (PostgreSQL accesible vía `SELECT 1`).
