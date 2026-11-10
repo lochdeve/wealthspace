@@ -1,17 +1,23 @@
 import {
+  Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { CreateSharedSpaceDto } from './dto/create-shared-space.dto';
 import {
   CurrentUser,
   type RequestUser,
@@ -38,6 +44,22 @@ export class SpacesController {
   @ApiUnauthorizedResponse({ description: 'Missing or invalid session' })
   async list(@CurrentUser() user: RequestUser): Promise<SpaceListItemDto[]> {
     return this.spacesService.listActiveSpacesForUser(user.userId);
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Create shared space',
+    description:
+      'Creates a SHARED space and an ACTIVE OWNER membership for the caller.',
+  })
+  @ApiCreatedResponse({ type: SpaceDetailDto })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid session' })
+  async create(
+    @CurrentUser() user: RequestUser,
+    @Body() dto: CreateSharedSpaceDto,
+  ): Promise<SpaceDetailDto> {
+    return this.spacesService.createSharedSpace(user.userId, dto);
   }
 
   @Get(':spaceId')

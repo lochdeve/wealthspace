@@ -1,11 +1,14 @@
+import { randomUUID } from 'node:crypto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   MembershipRole,
   MembershipStatus,
+  SpaceType,
   type Space,
   type SpaceMembership,
 } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import type { CreateSharedSpaceDto } from './dto/create-shared-space.dto';
 import type { SpaceListItemDto } from './dto/space-list-item.dto';
 import type { SpaceDetailDto } from './dto/space-detail.dto';
 
@@ -14,6 +17,40 @@ export type ActiveSpaceMembership = SpaceMembership & { space: Space };
 @Injectable()
 export class SpacesService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async createSharedSpace(
+    userId: string,
+    dto: CreateSharedSpaceDto,
+  ): Promise<SpaceDetailDto> {
+    const spaceId = randomUUID();
+    const membership = await this.prisma.$transaction(async (tx) => {
+      const space = await tx.space.create({
+        data: {
+          id: spaceId,
+          type: SpaceType.SHARED,
+          name: dto.name,
+          displayCurrency: dto.displayCurrency ?? null,
+        },
+      });
+
+      const createdMembership = await tx.spaceMembership.create({
+        data: {
+          spaceId: space.id,
+          userId,
+          role: MembershipRole.OWNER,
+          status: MembershipStatus.ACTIVE,
+        },
+      });
+
+      return { space, membership: createdMembership };
+    });
+
+    return this.toDetail(
+      membership.space,
+      membership.membership.role,
+      membership.membership.joinedAt,
+    );
+  }
 
   async listActiveSpacesForUser(userId: string): Promise<SpaceListItemDto[]> {
     const memberships = await this.prisma.spaceMembership.findMany({

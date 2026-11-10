@@ -40,7 +40,7 @@ The product will be developed as a modular monolith.
 - [x] JwtAuthGuard (base for protected routes)
 - [x] List user spaces (ACTIVE memberships)
 - [x] Space-scoped guard (`SpaceMembershipGuard`) for `GET /spaces/:spaceId`
-- [ ] Create shared space
+- [x] Create shared space (`POST /spaces`)
 - [ ] Invitations and membership lifecycle
 - [ ] Authorization tests for shared-space mutations
 - [x] OpenAPI documentation (health + Swagger UI)

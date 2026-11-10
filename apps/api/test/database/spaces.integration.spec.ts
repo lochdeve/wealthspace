@@ -141,4 +141,40 @@ describe('Spaces (integration)', () => {
   it('requires authentication', async () => {
     await request(app.getHttpServer()).get('/api/v1/spaces').expect(401);
   });
+
+  it('POST /spaces creates SHARED space with OWNER membership', async () => {
+    const { cookies, profile } = await registerAndLogin('spaces-create');
+
+    const createRes = await request(app.getHttpServer())
+      .post('/api/v1/spaces')
+      .set('Cookie', cookies)
+      .send({ name: 'Roommates', displayCurrency: 'eur' })
+      .expect(201);
+
+    const created = createRes.body as SpaceListItem;
+    expect(created.type).toBe('SHARED');
+    expect(created.name).toBe('Roommates');
+    expect(created.role).toBe('OWNER');
+
+    const listRes = await request(app.getHttpServer())
+      .get('/api/v1/spaces')
+      .set('Cookie', cookies)
+      .expect(200);
+
+    const items = listRes.body as SpaceListItem[];
+    expect(items).toHaveLength(2);
+    const ids = items.map((item) => item.id);
+    expect(ids).toContain(profile.personalSpaceId);
+    expect(ids).toContain(created.id);
+  });
+
+  it('rejects invalid displayCurrency on POST /spaces', async () => {
+    const { cookies } = await registerAndLogin('spaces-currency');
+
+    await request(app.getHttpServer())
+      .post('/api/v1/spaces')
+      .set('Cookie', cookies)
+      .send({ name: 'Bad Currency', displayCurrency: 'EURO' })
+      .expect(400);
+  });
 });

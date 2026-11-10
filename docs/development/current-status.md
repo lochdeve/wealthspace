@@ -4,7 +4,7 @@
 
 ## Completado recientemente
 
-- **Espacios (Fase 4, slice 1):** `GET /api/v1/spaces`, `GET /api/v1/spaces/:spaceId`, `SpaceMembershipGuard`; integración en `test:db`.
+- **Espacios (Fase 4):** `GET`/`POST /api/v1/spaces`, `GET /api/v1/spaces/:spaceId`, `SpaceMembershipGuard`; `POST` crea SHARED + OWNER.
 - **Frontend auth (Fase 3):** `lib/api`, login/registro, layout `(app)` con `/dashboard`, CORS `WEB_ORIGIN`, doc [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 - **`POST /api/v1/auth/login`**, **`POST /api/v1/auth/logout`**, **`GET /api/v1/auth/me`**: sesión con JWT en cookie HttpOnly (`wealthspace_session`), `JwtAuthGuard`; **401** `INVALID_CREDENTIALS` / sin filtrar existencia de email.
 - **`POST /api/v1/auth/register`**: hash Argon2id, transacción atómica `Space` PERSONAL + `User` + `SpaceMembership` OWNER ACTIVE; **409** si el email ya existe; validación global con `class-validator`.
@@ -26,12 +26,12 @@
 | Prisma en NestJS | Hecho                                      |
 | Env validation   | Hecho (`AppConfigModule`)                  |
 | Auth / usuarios  | Registro + login/sesión/me; guards básicos |
-| Espacios         | Listado + detalle (ACTIVE); guard por espacio |
+| Espacios         | Listar, crear SHARED, detalle; guard por espacio |
 | OpenAPI          | Swagger UI + auth/spaces documentados      |
 
 ## Siguiente tarea
 
-Fase 4 (continuación): `POST` espacio SHARED, invitaciones y ciclo de membresía; UI de selector de espacio en web. Opcional: módulo Users, E2E auth en CI.
+Fase 4 (continuación): invitaciones y ciclo de membresía; UI de selector / crear espacio en web. Opcional: módulo Users, E2E auth en CI.
 
 ## Notas
 
