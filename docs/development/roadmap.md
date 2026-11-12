@@ -43,7 +43,7 @@ The product will be developed as a modular monolith.
 - [x] Create shared space (`POST /spaces`)
 - [x] Invitations (create, list, accept, reject, revoke)
 - [x] Membership lifecycle (leave / remove)
-- [ ] Authorization tests for shared-space mutations
+- [x] Authorization tests for shared-space mutations
 - [x] OpenAPI documentation (health + Swagger UI)
 
 ### Frontend
@@ -61,7 +61,7 @@ The product will be developed as a modular monolith.
 - [x] Space detail and invitation management (OWNER/ADMIN)
 - [x] User pending invitations (accept / reject)
 - [x] Active space selection (cookie + header switcher)
-- [ ] Membership leave/remove UI
+- [x] Membership leave/remove UI
 
 ## 3. Development phases
 
@@ -181,4 +181,4 @@ A deliverable is complete only when:
 
 ## 6. Current priority
 
-The next implementation task is Phase 4 web completion (leave/remove UI), then Phase 5 accounts and transactions.
+The next implementation task is Phase 5 accounts and transactions (Phase 4 web leave/remove UI complete).

@@ -43,6 +43,7 @@ Requiere rama API `feat/api-phase-4-spaces` (o `main` tras merge).
 | Mis invitaciones pendientes | GET    | `/invitations`                            | `/invitations`                      |
 | Aceptar                     | POST   | `/invitations/:id/accept`                 | Lista de invitaciones               |
 | Rechazar                    | POST   | `/invitations/:id/reject`                 | Lista de invitaciones               |
+| Miembros activos            | GET    | `/spaces/:spaceId/members`                | Panel en detalle SHARED             |
 | Salir del espacio           | POST   | `/spaces/:spaceId/membership/leave`       | Detalle SHARED (cualquier ACTIVE)   |
 | Expulsar miembro            | POST   | `/spaces/:spaceId/members/:userId/remove` | Detalle SHARED (OWNER/ADMIN)        |
 
