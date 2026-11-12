@@ -61,6 +61,45 @@ Requiere rama API `feat/api-phase-4-spaces` (o `main` tras merge).
 - `MEMBER_NOT_FOUND` (404) — remove
 - Mensaje genérico de API en el resto de casos
 
+## Cuentas (Fase 5 — slice 1)
+
+Requiere rama `feat/api-phase-5-accounts` o `main` tras merge. Membresía **ACTIVE** en el espacio (mismo guard que detalle de espacio).
+
+| Recurso          | Método | Ruta                                           | Notas                                              |
+| ---------------- | ------ | ---------------------------------------------- | -------------------------------------------------- |
+| Listar cuentas   | GET    | `/spaces/:spaceId/accounts`                    | Query `includeArchived=true` opcional (defecto no) |
+| Crear cuenta     | POST   | `/spaces/:spaceId/accounts`                    | Body: `name`, `currency` (ISO 4217)                |
+| Detalle cuenta   | GET    | `/spaces/:spaceId/accounts/:accountId`         | `balance` on-read (4 decimales)                    |
+| Archivar cuenta  | POST   | `/spaces/:spaceId/accounts/:accountId/archive` | **204**; ya archivada → **409**                    |
+
+### Códigos de error (cuentas)
+
+- `SPACE_NOT_FOUND` (404) — espacio sin membresía ACTIVE del usuario
+- `ACCOUNT_NOT_FOUND` (404) — cuenta ajena al `spaceId` (anti-IDOR)
+- `ACCOUNT_ALREADY_ARCHIVED` (409) — repetir archivado
+
+## Categorías (Fase 5 — slice 3)
+
+| Recurso        | Método | Ruta                           | Notas                          |
+| -------------- | ------ | ------------------------------ | ------------------------------ |
+| Listar         | GET    | `/spaces/:spaceId/categories`  | Query `type=INCOME` \| `EXPENSE` |
+| Crear          | POST   | `/spaces/:spaceId/categories`  | `name`, `type`, `parentId?`    |
+
+### Transacciones
+
+| Recurso        | Método | Ruta                                                   | Notas                                                |
+| -------------- | ------ | ------------------------------------------------------ | ---------------------------------------------------- |
+| Saldo inicial  | POST   | `/spaces/:spaceId/accounts/:accountId/opening-balance` | Una por cuenta                                       |
+| Ingreso        | POST   | `/spaces/:spaceId/transactions/income`                 | `accountId` obligatorio (PERSONAL y SHARED)          |
+| Gasto          | POST   | `/spaces/:spaceId/transactions/expense`                | PERSONAL: `accountId`; SHARED: `attributedToUserId`  |
+| Transferencia  | POST   | `/spaces/:spaceId/transactions/transfer`               | Misma moneda; cuentas distintas                      |
+
+**SHARED expense:** `accountId` opcional; sin cuenta → `displayCurrency` del espacio o `currency` en body. Atribución: Owner/Admin → cualquier ACTIVE; Member → solo sí mismo.
+
+Códigos: `ATTRIBUTION_REQUIRED`, `ATTRIBUTION_NOT_ALLOWED`, `ATTRIBUTEE_NOT_ACTIVE_MEMBER`, `ACCOUNT_REQUIRED`, `CURRENCY_REQUIRED`, `CURRENCY_MISMATCH`, `SAME_ACCOUNT_TRANSFER`, más los de slice 1–2.
+
+`SharedExpense` / liquidaciones: **fase posterior**.
+
 ## Fuera de alcance (fases posteriores)
 
-Cuentas, transacciones y dashboards financieros. Transferencia de ownership: **entrega 4.1** — reglas en [spaces-membership-mvp.md](../product/spaces-membership-mvp.md); hasta entonces 409 en único OWNER.
+Dashboards financieros agregados. Transferencia de ownership: **entrega 4.1** — [spaces-membership-mvp.md](../product/spaces-membership-mvp.md).

@@ -31,6 +31,16 @@ Desde la raíz del monorepo: `pnpm --filter @wealthspace/api dev`.
 - `POST /api/v1/invitations/:id/accept` | `reject` — responder invitación.
 - `POST /api/v1/spaces/:spaceId/membership/leave` — salir de SHARED (status LEFT).
 - `POST /api/v1/spaces/:spaceId/members/:userId/remove` — expulsar (OWNER/ADMIN; status REMOVED).
+- `GET /api/v1/spaces/:spaceId/accounts` — listar cuentas (`?includeArchived=true` opcional).
+- `POST /api/v1/spaces/:spaceId/accounts` — crear cuenta (`name`, `currency` ISO 4217).
+- `GET /api/v1/spaces/:spaceId/accounts/:accountId` — detalle con `balance` on-read.
+- `POST /api/v1/spaces/:spaceId/accounts/:accountId/archive` — archivar (**409** si ya archivada).
+- `POST /api/v1/spaces/:spaceId/accounts/:accountId/opening-balance` — saldo inicial (uno por cuenta).
+- `GET /api/v1/spaces/:spaceId/categories` — categorías (`?type=` opcional).
+- `POST /api/v1/spaces/:spaceId/categories` — crear categoría.
+- `POST /api/v1/spaces/:spaceId/transactions/income` — ingreso (cuenta obligatoria).
+- `POST /api/v1/spaces/:spaceId/transactions/expense` — gasto (atribución en SHARED).
+- `POST /api/v1/spaces/:spaceId/transactions/transfer` — transferencia entre cuentas.
 - Variable obligatoria: `JWT_SECRET` (mín. 32 caracteres).
 - `GET /api/v1/health` — liveness (el proceso responde; no consulta la BD).
 - `GET /api/v1/health/ready` — readiness (PostgreSQL accesible vía `SELECT 1`).

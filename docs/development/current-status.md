@@ -32,7 +32,7 @@
 
 ## Siguiente tarea
 
-**Fase 5** — cuentas y transacciones (rama nueva). Opcional en paralelo: **4.1** transferencia ownership, **4.2** último miembro ACTIVE (`LAST_ACTIVE_MEMBER`).
+**Fase 5** — en curso (`feat/api-phase-5-accounts`): slices 1–3 (cuentas, cashflow PERSONAL, SHARED+transfer+categorías). Siguiente: edición transacciones / `SharedExpense`. Opcional: **4.1** / **4.2**.
 
 ## Notas
 
