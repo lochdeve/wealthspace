@@ -10,25 +10,25 @@
 
 ## Backend
 
-| Área              | Estado                                                                 |
-| ----------------- | ---------------------------------------------------------------------- |
-| Auth / usuarios   | Registro + login/sesión/me                                             |
-| Espacios          | List/create/detail, miembros, leave/remove, invitaciones               |
-| Cuentas           | CRUD MVP + archivado                                                   |
-| Categorías        | List/create                                                            |
-| Transacciones     | Opening balance, income, expense, transfer, list/detail, PATCH + revisión |
-| OpenAPI           | Swagger UI                                                             |
-| SharedExpense     | Fase 6 (no iniciado)                                                   |
+| Área            | Estado                                                                    |
+| --------------- | ------------------------------------------------------------------------- |
+| Auth / usuarios | Registro + login/sesión/me                                                |
+| Espacios        | List/create/detail, miembros, leave/remove, invitaciones                  |
+| Cuentas         | CRUD MVP + archivado                                                      |
+| Categorías      | List/create                                                               |
+| Transacciones   | Opening balance, income, expense, transfer, list/detail, PATCH + revisión |
+| OpenAPI         | Swagger UI                                                                |
+| SharedExpense   | Fase 6 (no iniciado)                                                      |
 
 ## Frontend
 
-| Área         | Estado                                                 |
-| ------------ | ------------------------------------------------------ |
-| Auth         | Login, registro, rutas protegidas                      |
-| Espacios     | Listado, crear, detalle, miembros, leave/remove        |
-| Invitaciones | Gestión en espacio + `/invitations`                    |
-| Finanzas     | **Pendiente** — consumir API Fase 5                    |
-| Tests        | Unit espacios/auth; E2E auth mínimo                    |
+| Área         | Estado                                                             |
+| ------------ | ------------------------------------------------------------------ |
+| Auth         | Login, registro, rutas protegidas                                  |
+| Espacios     | Listado, crear, detalle, miembros, leave/remove                    |
+| Invitaciones | Gestión en espacio + `/invitations`                                |
+| Finanzas     | **Slices 1–3** en `feat/web-phase-5-accounts` (PERSONAL + gasto SHARED) |
+| Tests        | Unit espacios/auth; E2E auth mínimo                                |
 
 ## Siguiente tarea
 

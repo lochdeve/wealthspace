@@ -63,12 +63,14 @@ Espacio activo (solo UI): cookie `wealthspace_active_space`, establecida con Ser
 
 Disponible en `main` (Fase 5 API). Membresía **ACTIVE** en el espacio (mismo guard que detalle de espacio).
 
-| Recurso          | Método | Ruta                                           | Notas                                              |
-| ---------------- | ------ | ---------------------------------------------- | -------------------------------------------------- |
-| Listar cuentas   | GET    | `/spaces/:spaceId/accounts`                    | Query `includeArchived=true` opcional (defecto no) |
-| Crear cuenta     | POST   | `/spaces/:spaceId/accounts`                    | Body: `name`, `currency` (ISO 4217)                |
-| Detalle cuenta   | GET    | `/spaces/:spaceId/accounts/:accountId`         | `balance` on-read (4 decimales)                    |
-| Archivar cuenta  | POST   | `/spaces/:spaceId/accounts/:accountId/archive` | **204**; ya archivada → **409**                    |
+| Recurso         | Método | Ruta                                           | Notas                                              |
+| --------------- | ------ | ---------------------------------------------- | -------------------------------------------------- |
+| Listar cuentas  | GET    | `/spaces/:spaceId/accounts`                    | Query `includeArchived=true` opcional (defecto no) |
+| Crear cuenta    | POST   | `/spaces/:spaceId/accounts`                    | Body: `name`, `currency` (ISO 4217)                |
+| Detalle cuenta  | GET    | `/spaces/:spaceId/accounts/:accountId`         | `balance` on-read (4 decimales)                    |
+| Archivar cuenta | POST   | `/spaces/:spaceId/accounts/:accountId/archive` | **204**; ya archivada → **409**                    |
+
+**UI (slice 1–2, PERSONAL):** `/accounts` → espacio personal; `/spaces/:id/accounts`, `.../new`, `.../[accountId]`; `/spaces/:id/categories`.
 
 ### Códigos de error (cuentas)
 
@@ -78,22 +80,28 @@ Disponible en `main` (Fase 5 API). Membresía **ACTIVE** en el espacio (mismo gu
 
 ## Categorías (Fase 5 — slice 3)
 
-| Recurso        | Método | Ruta                           | Notas                          |
-| -------------- | ------ | ------------------------------ | ------------------------------ |
-| Listar         | GET    | `/spaces/:spaceId/categories`  | Query `type=INCOME` \| `EXPENSE` |
-| Crear          | POST   | `/spaces/:spaceId/categories`  | `name`, `type`, `parentId?`    |
+| Recurso | Método | Ruta                          | Notas                            |
+| ------- | ------ | ----------------------------- | -------------------------------- |
+| Listar  | GET    | `/spaces/:spaceId/categories` | Query `type=INCOME` \| `EXPENSE` |
+| Crear   | POST   | `/spaces/:spaceId/categories` | `name`, `type`, `parentId?`      |
+
+**UI:** `/spaces/:id/categories` (list + crear); selector opcional en ingreso/gasto.
 
 ### Transacciones
 
-| Recurso        | Método | Ruta                                                   | Notas                                                |
-| -------------- | ------ | ------------------------------------------------------ | ---------------------------------------------------- |
-| Saldo inicial  | POST   | `/spaces/:spaceId/accounts/:accountId/opening-balance` | Una por cuenta                                       |
-| Ingreso        | POST   | `/spaces/:spaceId/transactions/income`                 | `accountId` obligatorio (PERSONAL y SHARED)          |
-| Gasto          | POST   | `/spaces/:spaceId/transactions/expense`                | PERSONAL: `accountId`; SHARED: `attributedToUserId`  |
-| Transferencia  | POST   | `/spaces/:spaceId/transactions/transfer`               | Misma moneda; cuentas distintas                      |
-| Listar txs     | GET    | `/spaces/:spaceId/transactions`                        | `accountId`, `type`, `limit` (≤100)                  |
-| Detalle tx     | GET    | `/spaces/:spaceId/transactions/:transactionId`         | Incluye `version`                                    |
-| Editar tx      | PATCH  | `/spaces/:spaceId/transactions/:transactionId`         | `expectedVersion` + cambios; revisión en BD          |
+| Recurso       | Método | Ruta                                                   | Notas                                               |
+| ------------- | ------ | ------------------------------------------------------ | --------------------------------------------------- |
+| Saldo inicial | POST   | `/spaces/:spaceId/accounts/:accountId/opening-balance` | Una por cuenta                                      |
+| Ingreso       | POST   | `/spaces/:spaceId/transactions/income`                 | `accountId` obligatorio (PERSONAL y SHARED)         |
+| Gasto         | POST   | `/spaces/:spaceId/transactions/expense`                | PERSONAL: `accountId`; SHARED: `attributedToUserId` |
+| Transferencia | POST   | `/spaces/:spaceId/transactions/transfer`               | Misma moneda; cuentas distintas                     |
+| Listar txs    | GET    | `/spaces/:spaceId/transactions`                        | `accountId`, `type`, `limit` (≤100)                 |
+| Detalle tx    | GET    | `/spaces/:spaceId/transactions/:transactionId`         | Incluye `version`                                   |
+| Editar tx     | PATCH  | `/spaces/:spaceId/transactions/:transactionId`         | `expectedVersion` + cambios; revisión en BD         |
+
+**UI (slice 2 PERSONAL):** transferencia en detalle de cuenta; categorías ver arriba.
+
+**UI (slice 3):** archivar cuenta + `?archived=1`; `/spaces/:id/transactions/:txId` (PATCH); `/spaces/:id/expenses/new` (SHARED); categoría padre opcional.
 
 **SHARED expense:** `accountId` opcional; sin cuenta → `displayCurrency` del espacio o `currency` en body. Atribución: Owner/Admin → cualquier ACTIVE; Member → solo sí mismo.
 
