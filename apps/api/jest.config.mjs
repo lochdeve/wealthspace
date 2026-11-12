@@ -16,8 +16,17 @@ const config = {
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
-  collectCoverageFrom: ['**/*.(t|j)s'],
+  /** Unit layer only (domain HTTP flows: `pnpm test:db`). */
+  collectCoverageFrom: ['config/env.ts', 'health/health.controller.ts', '!**/*.spec.ts'],
   coverageDirectory: '../coverage',
+  coverageThreshold: {
+    global: {
+      branches: 74,
+      functions: 85,
+      lines: 80,
+      statements: 80,
+    },
+  },
   testEnvironment: 'node',
 };
 

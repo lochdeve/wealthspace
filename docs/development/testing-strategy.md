@@ -38,6 +38,13 @@ Implementación automatizada: `apps/api/test/database/*.integration.spec.ts` (`p
 
 splitMode, ISO 4217, atribución, informes, 409 — sin cambio de alcance.
 
+## Cobertura (capa unitaria)
+
+- **API:** `pnpm --filter @wealthspace/api test:cov` — Jest ESM sobre `env` y `health.controller` (umbrales en `jest.config.mjs`). Lógica HTTP de espacios/invitaciones: **`pnpm test:db`**, sin informe de líneas.
+- **Web:** `pnpm --filter @wealthspace/web test:cov` — Vitest + v8 sobre helpers Fase 4 (`lib/spaces/*` testeable, `lib/api/errors.ts`); excluye Server Actions (`*.server.ts`) y UI.
+
+Los directorios `coverage/` están en `.gitignore`.
+
 ## Herramientas
 
 Jest/Supertest, Vitest/RTL, Playwright, PostgreSQL CI post-migración.

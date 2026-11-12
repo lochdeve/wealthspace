@@ -36,6 +36,11 @@ jobs:
       - name: Test
         run: pnpm run test
 
+      - name: Unit coverage (API env/health, web space helpers)
+        run: |
+          pnpm --filter @wealthspace/api test:cov
+          pnpm --filter @wealthspace/web test:cov
+
       - name: Build
         run: pnpm run build
 
