@@ -1,0 +1,127 @@
+.pageHeader {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.lead {
+  margin: 0.5rem 0 0;
+  opacity: 0.9;
+  line-height: 1.5;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.9375rem;
+}
+
+.nav a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.spaceGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.spaceCard {
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+}
+
+.spaceCard a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.spaceCard a:hover {
+  text-decoration: underline;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.75;
+}
+
+.section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent);
+}
+
+.sectionHeading {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}
+
+.pageHeaderActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  font-size: 0.9375rem;
+}
+
+.pageHeaderActions a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.dangerZone {
+  margin-top: 2.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, #b42318 22%, transparent);
+  background: color-mix(in srgb, #b42318 5%, var(--background));
+}
+
+.dangerZoneTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.35rem;
+  opacity: 0.85;
+}
+
+.dangerZoneLead {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  opacity: 0.9;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dangerZone {
+    border-color: color-mix(in srgb, #f97066 25%, transparent);
+    background: color-mix(in srgb, #f97066 6%, var(--background));
+  }
+}

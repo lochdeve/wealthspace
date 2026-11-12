@@ -5,7 +5,7 @@ import { ApiError, AUTH_ERROR_CODES } from '@/lib/api/errors';
 import type { UserProfile } from '@/lib/api/types';
 import { SESSION_COOKIE_NAME } from '@/lib/auth/constants';
 
-async function sessionCookieHeader(): Promise<string | null> {
+export async function getSessionCookieHeader(): Promise<string | null> {
   const cookieStore = await cookies();
   const session = cookieStore.get(SESSION_COOKIE_NAME);
   if (!session) {
@@ -14,8 +14,22 @@ async function sessionCookieHeader(): Promise<string | null> {
   return `${session.name}=${session.value}`;
 }
 
-export async function getCurrentUser(): Promise<UserProfile | null> {
-  const cookieHeader = await sessionCookieHeader();
+type GetCurrentUserOptions = {
+  /**
+   * When true, treat API 5xx/502/503 as "no session" so public auth pages still render
+   * if the API or database is temporarily unavailable.
+   */
+  tolerateUnavailableApi?: boolean;
+};
+
+function isUnavailableApiError(error: unknown): boolean {
+  return error instanceof ApiError && error.statusCode >= 500;
+}
+
+export async function getCurrentUser(
+  options: GetCurrentUserOptions = {},
+): Promise<UserProfile | null> {
+  const cookieHeader = await getSessionCookieHeader();
   if (!cookieHeader) {
     return null;
   }
@@ -25,12 +39,15 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
     if (error instanceof ApiError && error.statusCode === 401) {
       return null;
     }
+    if (options.tolerateUnavailableApi && isUnavailableApiError(error)) {
+      return null;
+    }
     throw error;
   }
 }
 
 export async function requireUser(nextPath?: string): Promise<UserProfile> {
-  const user = await getCurrentUser();
+  const user = await getCurrentUser({ tolerateUnavailableApi: true });
   if (!user) {
     const query =
       nextPath && nextPath.startsWith('/') && !nextPath.startsWith('//')
@@ -41,8 +58,8 @@ export async function requireUser(nextPath?: string): Promise<UserProfile> {
   return user;
 }
 
-export async function redirectIfAuthenticated(destination = '/dashboard'): Promise<void> {
-  const user = await getCurrentUser();
+export async function redirectIfAuthenticated(destination = '/spaces'): Promise<void> {
+  const user = await getCurrentUser({ tolerateUnavailableApi: true });
   if (user) {
     redirect(destination);
   }

@@ -34,7 +34,9 @@ Desde la raíz: `pnpm --filter @wealthspace/web dev`.
 
 ## Auth (Fase 3)
 
-Rutas: `/login`, `/register`, `/dashboard` (protegida). Dependencias con endpoints: [frontend-api-dependencies.md](../../docs/development/frontend-api-dependencies.md).
+Rutas: `/login`, `/register`, `/spaces`, `/spaces/new`, `/spaces/[id]`, `/invitations` (área `(app)` protegida). `/dashboard` redirige a `/spaces`.
+
+Dependencias con endpoints: [frontend-api-dependencies.md](../../docs/development/frontend-api-dependencies.md). Fase 4 web requiere API con espacios/invitaciones (`feat/api-phase-4-spaces` o `main` tras merge).
 
 ## Documentación
 

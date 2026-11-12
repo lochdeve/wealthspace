@@ -49,6 +49,14 @@ export async function parseErrorResponse(response: Response): Promise<ApiError> 
   return new ApiError(response.status, payload);
 }
 
+/** User-facing copy when the API cannot reach PostgreSQL or returns 5xx. */
+export function apiUnavailableUserMessage(error: ApiError): string {
+  if (error.statusCode >= 500) {
+    return 'El servidor o la base de datos no están disponibles. Comprueba que Docker y PostgreSQL estén en marcha (docker compose up -d) y vuelve a intentarlo.';
+  }
+  return error.message;
+}
+
 /** Stable codes returned by auth endpoints (for UX branching). */
 export const AUTH_ERROR_CODES = {
   EMAIL_ALREADY_REGISTERED: 'EMAIL_ALREADY_REGISTERED',
