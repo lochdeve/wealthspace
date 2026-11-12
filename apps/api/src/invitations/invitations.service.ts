@@ -136,10 +136,14 @@ export class InvitationsService {
         status: InvitationStatus.PENDING,
         OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
       },
+      include: {
+        space: { select: { name: true } },
+        invitedBy: { select: { displayName: true } },
+      },
       orderBy: { createdAt: 'desc' },
     });
 
-    return invitations.map((row) => this.toDto(row));
+    return invitations.map((row) => this.toInboxDto(row));
   }
 
   async accept(userId: string, invitationId: string): Promise<void> {
@@ -294,6 +298,19 @@ export class InvitationsService {
           ? null
           : invitation.expiresAt.toISOString(),
       createdAt: invitation.createdAt.toISOString(),
+    };
+  }
+
+  private toInboxDto(
+    invitation: SpaceInvitation & {
+      space: { name: string };
+      invitedBy: { displayName: string };
+    },
+  ): InvitationDto {
+    return {
+      ...this.toDto(invitation),
+      spaceName: invitation.space.name,
+      invitedByDisplayName: invitation.invitedBy.displayName,
     };
   }
 

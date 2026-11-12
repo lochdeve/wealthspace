@@ -28,6 +28,8 @@ type InvitationBody = {
   id: string;
   email: string;
   spaceId: string;
+  spaceName?: string;
+  invitedByDisplayName?: string;
 };
 
 function asCookieSetHeader(setCookie: string | string[] | undefined): string[] {
@@ -127,6 +129,8 @@ describe('Invitations (integration)', () => {
     const pending = mine.body as InvitationBody[];
     expect(pending).toHaveLength(1);
     expect(pending[0]?.id).toBe(invitation.id);
+    expect(pending[0]?.spaceName).toBe('Shared test');
+    expect(pending[0]?.invitedByDisplayName).toBeTruthy();
 
     await request(app.getHttpServer())
       .post(`/api/v1/invitations/${invitation.id}/accept`)

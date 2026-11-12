@@ -1,10 +1,10 @@
 # Estado actual del desarrollo
 
-Última actualización: Fase 4 backend (listado/detalle de espacios, guard por membresía ACTIVE).
+Última actualización: Fase 4 backend — leave/remove de membresías en espacios SHARED.
 
 ## Completado recientemente
 
-- **Espacios e invitaciones (Fase 4):** espacios (list/create/detail), flujo de invitaciones (OWNER/ADMIN en SHARED); TTL invitación **7 días por defecto** (PENDIENTE DE DECISIÓN en producto).
+- **Espacios e invitaciones (Fase 4):** espacios (list/create/detail), invitaciones, **leave** (`LEFT`) y **remove** (`REMOVED`) en SHARED; TTL invitación **7 días** (PENDIENTE DE DECISIÓN).
 - **Frontend auth (Fase 3):** `lib/api`, login/registro, layout `(app)` con `/dashboard`, CORS `WEB_ORIGIN`, doc [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 - **`POST /api/v1/auth/login`**, **`POST /api/v1/auth/logout`**, **`GET /api/v1/auth/me`**: sesión con JWT en cookie HttpOnly (`wealthspace_session`), `JwtAuthGuard`; **401** `INVALID_CREDENTIALS` / sin filtrar existencia de email.
 - **`POST /api/v1/auth/register`**: hash Argon2id, transacción atómica `Space` PERSONAL + `User` + `SpaceMembership` OWNER ACTIVE; **409** si el email ya existe; validación global con `class-validator`.
@@ -26,12 +26,12 @@
 | Prisma en NestJS | Hecho                                      |
 | Env validation   | Hecho (`AppConfigModule`)                  |
 | Auth / usuarios  | Registro + login/sesión/me; guards básicos |
-| Espacios         | Listar, crear SHARED, detalle; guard por espacio |
+| Espacios         | Listar, crear, invitaciones, leave/remove        |
 | OpenAPI          | Swagger UI + auth/spaces documentados      |
 
 ## Siguiente tarea
 
-Fase 4 (continuación): ciclo LEFT/REMOVED en membresías; UI de espacios e invitaciones en web.
+Fase 4: cerrar UI leave/remove en web; merge API+web; Fase 5 cuentas/transacciones en rama nueva.
 
 ## Notas
 

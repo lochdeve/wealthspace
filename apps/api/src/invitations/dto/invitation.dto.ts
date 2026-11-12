@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { InvitationStatus, MembershipRole } from '@prisma/client';
 
 export class InvitationDto {
@@ -25,4 +25,11 @@ export class InvitationDto {
 
   @ApiProperty({ format: 'date-time' })
   createdAt!: string;
+
+  /** Present on GET /invitations (inbox) for invitee UX. */
+  @ApiPropertyOptional()
+  spaceName?: string;
+
+  @ApiPropertyOptional()
+  invitedByDisplayName?: string;
 }

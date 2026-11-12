@@ -42,7 +42,7 @@ The product will be developed as a modular monolith.
 - [x] Space-scoped guard (`SpaceMembershipGuard`) for `GET /spaces/:spaceId`
 - [x] Create shared space (`POST /spaces`)
 - [x] Invitations (create, list, accept, reject, revoke)
-- [ ] Membership lifecycle (leave / remove)
+- [x] Membership lifecycle (leave / remove)
 - [ ] Authorization tests for shared-space mutations
 - [x] OpenAPI documentation (health + Swagger UI)
 
@@ -57,6 +57,11 @@ The product will be developed as a modular monolith.
 - [x] Protected routes (`(app)`)
 - [x] Authenticated application layout
 - [ ] End-to-end authentication flow against live API (optional CI)
+- [x] Spaces list and create shared space UI
+- [x] Space detail and invitation management (OWNER/ADMIN)
+- [x] User pending invitations (accept / reject)
+- [x] Active space selection (cookie + header switcher)
+- [ ] Membership leave/remove UI
 
 ## 3. Development phases
 
@@ -176,4 +181,4 @@ A deliverable is complete only when:
 
 ## 6. Current priority
 
-The next implementation task is Phase 4 continuation: create SHARED space, invitations, and membership lifecycle; then spaces UI in the web app.
+The next implementation task is Phase 4 web completion (leave/remove UI), then Phase 5 accounts and transactions.

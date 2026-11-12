@@ -110,7 +110,7 @@ export class SpacesService {
       throw new ForbiddenException({
         statusCode: 403,
         code: 'INSUFFICIENT_ROLE',
-        message: 'Only owners and admins can manage invitations',
+        message: 'Only owners and admins can perform this action',
       });
     }
   }

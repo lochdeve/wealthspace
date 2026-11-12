@@ -29,6 +29,8 @@ Desde la raíz del monorepo: `pnpm --filter @wealthspace/api dev`.
 - `POST /api/v1/spaces/:spaceId/invitations/:id/revoke` — revocar pendiente.
 - `GET /api/v1/invitations` — pendientes para el email del usuario autenticado.
 - `POST /api/v1/invitations/:id/accept` | `reject` — responder invitación.
+- `POST /api/v1/spaces/:spaceId/membership/leave` — salir de SHARED (status LEFT).
+- `POST /api/v1/spaces/:spaceId/members/:userId/remove` — expulsar (OWNER/ADMIN; status REMOVED).
 - Variable obligatoria: `JWT_SECRET` (mín. 32 caracteres).
 - `GET /api/v1/health` — liveness (el proceso responde; no consulta la BD).
 - `GET /api/v1/health/ready` — readiness (PostgreSQL accesible vía `SELECT 1`).
