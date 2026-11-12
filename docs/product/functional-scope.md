@@ -6,6 +6,7 @@
 
 - **PERSONAL:** cuentas, ingresos, gastos (`FinancialTransaction`), transferencias, presupuestos, dashboard. **Sin** `SharedExpense`, participantes ni liquidaciones entre miembros.
 - **SHARED:** miembros, invitaciones, roles; cuentas opcionales; gastos individuales y compartidos; liquidaciones.
+- Reglas detalladas membresía, invitaciones y ownership (MVP): [spaces-membership-mvp.md](./spaces-membership-mvp.md).
 
 ---
 

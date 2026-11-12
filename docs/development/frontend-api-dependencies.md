@@ -63,4 +63,4 @@ Requiere rama API `feat/api-phase-4-spaces` (o `main` tras merge).
 
 ## Fuera de alcance (fases posteriores)
 
-Cuentas, transacciones y dashboards financieros. Transferencia de ownership antes de que el OWNER salga: **PENDIENTE DE DECISIÓN** (API bloquea único OWNER).
+Cuentas, transacciones y dashboards financieros. Transferencia de ownership: **entrega 4.1** — reglas en [spaces-membership-mvp.md](../product/spaces-membership-mvp.md); hasta entonces 409 en único OWNER.

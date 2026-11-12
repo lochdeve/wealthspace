@@ -8,6 +8,8 @@ Integridad: [database-design](../architecture/database-design.md), [first-migrat
 
 PERSONAL vs SHARED; EXPENSE con/sin cuenta; FK compuestas en BD aseguran mismo espacio en cuentas/categorías/transacciones vinculadas.
 
+Membresía e invitaciones en SHARED: [spaces-membership-mvp.md](./spaces-membership-mvp.md). Liquidaciones y atribución usan intervalo **[joinedAt, leftAt)** en membresía.
+
 ---
 
 ## SharedExpense
