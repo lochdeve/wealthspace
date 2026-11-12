@@ -30,8 +30,6 @@ Espacio activo (solo UI): cookie `wealthspace_active_space`, establecida con Ser
 
 ## Espacios e invitaciones (Fase 4)
 
-Requiere rama API `feat/api-phase-4-spaces` (o `main` tras merge).
-
 | Recurso                     | Método | Ruta                                      | UI / uso                            |
 | --------------------------- | ------ | ----------------------------------------- | ----------------------------------- |
 | Listar espacios             | GET    | `/spaces`                                 | `/spaces`, selector en header       |
@@ -63,7 +61,7 @@ Requiere rama API `feat/api-phase-4-spaces` (o `main` tras merge).
 
 ## Cuentas (Fase 5 — slice 1)
 
-Requiere rama `feat/api-phase-5-accounts` o `main` tras merge. Membresía **ACTIVE** en el espacio (mismo guard que detalle de espacio).
+Disponible en `main` (Fase 5 API). Membresía **ACTIVE** en el espacio (mismo guard que detalle de espacio).
 
 | Recurso          | Método | Ruta                                           | Notas                                              |
 | ---------------- | ------ | ---------------------------------------------- | -------------------------------------------------- |

@@ -15,7 +15,7 @@ Usar este archivo al abrir o reiniciar chats de implementación. El chat de **co
 - Una fase puede darse por **cerrada en MVP** con ítems **PENDIENTE DE DECISIÓN** en el mismo dominio si API/UI tienen comportamiento **seguro** (p. ej. 409) y está **documentado**.
 - La fase siguiente puede empezar si los pendientes no rompen integridad de la nueva fase.
 
-**Hoy:** Fase 4 **cerrada (MVP)**. **Fase 5** (cuentas/transacciones) es prioridad. **Entrega 4.1** (transferencia ownership) en paralelo o justo después del primer slice de Fase 5 — **no bloqueante** para cuentas en SHARED.
+**Hoy:** Fase 4 **cerrada (MVP)**. Fase 5 **API cerrada (MVP)**. Prioridad: **Fase 5 web**. **Entrega 4.1** (transferencia ownership) opcional — **no bloqueante**.
 
 ---
 
@@ -33,7 +33,7 @@ Reglas:
 - Fase 4 MVP cerrada: no rehacer invitaciones/leave/remove salvo bug o alinear con spaces-membership-mvp.md.
 - Transferencia ownership = entrega 4.1 (POST transfer, unilateral, un OWNER, ex-OWNER → ADMIN, auditoría). Hasta entonces mantener 409 CANNOT_LEAVE_AS_SOLE_OWNER / CANNOT_REMOVE_SOLE_OWNER.
 - Invitaciones: TTL 7d global; roles MEMBER/ADMIN solo; sin email transaccional.
-- Prioridad: Fase 5 cuentas/transacciones; 4.1/4.2 si se asignan explícitamente.
+- Fase 5 API en `main`; no ampliar salvo bug o hueco documentado. 4.1/4.2 si se asignan explícitamente.
 - Dinero: Decimal; concurrencia expectedVersion → 409; tests e IDOR cross-space.
 
 No tocar apps/web salvo que la tarea lo pida. Coordinación resuelve producto; no reabrir auth/sesión sin decisión.
@@ -54,7 +54,7 @@ Reglas:
 - UI consume REST únicamente; no reglas de negocio críticas ni permisos solo en cliente.
 - Fase 4 MVP cerrada: copy y flujos deben reflejar leave/remove, invitaciones (inbox mismo email), único OWNER bloqueado hasta exista UI 4.1 transferencia.
 - Errores API: usar códigos estables (409 CANNOT_LEAVE_AS_SOLE_OWNER, etc.) para mensajes de usuario.
-- Prioridad: seguir Fase 5 cuando backend exponga contratos; no adelantar cuentas/transacciones sin endpoints documentados.
+- Prioridad: Fase 5 web (cuentas/transacciones); contratos en frontend-api-dependencies.md.
 - NEXT_PUBLIC_API_URL; sesión cookie HttpOnly — no duplicar lógica de saldos/repartos.
 
 No tocar apps/api. Dudas de producto → chat coordinación; no inventar TTL, roles ni ownership.

@@ -181,4 +181,4 @@ A deliverable is complete only when:
 
 ## 6. Current priority
 
-The next implementation task is Phase 5 accounts and transactions (Phase 4 web leave/remove UI complete).
+The next implementation task is Phase 5 web — accounts and transactions UI (Phase 5 API complete on main).

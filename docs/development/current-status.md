@@ -1,25 +1,24 @@
 # Estado actual del desarrollo
 
-Última actualización: Fase 4 **cerrada (MVP)**; decisiones de producto en [spaces-membership-mvp.md](../product/spaces-membership-mvp.md). Handoff chats: [chat-handoff.md](./chat-handoff.md).
+Última actualización: Fase 5 **API cerrada (MVP)** en `main` tras merge; contrato en [frontend-api-dependencies.md](./frontend-api-dependencies.md). Handoff: [chat-handoff.md](./chat-handoff.md).
 
 ## Completado recientemente
 
-- **Espacios e invitaciones (Fase 4):** listar/crear/detalle, invitaciones (crear, inbox, aceptar/rechazar, revocar), **GET members**, **leave** / **remove**, UI con selector de espacio activo; TTL invitación **7 días** (decisión producto cerrada).
-- **Transferencia ownership:** entrega **4.1** — documentada, no implementada; leave/remove del único OWNER sigue en **409**.
-- **Frontend auth (Fase 3):** `lib/api`, login/registro, layout `(app)`, CORS `WEB_ORIGIN`, doc [frontend-api-dependencies.md](./frontend-api-dependencies.md).
-- **Sesión:** `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`, cookie HttpOnly, `JwtAuthGuard`.
-- **Registro:** Argon2id, transacción PERSONAL + User + OWNER membership.
-- Infra: Prisma, health, OpenAPI, jobs CI quality + database-integrity.
+- **Fase 5 API:** cuentas (list/create/detail/archive, saldo on-read), categorías (list/create), transacciones (opening balance, income, expense PERSONAL/SHARED, transfer), historial (GET list/detail, PATCH + `FinancialRevision`). Tests `pnpm test:db` (75).
+- **Fase 4 (MVP):** espacios, invitaciones, membresías, UI espacio activo — [spaces-membership-mvp.md](../product/spaces-membership-mvp.md). Pendiente opcional **4.1** / **4.2** (no bloquean front Fase 5).
+- **Auth (Fase 3):** sesión cookie, rutas protegidas, layout `(app)`.
 
 ## Backend
 
-| Área             | Estado                                             |
-| ---------------- | -------------------------------------------------- |
-| NestJS bootstrap | Hecho                                              |
-| Auth / usuarios  | Registro + login/sesión/me                         |
-| Espacios         | CRUD listado/crear/detalle, miembros, leave/remove |
-| Invitaciones     | Ciclo completo + tests de integración              |
-| OpenAPI          | Swagger UI                                         |
+| Área              | Estado                                                                 |
+| ----------------- | ---------------------------------------------------------------------- |
+| Auth / usuarios   | Registro + login/sesión/me                                             |
+| Espacios          | List/create/detail, miembros, leave/remove, invitaciones               |
+| Cuentas           | CRUD MVP + archivado                                                   |
+| Categorías        | List/create                                                            |
+| Transacciones     | Opening balance, income, expense, transfer, list/detail, PATCH + revisión |
+| OpenAPI           | Swagger UI                                                             |
+| SharedExpense     | Fase 6 (no iniciado)                                                   |
 
 ## Frontend
 
@@ -28,13 +27,14 @@
 | Auth         | Login, registro, rutas protegidas                      |
 | Espacios     | Listado, crear, detalle, miembros, leave/remove        |
 | Invitaciones | Gestión en espacio + `/invitations`                    |
-| Tests        | Unit (labels, mensajes, active space); E2E auth mínimo |
+| Finanzas     | **Pendiente** — consumir API Fase 5                    |
+| Tests        | Unit espacios/auth; E2E auth mínimo                    |
 
 ## Siguiente tarea
 
-**Fase 5** — en curso (`feat/api-phase-5-accounts`): API cuentas/categorías/transacciones + listado y PATCH con revisión. Siguiente: `SharedExpense` (fase 6) o UI web. Opcional: **4.1** / **4.2**.
+**Fase 5 web** — UI cuentas y movimientos (PERSONAL primero; espacio activo + contrato API). Rama sugerida: `feat/web-phase-5-accounts` desde `main`.
 
 ## Notas
 
-- Migración: `prisma migrate deploy` con PostgreSQL en marcha para desarrollo local completo.
-- `pnpm test:db` valida integración API+BD; E2E espacios contra API vivo sigue opcional.
+- `pnpm test:db` en `@wealthspace/api` tras cambios de dominio financiero.
+- Migración: `prisma migrate deploy` con PostgreSQL en marcha.
