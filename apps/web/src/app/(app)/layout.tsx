@@ -23,6 +23,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         </div>
         <nav className={styles.appNav} aria-label="Aplicación">
           <Link href="/spaces">Espacios</Link>
+          <Link href="/accounts">Cuentas</Link>
           <Link href="/invitations">Invitaciones</Link>
           <SpaceSwitcher activeSpaceId={activeSpaceId} />
         </nav>

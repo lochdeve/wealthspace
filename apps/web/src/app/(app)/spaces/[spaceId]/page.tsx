@@ -64,13 +64,24 @@ export default async function SpaceDetailPage({ params }: PageProps) {
           ) : null}
         </div>
         <nav className={styles.pageHeaderActions} aria-label="Acciones del espacio">
+          {space.type === 'PERSONAL' ? (
+            <Link href={`/spaces/${spaceId}/accounts`}>Cuentas</Link>
+          ) : null}
           <Link href="/spaces">← Tus espacios</Link>
         </nav>
       </header>
 
-      <p className={styles.lead}>
-        Las cuentas y movimientos de este espacio llegarán en fases posteriores.
-      </p>
+      {space.type === 'PERSONAL' ? (
+        <p className={styles.lead}>
+          <Link href={`/spaces/${spaceId}/accounts`}>Gestiona tus cuentas y movimientos</Link> en
+          este espacio personal.
+        </p>
+      ) : (
+        <p className={styles.lead}>
+          <Link href={`/spaces/${spaceId}/expenses/new`}>Registrar gasto compartido</Link> (con
+          atribución; cuenta opcional).
+        </p>
+      )}
 
       {isShared ? (
         <>

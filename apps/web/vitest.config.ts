@@ -17,6 +17,10 @@ export default defineConfig({
         'src/lib/spaces/membership-messages.ts',
         'src/lib/spaces/resolve-active-space.ts',
         'src/lib/api/errors.ts',
+        'src/lib/api/query.ts',
+        'src/lib/finance/amount.ts',
+        'src/lib/finance/finance-messages.ts',
+        'src/lib/finance/format-money.ts',
       ],
       exclude: ['**/*.{test,spec}.{ts,tsx}'],
       thresholds: {
