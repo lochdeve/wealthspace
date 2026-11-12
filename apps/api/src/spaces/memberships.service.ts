@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { MembershipRole, MembershipStatus, SpaceType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import type { SpaceMemberDto } from './dto/space-member.dto';
 import type { ActiveSpaceMembership } from './spaces.service';
 import { SpacesService } from './spaces.service';
 
@@ -15,6 +16,36 @@ export class MembershipsService {
     private readonly prisma: PrismaService,
     private readonly spacesService: SpacesService,
   ) {}
+
+  async listActiveMembers(
+    userId: string,
+    spaceId: string,
+  ): Promise<SpaceMemberDto[]> {
+    const membership = await this.spacesService.requireActiveMembership(
+      userId,
+      spaceId,
+    );
+    this.assertSharedSpace(membership);
+
+    const rows = await this.prisma.spaceMembership.findMany({
+      where: {
+        spaceId,
+        status: MembershipStatus.ACTIVE,
+      },
+      include: {
+        user: { select: { id: true, displayName: true, email: true } },
+      },
+      orderBy: [{ role: 'asc' }, { joinedAt: 'asc' }],
+    });
+
+    return rows.map((row) => ({
+      userId: row.user.id,
+      displayName: row.user.displayName,
+      email: row.user.email,
+      role: row.role,
+      joinedAt: row.joinedAt.toISOString(),
+    }));
+  }
 
   async leaveSpace(userId: string, spaceId: string): Promise<void> {
     const membership = await this.spacesService.requireActiveMembership(

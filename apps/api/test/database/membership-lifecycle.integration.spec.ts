@@ -117,6 +117,23 @@ describe('Membership lifecycle (integration)', () => {
       .expect(204);
   }
 
+  it('GET /spaces/:id/members lists active members', async () => {
+    const owner = await registerAndLogin('list-owner');
+    const member = await registerAndLogin('list-member');
+    const shared = await createSharedSpace(owner.cookies);
+    await inviteAndAccept(owner.cookies, member, shared.id);
+
+    const res = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${shared.id}/members`)
+      .set('Cookie', member.cookies)
+      .expect(200);
+
+    const body = res.body as { userId: string; role: string }[];
+    expect(body).toHaveLength(2);
+    const roles = body.map((row) => row.role).sort();
+    expect(roles).toEqual(['MEMBER', 'OWNER']);
+  });
+
   it('member can leave SHARED space (LEFT)', async () => {
     const owner = await registerAndLogin('leave-owner');
     const member = await registerAndLogin('leave-member');
@@ -205,6 +222,49 @@ describe('Membership lifecycle (integration)', () => {
       .expect(403)
       .expect((r) => {
         expect((r.body as { code?: string }).code).toBe('INSUFFICIENT_ROLE');
+      });
+  });
+
+  it('returns 404 when listing members of another user space (anti-IDOR)', async () => {
+    const owner = await registerAndLogin('idor-owner');
+    const outsider = await registerAndLogin('idor-outsider');
+    const shared = await createSharedSpace(owner.cookies);
+
+    await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${shared.id}/members`)
+      .set('Cookie', outsider.cookies)
+      .expect(404)
+      .expect((r) => {
+        expect((r.body as { code?: string }).code).toBe('SPACE_NOT_FOUND');
+      });
+  });
+
+  it('rejects GET members on PERSONAL space', async () => {
+    const user = await registerAndLogin('personal-members');
+    const me = await request(app.getHttpServer())
+      .get('/api/v1/auth/me')
+      .set('Cookie', user.cookies)
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${(me.body as MeBody).personalSpaceId}/members`)
+      .set('Cookie', user.cookies)
+      .expect(403)
+      .expect((r) => {
+        expect((r.body as { code?: string }).code).toBe('SPACE_NOT_SHARED');
+      });
+  });
+
+  it('owner cannot remove self (USE_LEAVE_INSTEAD)', async () => {
+    const owner = await registerAndLogin('self-remove');
+    const shared = await createSharedSpace(owner.cookies);
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${shared.id}/members/${owner.userId}/remove`)
+      .set('Cookie', owner.cookies)
+      .expect(409)
+      .expect((r) => {
+        expect((r.body as { code?: string }).code).toBe('USE_LEAVE_INSTEAD');
       });
   });
 
