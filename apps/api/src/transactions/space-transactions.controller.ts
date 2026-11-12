@@ -1,18 +1,28 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
+  ParseEnumPipe,
+  ParseIntPipe,
   ParseUUIDPipe,
+  Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
+import { TransactionType } from '@prisma/client';
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
+  ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -27,6 +37,7 @@ import {
   CreateIncomeDto,
   CreateTransferDto,
 } from './dto/create-cashflow.dto';
+import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { FinancialTransactionDto } from './dto/transaction-response.dto';
 import { TransactionsService } from './transactions.service';
 
@@ -35,6 +46,71 @@ import { TransactionsService } from './transactions.service';
 @UseGuards(JwtAuthGuard, SpaceMembershipGuard)
 export class SpaceTransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'List transactions' })
+  @ApiQuery({ name: 'accountId', required: false, format: 'uuid' })
+  @ApiQuery({ name: 'type', required: false, enum: TransactionType })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Max 100, default 50',
+  })
+  @ApiOkResponse({ type: FinancialTransactionDto, isArray: true })
+  async list(
+    @Param('spaceId', ParseUUIDPipe) spaceId: string,
+    @Query('accountId', new ParseUUIDPipe({ optional: true }))
+    accountId?: string,
+    @Query('type', new ParseEnumPipe(TransactionType, { optional: true }))
+    type?: TransactionType,
+    @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit?: number,
+  ): Promise<FinancialTransactionDto[]> {
+    return this.transactionsService.listForSpace(spaceId, {
+      accountId,
+      type,
+      limit,
+    });
+  }
+
+  @Get(':transactionId')
+  @ApiOperation({ summary: 'Get transaction' })
+  @ApiOkResponse({ type: FinancialTransactionDto })
+  async getOne(
+    @Param('spaceId', ParseUUIDPipe) spaceId: string,
+    @Param('transactionId', ParseUUIDPipe) transactionId: string,
+  ): Promise<FinancialTransactionDto> {
+    return this.transactionsService.getInSpace(spaceId, transactionId);
+  }
+
+  @Patch(':transactionId')
+  @ApiOperation({
+    summary: 'Update transaction',
+    description:
+      'Optimistic lock via expectedVersion; stores FinancialRevision snapshot.',
+  })
+  @ApiOkResponse({ type: FinancialTransactionDto })
+  @ApiConflictResponse({
+    schema: {
+      example: {
+        statusCode: 409,
+        code: 'VERSION_CONFLICT',
+        message: 'Transaction was modified by another request',
+      },
+    },
+  })
+  async update(
+    @CurrentUser() user: RequestUser,
+    @Param('spaceId', ParseUUIDPipe) spaceId: string,
+    @Param('transactionId', ParseUUIDPipe) transactionId: string,
+    @Body() dto: UpdateTransactionDto,
+  ): Promise<FinancialTransactionDto> {
+    return this.transactionsService.updateInSpace(
+      user.userId,
+      spaceId,
+      transactionId,
+      dto,
+    );
+  }
 
   @Post('income')
   @HttpCode(HttpStatus.CREATED)

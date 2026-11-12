@@ -41,6 +41,9 @@ Desde la raíz del monorepo: `pnpm --filter @wealthspace/api dev`.
 - `POST /api/v1/spaces/:spaceId/transactions/income` — ingreso (cuenta obligatoria).
 - `POST /api/v1/spaces/:spaceId/transactions/expense` — gasto (atribución en SHARED).
 - `POST /api/v1/spaces/:spaceId/transactions/transfer` — transferencia entre cuentas.
+- `GET /api/v1/spaces/:spaceId/transactions` — listar (`accountId`, `type`, `limit`).
+- `GET /api/v1/spaces/:spaceId/transactions/:transactionId` — detalle.
+- `PATCH /api/v1/spaces/:spaceId/transactions/:transactionId` — edición (`expectedVersion`).
 - Variable obligatoria: `JWT_SECRET` (mín. 32 caracteres).
 - `GET /api/v1/health` — liveness (el proceso responde; no consulta la BD).
 - `GET /api/v1/health/ready` — readiness (PostgreSQL accesible vía `SELECT 1`).

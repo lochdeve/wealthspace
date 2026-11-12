@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import {
   CategoryType,
+  Prisma,
   SpaceType,
   TransactionType,
   type FinancialTransaction,
@@ -19,6 +20,7 @@ import type {
   CreateIncomeDto,
   CreateTransferDto,
 } from './dto/create-cashflow.dto';
+import type { UpdateTransactionDto } from './dto/update-transaction.dto';
 import type { FinancialTransactionDto } from './dto/transaction-response.dto';
 import { assertSharedExpenseAttribution } from './expense-attribution';
 import {
@@ -26,6 +28,10 @@ import {
   parsePositiveMoneyAmount,
   parseSignedMoneyAmount,
 } from './money';
+import { buildTransactionSnapshot } from './transaction-revision';
+
+const DEFAULT_LIST_LIMIT = 50;
+const MAX_LIST_LIMIT = 100;
 
 @Injectable()
 export class TransactionsService {
@@ -250,6 +256,177 @@ export class TransactionsService {
     });
 
     return this.toDto(tx);
+  }
+
+  async listForSpace(
+    spaceId: string,
+    options: {
+      accountId?: string;
+      type?: TransactionType;
+      limit?: number;
+    },
+  ): Promise<FinancialTransactionDto[]> {
+    const take = Math.min(options.limit ?? DEFAULT_LIST_LIMIT, MAX_LIST_LIMIT);
+
+    const rows = await this.prisma.financialTransaction.findMany({
+      where: {
+        spaceId,
+        ...(options.type !== undefined ? { type: options.type } : {}),
+        ...(options.accountId !== undefined
+          ? {
+              OR: [
+                { accountId: options.accountId },
+                { sourceAccountId: options.accountId },
+                { destinationAccountId: options.accountId },
+              ],
+            }
+          : {}),
+      },
+      orderBy: [{ occurredAt: 'desc' }, { createdAt: 'desc' }],
+      take,
+    });
+
+    return rows.map((row) => this.toDto(row));
+  }
+
+  async getInSpace(
+    spaceId: string,
+    transactionId: string,
+  ): Promise<FinancialTransactionDto> {
+    const tx = await this.findTransactionInSpace(spaceId, transactionId);
+    return this.toDto(tx);
+  }
+
+  async updateInSpace(
+    userId: string,
+    spaceId: string,
+    transactionId: string,
+    dto: UpdateTransactionDto,
+  ): Promise<FinancialTransactionDto> {
+    const hasPatch =
+      dto.description !== undefined ||
+      dto.occurredAt !== undefined ||
+      dto.amount !== undefined;
+    if (!hasPatch) {
+      throw new BadRequestException({
+        statusCode: 400,
+        code: 'NO_CHANGES',
+        message:
+          'At least one of description, occurredAt or amount is required',
+      });
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const current = await tx.financialTransaction.findFirst({
+        where: { id: transactionId, spaceId },
+      });
+      if (current === null) {
+        throw new NotFoundException({
+          statusCode: 404,
+          code: 'TRANSACTION_NOT_FOUND',
+          message: 'Transaction not found',
+        });
+      }
+
+      const linked = await tx.sharedExpense.findFirst({
+        where: { financialTransactionId: transactionId },
+      });
+      if (linked !== null) {
+        throw new ConflictException({
+          statusCode: 409,
+          code: 'TRANSACTION_LINKED_TO_SHARED_EXPENSE',
+          message:
+            'Cannot edit a payment transaction linked to a shared expense',
+        });
+      }
+
+      if (current.version !== dto.expectedVersion) {
+        throw new ConflictException({
+          statusCode: 409,
+          code: 'VERSION_CONFLICT',
+          message: 'Transaction was modified by another request',
+        });
+      }
+
+      const data: Prisma.FinancialTransactionUpdateInput = {
+        version: { increment: 1 },
+      };
+
+      if (dto.description !== undefined) {
+        data.description = dto.description;
+      }
+      if (dto.occurredAt !== undefined) {
+        data.occurredAt = new Date(dto.occurredAt);
+      }
+      if (dto.amount !== undefined) {
+        data.amount = this.parseAmountForType(current.type, dto.amount);
+      }
+
+      const lastRev = await tx.financialRevision.findFirst({
+        where: { financialTransactionId: transactionId },
+        orderBy: { revisionNumber: 'desc' },
+      });
+      const revisionNumber = (lastRev?.revisionNumber ?? 0) + 1;
+
+      await tx.financialRevision.create({
+        data: {
+          revisionNumber,
+          snapshot: buildTransactionSnapshot(current),
+          changedByUserId: userId,
+          financialTransactionId: transactionId,
+          reason: dto.reason,
+        },
+      });
+
+      const updated = await tx.financialTransaction.updateMany({
+        where: {
+          id: transactionId,
+          spaceId,
+          version: dto.expectedVersion,
+        },
+        data,
+      });
+
+      if (updated.count === 0) {
+        throw new ConflictException({
+          statusCode: 409,
+          code: 'VERSION_CONFLICT',
+          message: 'Transaction was modified by another request',
+        });
+      }
+
+      const row = await tx.financialTransaction.findFirstOrThrow({
+        where: { id: transactionId, spaceId },
+      });
+      return this.toDto(row);
+    });
+  }
+
+  private parseAmountForType(
+    type: TransactionType,
+    raw: string,
+  ): Prisma.Decimal {
+    if (type === TransactionType.OPENING_BALANCE) {
+      return parseSignedMoneyAmount(raw);
+    }
+    return parsePositiveMoneyAmount(raw);
+  }
+
+  private async findTransactionInSpace(
+    spaceId: string,
+    transactionId: string,
+  ): Promise<FinancialTransaction> {
+    const tx = await this.prisma.financialTransaction.findFirst({
+      where: { id: transactionId, spaceId },
+    });
+    if (tx === null) {
+      throw new NotFoundException({
+        statusCode: 404,
+        code: 'TRANSACTION_NOT_FOUND',
+        message: 'Transaction not found',
+      });
+    }
+    return tx;
   }
 
   private async resolveCategory(

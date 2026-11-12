@@ -93,6 +93,9 @@ Requiere rama `feat/api-phase-5-accounts` o `main` tras merge. Membresía **ACTI
 | Ingreso        | POST   | `/spaces/:spaceId/transactions/income`                 | `accountId` obligatorio (PERSONAL y SHARED)          |
 | Gasto          | POST   | `/spaces/:spaceId/transactions/expense`                | PERSONAL: `accountId`; SHARED: `attributedToUserId`  |
 | Transferencia  | POST   | `/spaces/:spaceId/transactions/transfer`               | Misma moneda; cuentas distintas                      |
+| Listar txs     | GET    | `/spaces/:spaceId/transactions`                        | `accountId`, `type`, `limit` (≤100)                  |
+| Detalle tx     | GET    | `/spaces/:spaceId/transactions/:transactionId`         | Incluye `version`                                    |
+| Editar tx      | PATCH  | `/spaces/:spaceId/transactions/:transactionId`         | `expectedVersion` + cambios; revisión en BD          |
 
 **SHARED expense:** `accountId` opcional; sin cuenta → `displayCurrency` del espacio o `currency` en body. Atribución: Owner/Admin → cualquier ACTIVE; Member → solo sí mismo.
 

@@ -32,7 +32,7 @@
 
 ## Siguiente tarea
 
-**Fase 5** — en curso (`feat/api-phase-5-accounts`): slices 1–3 (cuentas, cashflow PERSONAL, SHARED+transfer+categorías). Siguiente: edición transacciones / `SharedExpense`. Opcional: **4.1** / **4.2**.
+**Fase 5** — en curso (`feat/api-phase-5-accounts`): API cuentas/categorías/transacciones + listado y PATCH con revisión. Siguiente: `SharedExpense` (fase 6) o UI web. Opcional: **4.1** / **4.2**.
 
 ## Notas
 

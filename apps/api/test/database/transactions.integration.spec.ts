@@ -22,7 +22,13 @@ type UserProfileBody = {
 
 type AccountBody = { id: string; balance: string };
 
-type TxBody = { id: string; type: string; amount: string };
+type TxBody = {
+  id: string;
+  type: string;
+  amount: string;
+  version?: number;
+  description?: string;
+};
 
 function asCookieSetHeader(setCookie: string | string[] | undefined): string[] {
   if (setCookie === undefined) {
@@ -321,5 +327,48 @@ describe('Transactions (integration)', () => {
 
     expect((fromDetail.body as AccountBody).balance).toBe('60.0000');
     expect((toDetail.body as AccountBody).balance).toBe('40.0000');
+  });
+
+  it('GET list and PATCH transaction with expectedVersion', async () => {
+    const { cookies, profile } = await registerAndLogin('tx-read-patch');
+    const accountId = await createAccount(cookies, profile.personalSpaceId);
+
+    const createRes = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${profile.personalSpaceId}/transactions/income`)
+      .set('Cookie', cookies)
+      .send({ accountId, amount: '20', description: 'Salary' })
+      .expect(201);
+
+    const tx = createRes.body as TxBody & { version: number; id: string };
+
+    const listRes = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${profile.personalSpaceId}/transactions`)
+      .query({ accountId })
+      .set('Cookie', cookies)
+      .expect(200);
+
+    expect((listRes.body as TxBody[]).length).toBeGreaterThanOrEqual(1);
+
+    const patchRes = await request(app.getHttpServer())
+      .patch(`/api/v1/spaces/${profile.personalSpaceId}/transactions/${tx.id}`)
+      .set('Cookie', cookies)
+      .send({
+        expectedVersion: tx.version,
+        description: 'Salary (corrected)',
+      })
+      .expect(200);
+
+    const patched = patchRes.body as TxBody & { version: number };
+    expect(patched.description).toBe('Salary (corrected)');
+    expect(patched.version).toBe(tx.version + 1);
+
+    await request(app.getHttpServer())
+      .patch(`/api/v1/spaces/${profile.personalSpaceId}/transactions/${tx.id}`)
+      .set('Cookie', cookies)
+      .send({ expectedVersion: tx.version, description: 'Stale' })
+      .expect(409)
+      .expect((res) => {
+        expect((res.body as { code?: string }).code).toBe('VERSION_CONFLICT');
+      });
   });
 });
