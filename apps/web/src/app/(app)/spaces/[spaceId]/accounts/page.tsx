@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getSessionCookieHeader, getCurrentUser, requireUser } from '@/lib/auth/session.server';
+import { getSessionCookieHeader, requireUser } from '@/lib/auth/session.server';
 import { ApiError } from '@/lib/api/errors';
 import { listAccountsWithCookie } from '@/lib/api/accounts';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
+import { spaceTypeLabel } from '@/lib/spaces/labels';
 import { formatMoneyAmount } from '@/lib/finance/format-money';
 import { SyncActiveSpace } from '@/components/spaces/sync-active-space';
 import styles from '../../../app-pages.module.css';
@@ -16,12 +17,11 @@ type PageProps = {
 
 export default async function SpaceAccountsPage({ params, searchParams }: PageProps) {
   await requireUser();
-  const user = await getCurrentUser();
   const { spaceId } = await params;
   const { archived } = await searchParams;
   const includeArchived = archived === '1';
   const cookieHeader = await getSessionCookieHeader();
-  if (!cookieHeader || !user) {
+  if (!cookieHeader) {
     return null;
   }
 
@@ -35,22 +35,6 @@ export default async function SpaceAccountsPage({ params, searchParams }: PagePr
     throw error;
   }
 
-  if (space.type !== 'PERSONAL') {
-    return (
-      <article aria-labelledby="accounts-personal-only">
-        <SyncActiveSpace spaceId={space.id} />
-        <h1 id="accounts-personal-only" className={styles.title}>
-          Cuentas
-        </h1>
-        <p className={styles.lead}>
-          En este slice las cuentas y movimientos están en el <strong>espacio personal</strong>. Los
-          espacios compartidos tendrán gastos con atribución en fases posteriores.
-        </p>
-        <Link href={`/spaces/${user.personalSpaceId}/accounts`}>Ir a mi espacio personal</Link>
-      </article>
-    );
-  }
-
   const accounts = await listAccountsWithCookie(spaceId, cookieHeader, { includeArchived });
 
   return (
@@ -61,10 +45,13 @@ export default async function SpaceAccountsPage({ params, searchParams }: PagePr
           <h1 id="accounts-title" className={styles.title}>
             Cuentas
           </h1>
-          <p className={styles.lead}>Espacio personal · saldos calculados por la API.</p>
+          <p className={styles.lead}>
+            {spaceTypeLabel(space.type)} · saldos calculados por la API.
+          </p>
         </div>
         <nav className={styles.pageHeaderActions} aria-label="Acciones">
           <Link href={`/spaces/${spaceId}/accounts/new`}>Nueva cuenta</Link>
+          <Link href={`/spaces/${spaceId}/transactions`}>Movimientos</Link>
           <Link href={`/spaces/${spaceId}/categories`}>Categorías</Link>
           <Link
             href={
@@ -81,7 +68,7 @@ export default async function SpaceAccountsPage({ params, searchParams }: PagePr
 
       {accounts.length === 0 ? (
         <p className={styles.lead}>
-          No tienes cuentas. <Link href={`/spaces/${spaceId}/accounts/new`}>Crea la primera</Link>.
+          No hay cuentas. <Link href={`/spaces/${spaceId}/accounts/new`}>Crea la primera</Link>.
         </p>
       ) : (
         <ul className={financeStyles.list}>

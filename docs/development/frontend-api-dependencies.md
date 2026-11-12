@@ -70,7 +70,7 @@ Disponible en `main` (Fase 5 API). Membresía **ACTIVE** en el espacio (mismo gu
 | Detalle cuenta  | GET    | `/spaces/:spaceId/accounts/:accountId`         | `balance` on-read (4 decimales)                    |
 | Archivar cuenta | POST   | `/spaces/:spaceId/accounts/:accountId/archive` | **204**; ya archivada → **409**                    |
 
-**UI (slice 1–2, PERSONAL):** `/accounts` → espacio personal; `/spaces/:id/accounts`, `.../new`, `.../[accountId]`; `/spaces/:id/categories`.
+**UI:** `/accounts` → espacio personal del usuario; `/spaces/:id/accounts`, `.../new`, `.../[accountId]` (PERSONAL y SHARED).
 
 ### Códigos de error (cuentas)
 
@@ -101,7 +101,7 @@ Disponible en `main` (Fase 5 API). Membresía **ACTIVE** en el espacio (mismo gu
 
 **UI (slice 2 PERSONAL):** transferencia en detalle de cuenta; categorías ver arriba.
 
-**UI (slice 3):** archivar cuenta + `?archived=1`; `/spaces/:id/transactions/:txId` (PATCH); `/spaces/:id/expenses/new` (SHARED); categoría padre opcional.
+**UI (slice 3–4):** archivar cuenta + `?archived=1`; `/spaces/:id/transactions` (historial + filtros); `/spaces/:id/transactions/:txId` (PATCH); `/spaces/:id/expenses/new` (SHARED); categorías en cualquier espacio; nav finanzas en detalle de espacio.
 
 **SHARED expense:** `accountId` opcional; sin cuenta → `displayCurrency` del espacio o `currency` en body. Atribución: Owner/Admin → cualquier ACTIVE; Member → solo sí mismo.
 

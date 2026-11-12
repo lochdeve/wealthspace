@@ -62,6 +62,7 @@ The product will be developed as a modular monolith.
 - [x] User pending invitations (accept / reject)
 - [x] Active space selection (cookie + header switcher)
 - [x] Membership leave/remove UI
+- [x] Phase 5 accounts, categories and transactions UI (MVP)
 
 ## 3. Development phases
 
@@ -181,4 +182,4 @@ A deliverable is complete only when:
 
 ## 6. Current priority
 
-The next implementation task is Phase 5 web — accounts and transactions UI (Phase 5 API complete on main).
+The next implementation task is merge Phase 5 web PR; then dashboards / SharedExpense or Phase 6 per roadmap.

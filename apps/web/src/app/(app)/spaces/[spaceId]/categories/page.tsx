@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getSessionCookieHeader, requireUser } from '@/lib/auth/session.server';
 import { ApiError } from '@/lib/api/errors';
 import { listCategoriesWithCookie } from '@/lib/api/categories';
@@ -31,10 +31,6 @@ export default async function SpaceCategoriesPage({ params }: PageProps) {
     throw error;
   }
 
-  if (space.type !== 'PERSONAL') {
-    redirect(`/spaces/${spaceId}/accounts`);
-  }
-
   const categories = await listCategoriesWithCookie(spaceId, cookieHeader);
 
   return (
@@ -45,7 +41,7 @@ export default async function SpaceCategoriesPage({ params }: PageProps) {
           <h1 id="categories-title" className={styles.title}>
             Categorías
           </h1>
-          <p className={styles.lead}>Etiquetas de ingreso y gasto para tu espacio personal.</p>
+          <p className={styles.lead}>Etiquetas de ingreso y gasto en este espacio.</p>
         </div>
         <nav className={styles.pageHeaderActions} aria-label="Acciones">
           <Link href={`/spaces/${spaceId}/accounts`}>← Cuentas</Link>

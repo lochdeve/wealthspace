@@ -32,10 +32,6 @@ export default async function TransactionDetailPage({ params }: PageProps) {
     throw error;
   }
 
-  if (space.type !== 'PERSONAL') {
-    notFound();
-  }
-
   let transaction;
   try {
     transaction = await getTransactionWithCookie(spaceId, transactionId, cookieHeader);

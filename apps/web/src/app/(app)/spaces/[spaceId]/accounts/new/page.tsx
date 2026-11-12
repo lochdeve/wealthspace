@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getSessionCookieHeader, requireUser } from '@/lib/auth/session.server';
 import { ApiError } from '@/lib/api/errors';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
@@ -27,10 +27,6 @@ export default async function NewAccountPage({ params }: PageProps) {
       notFound();
     }
     throw error;
-  }
-
-  if (space.type !== 'PERSONAL') {
-    redirect(`/spaces/${spaceId}/accounts`);
   }
 
   return (

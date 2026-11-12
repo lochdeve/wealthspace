@@ -1,40 +1,27 @@
 # Estado actual del desarrollo
 
-Última actualización: Fase 5 **API cerrada (MVP)** en `main` tras merge; contrato en [frontend-api-dependencies.md](./frontend-api-dependencies.md). Handoff: [chat-handoff.md](./chat-handoff.md).
+Última actualización: Fase 5 **web MVP** en rama `feat/web-phase-5-accounts`. Contrato: [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 
 ## Completado recientemente
 
-- **Fase 5 API:** cuentas (list/create/detail/archive, saldo on-read), categorías (list/create), transacciones (opening balance, income, expense PERSONAL/SHARED, transfer), historial (GET list/detail, PATCH + `FinancialRevision`). Tests `pnpm test:db` (75).
-- **Fase 4 (MVP):** espacios, invitaciones, membresías, UI espacio activo — [spaces-membership-mvp.md](../product/spaces-membership-mvp.md). Pendiente opcional **4.1** / **4.2** (no bloquean front Fase 5).
-- **Auth (Fase 3):** sesión cookie, rutas protegidas, layout `(app)`.
-
-## Backend
-
-| Área            | Estado                                                                    |
-| --------------- | ------------------------------------------------------------------------- |
-| Auth / usuarios | Registro + login/sesión/me                                                |
-| Espacios        | List/create/detail, miembros, leave/remove, invitaciones                  |
-| Cuentas         | CRUD MVP + archivado                                                      |
-| Categorías      | List/create                                                               |
-| Transacciones   | Opening balance, income, expense, transfer, list/detail, PATCH + revisión |
-| OpenAPI         | Swagger UI                                                                |
-| SharedExpense   | Fase 6 (no iniciado)                                                      |
+- **Fase 5 web:** cuentas, categorías, movimientos (listado/edición), transferencias, gasto SHARED con atribución; PERSONAL y SHARED con cuentas API.
+- **Fase 5 API (main):** cuentas, categorías, transacciones, revisiones optimistas.
+- **Fase 4:** espacios, invitaciones, membresías, UI espacio activo.
 
 ## Frontend
 
-| Área         | Estado                                                             |
-| ------------ | ------------------------------------------------------------------ |
-| Auth         | Login, registro, rutas protegidas                                  |
-| Espacios     | Listado, crear, detalle, miembros, leave/remove                    |
-| Invitaciones | Gestión en espacio + `/invitations`                                |
-| Finanzas     | **Slices 1–3** en `feat/web-phase-5-accounts` (PERSONAL + gasto SHARED) |
-| Tests        | Unit espacios/auth; E2E auth mínimo                                |
+| Área     | Estado                                                         |
+| -------- | -------------------------------------------------------------- |
+| Auth     | Login, registro, rutas protegidas                              |
+| Espacios | Listado, detalle, miembros, leave/remove, invitaciones         |
+| Finanzas | MVP Fase 5 (rama `feat/web-phase-5-accounts`, pendiente merge) |
+| Tests    | Unit finanzas/espacios; E2E auth mínimo                        |
 
 ## Siguiente tarea
 
-**Fase 5 web** — UI cuentas y movimientos (PERSONAL primero; espacio activo + contrato API). Rama sugerida: `feat/web-phase-5-accounts` desde `main`.
+Merge PR Fase 5 web; opcional dashboards agregados y **SharedExpense** (fase posterior). **4.1** ownership si producto lo prioriza.
 
 ## Notas
 
-- `pnpm test:db` en `@wealthspace/api` tras cambios de dominio financiero.
+- `pnpm test:db` en API; `pnpm --filter @wealthspace/web test` / `test:cov` en web.
 - Migración: `prisma migrate deploy` con PostgreSQL en marcha.

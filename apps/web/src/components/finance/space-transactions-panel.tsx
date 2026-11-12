@@ -1,0 +1,71 @@
+import Link from 'next/link';
+import type { FinancialTransaction, TransactionType } from '@/lib/api/finance-types';
+import { formatMoneyAmount } from '@/lib/finance/format-money';
+import { transactionTypeLabel } from '@/lib/finance/labels';
+import styles from './finance-forms.module.css';
+
+type SpaceTransactionsPanelProps = {
+  spaceId: string;
+  transactions: FinancialTransaction[];
+  activeType?: TransactionType;
+};
+
+const TYPE_FILTERS: { value: TransactionType | ''; label: string }[] = [
+  { value: '', label: 'Todos' },
+  { value: 'INCOME', label: 'Ingresos' },
+  { value: 'EXPENSE', label: 'Gastos' },
+  { value: 'TRANSFER', label: 'Transferencias' },
+  { value: 'OPENING_BALANCE', label: 'Saldos iniciales' },
+];
+
+export function SpaceTransactionsPanel({
+  spaceId,
+  transactions,
+  activeType,
+}: SpaceTransactionsPanelProps) {
+  return (
+    <section aria-labelledby="space-transactions-title">
+      <h2 id="space-transactions-title" className={styles.sectionTitle}>
+        Movimientos
+      </h2>
+      <nav className={styles.inlineActions} aria-label="Filtrar por tipo">
+        {TYPE_FILTERS.map((filter) => {
+          const href =
+            filter.value === ''
+              ? `/spaces/${spaceId}/transactions`
+              : `/spaces/${spaceId}/transactions?type=${filter.value}`;
+          const isActive = (filter.value || undefined) === (activeType || undefined);
+          return (
+            <Link
+              key={filter.label}
+              href={href}
+              aria-current={isActive ? 'page' : undefined}
+              style={{ fontWeight: isActive ? 600 : undefined }}
+            >
+              {filter.label}
+            </Link>
+          );
+        })}
+      </nav>
+      {transactions.length === 0 ? (
+        <p className={styles.meta}>No hay movimientos con este filtro.</p>
+      ) : (
+        <ul className={styles.list}>
+          {transactions.map((tx) => (
+            <li key={tx.id} className={styles.listItem}>
+              <div className={styles.listItemHeader}>
+                <strong>{transactionTypeLabel(tx.type)}</strong>
+                <span>{formatMoneyAmount(tx.amount, tx.currency)}</span>
+              </div>
+              {tx.description ? <p className={styles.meta}>{tx.description}</p> : null}
+              <p className={styles.meta}>{new Date(tx.occurredAt).toLocaleString('es')}</p>
+              <p>
+                <Link href={`/spaces/${spaceId}/transactions/${tx.id}`}>Ver / editar</Link>
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}

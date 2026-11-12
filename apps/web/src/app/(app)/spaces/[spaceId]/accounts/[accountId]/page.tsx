@@ -39,10 +39,6 @@ export default async function AccountDetailPage({ params }: PageProps) {
     throw error;
   }
 
-  if (space.type !== 'PERSONAL') {
-    notFound();
-  }
-
   let account;
   try {
     account = await getAccountWithCookie(spaceId, accountId, cookieHeader);

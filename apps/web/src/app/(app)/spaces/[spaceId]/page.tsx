@@ -10,6 +10,7 @@ import { listSpaceMembersWithCookie } from '@/lib/api/memberships';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { listSpaceInvitationsWithCookie } from '@/lib/api/invitations';
 import { canManageInvitations, membershipRoleLabel, spaceTypeLabel } from '@/lib/spaces/labels';
+import { SpaceFinanceNav } from '@/components/finance/space-finance-nav';
 import { SyncActiveSpace } from '@/components/spaces/sync-active-space';
 import styles from '../../app-pages.module.css';
 
@@ -64,24 +65,14 @@ export default async function SpaceDetailPage({ params }: PageProps) {
           ) : null}
         </div>
         <nav className={styles.pageHeaderActions} aria-label="Acciones del espacio">
-          {space.type === 'PERSONAL' ? (
-            <Link href={`/spaces/${spaceId}/accounts`}>Cuentas</Link>
-          ) : null}
           <Link href="/spaces">← Tus espacios</Link>
         </nav>
       </header>
 
-      {space.type === 'PERSONAL' ? (
-        <p className={styles.lead}>
-          <Link href={`/spaces/${spaceId}/accounts`}>Gestiona tus cuentas y movimientos</Link> en
-          este espacio personal.
-        </p>
-      ) : (
-        <p className={styles.lead}>
-          <Link href={`/spaces/${spaceId}/expenses/new`}>Registrar gasto compartido</Link> (con
-          atribución; cuenta opcional).
-        </p>
-      )}
+      <div className={styles.section}>
+        <h2 className={styles.sectionHeading}>Finanzas</h2>
+        <SpaceFinanceNav spaceId={spaceId} spaceType={space.type} />
+      </div>
 
       {isShared ? (
         <>
