@@ -46,4 +46,9 @@ describe('resolveActiveSpaceId', () => {
     vi.mocked(getActiveSpaceId).mockResolvedValue(null);
     await expect(resolveActiveSpaceId([sharedA], undefined)).resolves.toBe(sharedA.id);
   });
+
+  it('uses first space when personal id is not in the list', async () => {
+    vi.mocked(getActiveSpaceId).mockResolvedValue(null);
+    await expect(resolveActiveSpaceId([sharedA], 'unknown-personal')).resolves.toBe(sharedA.id);
+  });
 });
