@@ -59,7 +59,8 @@ Desde la raíz del monorepo: `pnpm --filter @wealthspace/api dev`.
 
 - Versión **7.10.1**; esquema inicial en [`prisma/schema.prisma`](./prisma/schema.prisma).
 - Validación: `DATABASE_URL=... pnpm prisma:validate` (ver [`prisma/README.md`](./prisma/README.md)).
-- **Migraciones no aplicadas** hasta revisión explícita.
+- Migración inicial aplicada (`prisma migrate deploy`). **Nuevas migraciones** solo con aprobación explícita (ver [database-design.md](../../docs/architecture/database-design.md)).
+- Catálogo de endpoints para la web (mantenerlo al día): [frontend-api-dependencies.md](../../docs/development/frontend-api-dependencies.md). Roadmap: [roadmap-backend.md](../../docs/development/roadmap-backend.md).
 
 ## Documentación
 

@@ -4,14 +4,14 @@ Aplicación web para **gestionar finanzas personales y compartidas** mediante es
 
 ## Tecnologías
 
-| Área     | Stack                                                            |
-| -------- | ---------------------------------------------------------------- |
-| Frontend | Next.js 16 (App Router), React 19, TypeScript                    |
-| Backend  | NestJS 12, REST, OpenAPI (previsto)                              |
-| Datos    | PostgreSQL 17, Prisma ORM 7 (dependencia API; esquema pendiente) |
-| Tests    | Jest + Supertest (API), Vitest + RTL (web), Playwright (E2E)     |
-| Monorepo | pnpm Workspaces 12.x                                             |
-| Local DB | Docker Compose (PostgreSQL 17)                                   |
+| Área     | Stack                                                        |
+| -------- | ------------------------------------------------------------ |
+| Frontend | Next.js 16 (App Router), React 19, TypeScript                |
+| Backend  | NestJS 12, REST, OpenAPI (Swagger en `/api/v1/docs`)         |
+| Datos    | PostgreSQL 17, Prisma ORM 7 (migración inicial aplicada)     |
+| Tests    | Jest + Supertest (API), Vitest + RTL (web), Playwright (E2E) |
+| Monorepo | pnpm Workspaces 12.x                                         |
+| Local DB | Docker Compose (PostgreSQL 17)                               |
 
 Versiones detalladas: [docs/development/toolchain-versions.md](./docs/development/toolchain-versions.md).
 
@@ -102,13 +102,17 @@ pnpm test:e2e
 
 ## Documentación principal
 
-| Tema         | Enlace                                                         |
-| ------------ | -------------------------------------------------------------- |
-| Producto     | [docs/product/](./docs/product/)                               |
-| Dominio      | [docs/product/domain-model.md](./docs/product/domain-model.md) |
-| Arquitectura | [docs/architecture/](./docs/architecture/)                     |
-| Desarrollo   | [docs/development/](./docs/development/)                       |
-| ADRs         | [docs/decisions/](./docs/decisions/)                           |
+| Tema         | Enlace                                                                     |
+| ------------ | -------------------------------------------------------------------------- |
+| Decisiones   | [docs/product/decisions.md](./docs/product/decisions.md)                   |
+| Producto     | [docs/product/](./docs/product/)                                           |
+| Dominio      | [docs/product/domain-model.md](./docs/product/domain-model.md)             |
+| Roadmap      | [docs/development/roadmap.md](./docs/development/roadmap.md)               |
+| Estado       | [docs/development/current-status.md](./docs/development/current-status.md) |
+| Chats        | [docs/development/chat-handoff.md](./docs/development/chat-handoff.md)     |
+| Arquitectura | [docs/architecture/](./docs/architecture/)                                 |
+| Desarrollo   | [docs/development/](./docs/development/)                                   |
+| ADRs         | [docs/decisions/](./docs/decisions/)                                       |
 
 ## Licencia
 

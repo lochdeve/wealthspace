@@ -32,11 +32,12 @@ Desde la raíz: `pnpm --filter @wealthspace/web dev`.
 - `NEXT_PUBLIC_API_URL` — URL base de la API (default documentado en `.env.example` raíz).
 - En la API, `WEB_ORIGIN=http://localhost:3000` (CORS con credenciales para la cookie de sesión).
 
-## Auth (Fase 3)
+## Rutas
 
-Rutas: `/login`, `/register`, `/spaces`, `/spaces/new`, `/spaces/[id]`, `/invitations` (área `(app)` protegida). `/dashboard` redirige a `/spaces`.
+- Auth: `/login`, `/register`.
+- Área `(app)` protegida: `/spaces`, `/spaces/new`, `/spaces/[id]`, `/invitations`, `/accounts` y, por espacio, `accounts`, `categories`, `transactions` y `expenses/new` (gasto individual; ver P-14). `/dashboard` redirige a `/spaces`.
 
-Dependencias con endpoints: [frontend-api-dependencies.md](../../docs/development/frontend-api-dependencies.md). Fase 4 web requiere API con espacios/invitaciones (`feat/api-phase-4-spaces` o `main` tras merge).
+Endpoints consumidos: [frontend-api-dependencies.md](../../docs/development/frontend-api-dependencies.md). Roadmap: [roadmap-frontend.md](../../docs/development/roadmap-frontend.md).
 
 ## Documentación
 
