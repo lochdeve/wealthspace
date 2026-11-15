@@ -7,7 +7,7 @@ import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { spaceTypeLabel } from '@/lib/spaces/labels';
 import { formatMoneyAmount } from '@/lib/finance/format-money';
 import { SyncActiveSpace } from '@/components/spaces/sync-active-space';
-import styles from '../../../app-pages.module.css';
+import styles from '@/app/(app)/app-pages.module.css';
 import financeStyles from '@/components/finance/finance-forms.module.css';
 
 type PageProps = {

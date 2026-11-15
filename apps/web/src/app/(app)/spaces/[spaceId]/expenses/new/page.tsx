@@ -8,7 +8,7 @@ import { listSpaceMembersWithCookie } from '@/lib/api/memberships';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { RecordSharedExpenseForm } from '@/components/finance/record-shared-expense-form';
 import { SyncActiveSpace } from '@/components/spaces/sync-active-space';
-import styles from '../../../../app-pages.module.css';
+import styles from '@/app/(app)/app-pages.module.css';
 
 type PageProps = {
   params: Promise<{ spaceId: string }>;

@@ -12,7 +12,7 @@ import { listSpaceInvitationsWithCookie } from '@/lib/api/invitations';
 import { canManageInvitations, membershipRoleLabel, spaceTypeLabel } from '@/lib/spaces/labels';
 import { SpaceFinanceNav } from '@/components/finance/space-finance-nav';
 import { SyncActiveSpace } from '@/components/spaces/sync-active-space';
-import styles from '../../app-pages.module.css';
+import styles from '@/app/(app)/app-pages.module.css';
 
 type PageProps = {
   params: Promise<{ spaceId: string }>;

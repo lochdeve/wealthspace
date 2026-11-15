@@ -14,7 +14,7 @@ import { ArchiveAccountButton } from '@/components/finance/archive-account-butto
 import { RecordTransferForm } from '@/components/finance/record-transfer-form';
 import { formatMoneyAmount } from '@/lib/finance/format-money';
 import { SyncActiveSpace } from '@/components/spaces/sync-active-space';
-import styles from '../../../../app-pages.module.css';
+import styles from '@/app/(app)/app-pages.module.css';
 import financeStyles from '@/components/finance/finance-forms.module.css';
 
 type PageProps = {

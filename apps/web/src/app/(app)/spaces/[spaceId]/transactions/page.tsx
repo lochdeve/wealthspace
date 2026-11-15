@@ -7,7 +7,7 @@ import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { listTransactionsWithCookie } from '@/lib/api/transactions';
 import { SpaceTransactionsPanel } from '@/components/finance/space-transactions-panel';
 import { SyncActiveSpace } from '@/components/spaces/sync-active-space';
-import styles from '../../../app-pages.module.css';
+import styles from '@/app/(app)/app-pages.module.css';
 
 const VALID_TYPES = new Set<TransactionType>(['INCOME', 'EXPENSE', 'TRANSFER', 'OPENING_BALANCE']);
 

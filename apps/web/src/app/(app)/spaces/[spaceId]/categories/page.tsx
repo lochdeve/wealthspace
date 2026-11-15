@@ -7,7 +7,7 @@ import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { CategoryList } from '@/components/finance/category-list';
 import { CreateCategoryForm } from '@/components/finance/create-category-form';
 import { SyncActiveSpace } from '@/components/spaces/sync-active-space';
-import styles from '../../../../app-pages.module.css';
+import styles from '@/app/(app)/app-pages.module.css';
 
 type PageProps = {
   params: Promise<{ spaceId: string }>;
