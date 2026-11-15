@@ -8,6 +8,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { InvitationsModule } from './invitations/invitations.module';
 import { SpacesModule } from './spaces/spaces.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { SharedExpensesModule } from './shared-expenses/shared-expenses.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TransactionsModule } from './transactions/transactions.module';
     AccountsModule,
     CategoriesModule,
     TransactionsModule,
+    SharedExpensesModule,
   ],
 })
 export class AppModule {}

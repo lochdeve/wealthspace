@@ -19,7 +19,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Auth                    | ✅                | ✅                                                                 |
 | Espacios y membresía    | ✅ (sin 4.1/4.2)  | ✅                                                                 |
 | Cuentas y movimientos   | ✅                | ✅                                                                 |
-| Gastos compartidos      | ⬜ (solo esquema) | ⬜ (el «gasto compartido» actual es un gasto individual atribuido) |
+| Gastos compartidos      | 🟡 B-6.2 (preview + POST) | ⬜ (el «gasto compartido» actual es un gasto individual atribuido) |
 | Deudas y liquidaciones  | ⬜ (solo esquema) | ⬜                                                                 |
 | Presupuestos e informes | ⬜                | ⬜                                                                 |
 
@@ -35,7 +35,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
 | Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19                                                                                                           | Respuesta del responsable de producto |
 | Frontend     | **F-R2.4** UX sobre contratos existentes en `main` local (F-R2.2–F-R2.3 integradas; C-03 espera a B-R1.2)                                                  | Ninguno                               |
-| Backend      | **Aplicar** migración `20261115183000_phase6_shared_expenses` (aprobada 2026-11-15); luego **B-6.2–B-6.5**. B-6.1 y B-R1 ya en local si no están en `main` | Ninguno para B-6.0                    |
+| Backend      | **B-6.0** aplicada (`migrate deploy` + `test:db`); **B-6.2** listo en local (preview, POST, void atómico `SPACE_ACCOUNT` en servicio). Siguiente: **B-6.3** (listado/detalle) y **B-6.4–B-6.5** | Ninguno                               |
 
 ## Notas operativas
 

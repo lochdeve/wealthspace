@@ -115,11 +115,24 @@ Disponible en `main` (Fase 5 API). Membresía **ACTIVE** en el espacio (mismo gu
 
 Códigos: `ATTRIBUTION_REQUIRED`, `ATTRIBUTION_NOT_ALLOWED`, `ATTRIBUTEE_NOT_ACTIVE_MEMBER`, `ACCOUNT_REQUIRED`, `CURRENCY_REQUIRED`, `CURRENCY_MISMATCH`, `SAME_ACCOUNT_TRANSFER`, `CATEGORY_NOT_FOUND`, `INVALID_CATEGORY_TYPE`, `NO_CHANGES`, más los de slice 1–2.
 
+### Gastos compartidos (fase 6 — slice B-6.2)
+
+Membresía **ACTIVE** en espacio **SHARED** (`SHARED_SPACE_REQUIRED` en PERSONAL).
+
+| Recurso            | Método | Ruta                                         | Notas                                                                 |
+| ------------------ | ------ | -------------------------------------------- | --------------------------------------------------------------------- |
+| Previsualizar      | POST   | `/spaces/:spaceId/shared-expenses/preview`   | **200**; mismo body que el alta; no persiste                          |
+| Crear              | POST   | `/spaces/:spaceId/shared-expenses`           | **201**; participantes, `generatedDebts`, `version`                   |
+
+Body orientativo: `totalAmount`, `currency?`, `occurredAt?`, `categoryId?`, `payment` (`MEMBER` + `paidByUserId` o `SPACE_ACCOUNT` + `accountId`), `split` (`EQUAL` \| `PERCENTAGE` \| `FIXED_AMOUNT`). Importes de entrada hasta decimales de la moneda; respuesta con 4 decimales.
+
+Códigos (B-6.2): `SHARED_SPACE_REQUIRED`, `SPLIT_PERCENT_SUM_INVALID`, `SPLIT_AMOUNT_SUM_INVALID`, `SPLIT_SHARE_ZERO`, `INSUFFICIENT_PARTICIPANTS`, `DUPLICATE_PARTICIPANT`, `PARTICIPANT_NOT_MEMBER`, `PAYER_NOT_MEMBER`, `PAYER_NOT_ALLOWED`, `CURRENCY_REQUIRED`, `CURRENCY_MISMATCH`, `CATEGORY_NOT_FOUND`, `INVALID_CATEGORY_TYPE`, `CURRENCY_NOT_SUPPORTED`, `AMOUNT_PRECISION_INVALID`, `INVALID_AMOUNT`.
+
 ## No implementado todavía
 
 | Área                                                      | Fase | Contrato previsto                                                                                 |
 | --------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------- |
-| Gastos compartidos (reparto, preview, edición, anulación) | 6    | [api-design.md](../architecture/api-design.md#gastos-compartidos-deudas-y-liquidaciones-previsto) |
+| Gastos compartidos (listado, detalle, edición, anulación HTTP) | 6    | [api-design.md](../architecture/api-design.md#gastos-compartidos-deudas-y-liquidaciones-previsto) |
 | Saldos y liquidaciones                                    | 7    | Ídem                                                                                              |
 | Cuentas personales vinculadas, aportaciones               | 8    | En análisis ([accounts-model.md](../product/accounts-model.md))                                   |
 | Presupuestos, informes, dashboard, edición de perfil      | 9    | Pendiente (P-17)                                                                                  |

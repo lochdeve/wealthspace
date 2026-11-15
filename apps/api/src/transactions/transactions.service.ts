@@ -358,7 +358,7 @@ export class TransactionsService {
         await this.resolveCategory(spaceId, dto.categoryId, expected);
       }
 
-      const data: Prisma.FinancialTransactionUpdateInput = {
+      const data: Prisma.FinancialTransactionUpdateManyMutationInput = {
         version: { increment: 1 },
       };
 
