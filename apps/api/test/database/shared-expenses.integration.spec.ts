@@ -5,7 +5,6 @@ import cookieParser from 'cookie-parser';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../../src/app.module';
-import { SharedExpensesService } from '../../src/shared-expenses/shared-expenses.service';
 import { setupSwagger } from '../../src/swagger/setup-swagger';
 import {
   TEST_DB,
@@ -28,6 +27,7 @@ type SharedExpenseBody = {
   participants: { userId: string; allocatedAmount: string }[];
   generatedDebts: { fromUserId: string; toUserId: string; amount: string }[];
   version: number;
+  voidedAt?: string | null;
 };
 
 function asCookieSetHeader(setCookie: string | string[] | undefined): string[] {
@@ -360,13 +360,15 @@ describe('Shared expenses (integration)', () => {
       })
       .expect(201);
 
-    const expenseId = (createRes.body as SharedExpenseBody).id;
-    const service = app.get(SharedExpensesService);
-    await service.voidSharedExpenseInSpace(
-      owner.profile.id,
-      spaceId,
-      expenseId,
-    );
+    const created = createRes.body as SharedExpenseBody;
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/shared-expenses/${created.id}/void`)
+      .set('Cookie', owner.cookies)
+      .send({ expectedVersion: created.version })
+      .expect(200)
+      .expect((r) => {
+        expect((r.body as SharedExpenseBody).voidedAt).not.toBeNull();
+      });
 
     const after = await request(app.getHttpServer())
       .get(`/api/v1/spaces/${spaceId}/accounts/${accountId}`)
@@ -374,5 +376,108 @@ describe('Shared expenses (integration)', () => {
       .expect(200);
 
     expect((after.body as { balance: string }).balance).toBe('100.0000');
+  });
+
+  it('GET list and detail return generatedDebts', async () => {
+    const { owner, carlos, maria, spaceId } = await trioSharedSpace();
+    const ids = [owner.profile.id, carlos.profile.id, maria.profile.id];
+
+    const createRes = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/shared-expenses`)
+      .set('Cookie', owner.cookies)
+      .send({
+        totalAmount: '120.00',
+        currency: 'EUR',
+        payment: { source: 'MEMBER', paidByUserId: owner.profile.id },
+        split: { mode: 'EQUAL', participantUserIds: ids },
+      })
+      .expect(201);
+
+    const created = createRes.body as SharedExpenseBody;
+
+    const list = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${spaceId}/shared-expenses`)
+      .set('Cookie', owner.cookies)
+      .expect(200);
+
+    const listBody = list.body as SharedExpenseBody[];
+    expect(listBody).toHaveLength(1);
+    expect(listBody[0]?.id).toBe(created.id);
+
+    const detail = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${spaceId}/shared-expenses/${created.id}`)
+      .set('Cookie', carlos.cookies)
+      .expect(200);
+
+    expect((detail.body as SharedExpenseBody).generatedDebts).toHaveLength(2);
+  });
+
+  it('PATCH recalculates split and stores revision', async () => {
+    const { owner, carlos, maria, spaceId } = await trioSharedSpace();
+    const ids = [owner.profile.id, carlos.profile.id, maria.profile.id];
+
+    const createRes = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/shared-expenses`)
+      .set('Cookie', owner.cookies)
+      .send({
+        totalAmount: '120.00',
+        currency: 'EUR',
+        payment: { source: 'MEMBER', paidByUserId: owner.profile.id },
+        split: { mode: 'EQUAL', participantUserIds: ids },
+      })
+      .expect(201);
+
+    const created = createRes.body as SharedExpenseBody;
+
+    const patchRes = await request(app.getHttpServer())
+      .patch(`/api/v1/spaces/${spaceId}/shared-expenses/${created.id}`)
+      .set('Cookie', owner.cookies)
+      .send({
+        expectedVersion: created.version,
+        totalAmount: '90.00',
+        currency: 'EUR',
+        payment: { source: 'MEMBER', paidByUserId: owner.profile.id },
+        split: { mode: 'EQUAL', participantUserIds: ids },
+      })
+      .expect(200);
+
+    const patched = patchRes.body as SharedExpenseBody;
+    expect(patched.totalAmount).toBe('90.0000');
+    expect(patched.version).toBe(2);
+  });
+
+  it('MEMBER without role cannot void expense recorded by owner', async () => {
+    const { owner, carlos, maria, spaceId } = await trioSharedSpace();
+
+    const createRes = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/shared-expenses`)
+      .set('Cookie', owner.cookies)
+      .send({
+        totalAmount: '60.00',
+        currency: 'EUR',
+        payment: { source: 'MEMBER', paidByUserId: owner.profile.id },
+        split: {
+          mode: 'EQUAL',
+          participantUserIds: [
+            owner.profile.id,
+            carlos.profile.id,
+            maria.profile.id,
+          ],
+        },
+      })
+      .expect(201);
+
+    const created = createRes.body as SharedExpenseBody;
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/shared-expenses/${created.id}/void`)
+      .set('Cookie', carlos.cookies)
+      .send({ expectedVersion: created.version })
+      .expect(403)
+      .expect((r) => {
+        expect((r.body as { code?: string }).code).toBe(
+          'SHARED_EXPENSE_EDIT_FORBIDDEN',
+        );
+      });
   });
 });

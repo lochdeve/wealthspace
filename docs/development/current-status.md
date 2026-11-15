@@ -19,7 +19,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Auth                    | ✅                | ✅                                                                 |
 | Espacios y membresía    | ✅ (sin 4.1/4.2)  | ✅                                                                 |
 | Cuentas y movimientos   | ✅                | ✅                                                                 |
-| Gastos compartidos      | 🟡 B-6.2 (preview + POST) | ⬜ (el «gasto compartido» actual es un gasto individual atribuido) |
+| Gastos compartidos      | ✅ API fase 6 (B-6.5)     | ⬜ UI F-6 (puede arrancar)                                          |
 | Deudas y liquidaciones  | ⬜ (solo esquema) | ⬜                                                                 |
 | Presupuestos e informes | ⬜                | ⬜                                                                 |
 
@@ -34,8 +34,8 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Chat         | Tarea                                                                                                                                                      | Bloqueos                              |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
 | Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19                                                                                                           | Respuesta del responsable de producto |
-| Frontend     | **F-R2.4** UX sobre contratos existentes en `main` local (F-R2.2–F-R2.3 integradas; C-03 espera a B-R1.2)                                                  | Ninguno                               |
-| Backend      | **B-6.0** aplicada (`migrate deploy` + `test:db`); **B-6.2** listo en local (preview, POST, void atómico `SPACE_ACCOUNT` en servicio). Siguiente: **B-6.3** (listado/detalle) y **B-6.4–B-6.5** | Ninguno                               |
+| Frontend     | **F-6** gastos compartidos (API B-6 lista): alta con preview; listado/detalle; editar/anular/revisiones. En paralelo o después: **F-R2.4**                   | Ninguno para F-6                      |
+| Backend      | **B-6** cerrado. Siguiente: **B-7** bloqueado hasta P-10…P-19 (coordinación)                                                                                 | Decisiones fase 7                     |
 
 ## Notas operativas
 

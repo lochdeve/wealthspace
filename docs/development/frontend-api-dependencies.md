@@ -115,24 +115,29 @@ Disponible en `main` (Fase 5 API). Membresía **ACTIVE** en el espacio (mismo gu
 
 Códigos: `ATTRIBUTION_REQUIRED`, `ATTRIBUTION_NOT_ALLOWED`, `ATTRIBUTEE_NOT_ACTIVE_MEMBER`, `ACCOUNT_REQUIRED`, `CURRENCY_REQUIRED`, `CURRENCY_MISMATCH`, `SAME_ACCOUNT_TRANSFER`, `CATEGORY_NOT_FOUND`, `INVALID_CATEGORY_TYPE`, `NO_CHANGES`, más los de slice 1–2.
 
-### Gastos compartidos (fase 6 — slice B-6.2)
+### Gastos compartidos (fase 6 — B-6.2…B-6.5)
 
 Membresía **ACTIVE** en espacio **SHARED** (`SHARED_SPACE_REQUIRED` en PERSONAL).
 
-| Recurso            | Método | Ruta                                         | Notas                                                                 |
-| ------------------ | ------ | -------------------------------------------- | --------------------------------------------------------------------- |
-| Previsualizar      | POST   | `/spaces/:spaceId/shared-expenses/preview`   | **200**; mismo body que el alta; no persiste                          |
-| Crear              | POST   | `/spaces/:spaceId/shared-expenses`           | **201**; participantes, `generatedDebts`, `version`                   |
+| Recurso            | Método | Ruta                                                      | Notas                                                                 |
+| ------------------ | ------ | --------------------------------------------------------- | --------------------------------------------------------------------- |
+| Listar             | GET    | `/spaces/:spaceId/shared-expenses`                        | Query: `from`, `to`, `participantUserId`, `includeVoided`, `limit`≤100 |
+| Previsualizar      | POST   | `/spaces/:spaceId/shared-expenses/preview`                | **200**; mismo body que el alta; no persiste (`version: 0`, id placeholder) |
+| Crear              | POST   | `/spaces/:spaceId/shared-expenses`                        | **201**; participantes, `generatedDebts`, `version`                   |
+| Detalle            | GET    | `/spaces/:spaceId/shared-expenses/:id`                    | Incluye `generatedDebts`, `voidedAt`, `version`                       |
+| Editar             | PATCH  | `/spaces/:spaceId/shared-expenses/:id`                    | Mismo body que el alta + `expectedVersion`; `payment.source` inmutable |
+| Anular             | POST   | `/spaces/:spaceId/shared-expenses/:id/void`               | Body: `expectedVersion`, `reason?`; restaura saldo si `SPACE_ACCOUNT` |
+| Revisiones         | GET    | `/spaces/:spaceId/shared-expenses/:id/revisions`          | Instantáneas inmutables con `participants`                            |
 
 Body orientativo: `totalAmount`, `currency?`, `occurredAt?`, `categoryId?`, `payment` (`MEMBER` + `paidByUserId` o `SPACE_ACCOUNT` + `accountId`), `split` (`EQUAL` \| `PERCENTAGE` \| `FIXED_AMOUNT`). Importes de entrada hasta decimales de la moneda; respuesta con 4 decimales.
 
-Códigos (B-6.2): `SHARED_SPACE_REQUIRED`, `SPLIT_PERCENT_SUM_INVALID`, `SPLIT_AMOUNT_SUM_INVALID`, `SPLIT_SHARE_ZERO`, `INSUFFICIENT_PARTICIPANTS`, `DUPLICATE_PARTICIPANT`, `PARTICIPANT_NOT_MEMBER`, `PAYER_NOT_MEMBER`, `PAYER_NOT_ALLOWED`, `CURRENCY_REQUIRED`, `CURRENCY_MISMATCH`, `CATEGORY_NOT_FOUND`, `INVALID_CATEGORY_TYPE`, `CURRENCY_NOT_SUPPORTED`, `AMOUNT_PRECISION_INVALID`, `INVALID_AMOUNT`.
+Códigos: los de reparto/alta más `SHARED_EXPENSE_NOT_FOUND` (404), `SHARED_EXPENSE_EDIT_FORBIDDEN` (403, P-09), `VERSION_CONFLICT` (409), `ALREADY_VOIDED` (409), `PAYMENT_SOURCE_IMMUTABLE` (400). Los movimientos vinculados a un gasto compartido no se editan por PATCH de transacciones (**409** `TRANSACTION_LINKED_TO_SHARED_EXPENSE`).
 
 ## No implementado todavía
 
 | Área                                                      | Fase | Contrato previsto                                                                                 |
 | --------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------- |
-| Gastos compartidos (listado, detalle, edición, anulación HTTP) | 6    | [api-design.md](../architecture/api-design.md#gastos-compartidos-deudas-y-liquidaciones-previsto) |
+| Saldos netos del espacio (fase 7)                              | 7    | `GET /spaces/:spaceId/balances` (previsto)                                                        |
 | Saldos y liquidaciones                                    | 7    | Ídem                                                                                              |
 | Cuentas personales vinculadas, aportaciones               | 8    | En análisis ([accounts-model.md](../product/accounts-model.md))                                   |
 | Presupuestos, informes, dashboard, edición de perfil      | 9    | Pendiente (P-17)                                                                                  |
