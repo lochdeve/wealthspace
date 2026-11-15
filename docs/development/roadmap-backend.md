@@ -44,6 +44,14 @@ Orden recomendado: **B-6.1** (no depende de la migración) y, en paralelo, el bo
 | B-6.4    | `PATCH` (recalcula el reparto; revisión con participantes) y `POST /void`; historial `GET /revisions`                                                                                                                                                                                                                                                                                                                           | Criterio 6 de la fase 6; permisos según P-09 con 403                                                                                 |
 | B-6.5    | OpenAPI + catálogo en [frontend-api-dependencies.md](./frontend-api-dependencies.md) con códigos de error definitivos                                                                                                                                                                                                                                                                                                           | La web puede integrar sin preguntar                                                                                                  |
 
+## B-R1 — 🔧 Peticiones de la auditoría web (después de B-6.1, antes de B-6.2)
+
+| Entrega | Contenido                                                                                        | Aceptación                                                                                |
+| ------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| B-R1.1  | `categoryId` en `PATCH /spaces/:spaceId/transactions/:txId` (C-02)                               | Tests: cambio válido, categoría de otro espacio (404), tipo incompatible, 409 por versión |
+| B-R1.2  | `code: "VALIDATION_ERROR"` (+ campo afectado si es viable) en los 400 de `ValidationPipe` (C-03) | Tests e2e de un DTO inválido; OpenAPI y catálogo actualizados                             |
+| B-R1.3  | Añadir `INVITATION_NOT_FOUND` (404 al aceptar o rechazar) al catálogo                            | Catálogo al día                                                                           |
+
 ## B-7 — ✨ Saldos y liquidaciones ⛔ (pendientes P-10, P-11, P-12, P-19)
 
 | Entrega | Contenido                                                             | Aceptación                                                                  |

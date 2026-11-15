@@ -59,6 +59,16 @@ Aprobadas por el responsable de producto a partir de las recomendaciones de coor
 | P-15 | Mínimo: **1 participante distinto del pagador** (permite «Ana paga 30 € solo por Carlos»); con `SPACE_ACCOUNT`, al menos 1 participante. Requiere migración del trigger de participantes.                                                                                                                                     |
 | P-16 | Previsualización mediante endpoint **dry-run** (`POST …/shared-expenses/preview`) con el mismo cálculo y las mismas validaciones del alta. La web no reimplementa el redondeo.                                                                                                                                                |
 
+## 2c. Decisiones aprobadas — alineación de la fase 5 (2026-11-15)
+
+Surgen de la auditoría del frontend.
+
+| ID   | Decisión                                                                                                                                                                                                                                                                                     |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C-01 | En las cuentas de un espacio SHARED, el formulario genérico «Registrar gasto» desaparece y se sustituye por un enlace al «Gasto individual» con la cuenta preseleccionada (coherente con P-14). No se añade el campo «Atribuido a» al formulario genérico.                                   |
+| C-02 | La **categoría** de un movimiento es editable después de crearlo (`PATCH`), con las mismas reglas que en el alta (categoría del mismo espacio y del tipo compatible), `expectedVersion` y revisión. Los movimientos vinculados a un gasto compartido siguen sin poder editarse directamente. |
+| C-03 | Los 400 de validación de entrada devuelven `code: "VALIDATION_ERROR"` y, cuando sea posible, el campo afectado, manteniendo el formato `{statusCode, code, message}`. La web nunca muestra el `message` de la API.                                                                           |
+
 ## 3. Decisiones pendientes
 
 Prioridad: **Alta** = bloquea la siguiente fase de implementación; **Media** = bloquea una fase posterior; **Baja** = mejora.

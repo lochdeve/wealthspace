@@ -83,6 +83,7 @@ Aprobar o modificar en [decisions.md](../product/decisions.md): ✅ P-03, P-04, 
 ### R2 — 🔧 Alineación de la fase 5
 
 - ✅ Mergear la web de la fase 5 (hecho en local el 2026-11-15; push pendiente).
+- La auditoría web del 2026-11-15 detectó que el gasto desde una cuenta SHARED fallaba siempre (`ATTRIBUTION_REQUIRED`); se corrige en F-R2.2 (C-01). Detalle de F-R2.2 a F-R2.5 y B-R1 en los roadmaps de cada app.
 - Renombrar en la web el «gasto compartido» actual a «Gasto individual» y retirarlo del acceso principal del espacio (P-14).
 
 **Aceptación:** `main` contiene la web de la fase 5; ningún texto de la UI llama «compartido» a un gasto sin reparto; la CI está en verde.
