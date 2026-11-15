@@ -3,7 +3,7 @@
 ## Ramas
 
 - `main` — línea estable; protegida.
-- `feature/<ticket-o-descripcion>` — trabajo nuevo.
+- `feat/<area>-<descripcion>` — trabajo nuevo (p. ej. `feat/web-phase-5-accounts`, `feat/api-phase-6-shared-expenses`).
 - `fix/<descripcion>` — correcciones.
 - `chore/<descripcion>` — tooling, deps, CI.
 

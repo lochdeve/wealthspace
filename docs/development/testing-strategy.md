@@ -36,12 +36,17 @@ Implementación automatizada: `apps/api/test/database/*.integration.spec.ts` (`p
 
 ## Dominio app
 
-splitMode, ISO 4217, atribución, informes, 409 — sin cambio de alcance.
+- Atribución, 409 y anti-IDOR: tests de integración (`test/database/*.integration.spec.ts`) por endpoint.
+- **Reparto (fase 6):** tests unitarios de la función pura con los ejemplos de [shared-expenses.md §4](../product/shared-expenses.md#4-reglas-de-reparto) y la propiedad «Σ participaciones = total» para EQUAL, PERCENTAGE y FIXED_AMOUNT, con monedas de 0 y 2 decimales.
+- **Deudas (fase 7):** tests unitarios del cálculo neto por par y moneda (ejemplo de referencia Ana/Carlos/María, compensación, anulados excluidos, multimoneda).
+- **Privacidad (fase 8):** tests de no filtración de datos de cuentas personales en las respuestas de espacios SHARED.
+- Los criterios de aceptación de cada fase en [roadmap.md](./roadmap.md) deben tener al menos un test automatizado.
 
 ## Cobertura (capa unitaria)
 
 - **API:** `pnpm --filter @wealthspace/api test:cov` — Jest ESM sobre `env` y `health.controller` (umbrales en `jest.config.mjs`). Lógica HTTP de espacios/invitaciones: **`pnpm test:db`**, sin informe de líneas.
-- **Web:** `pnpm --filter @wealthspace/web test:cov` — Vitest + v8 sobre helpers Fase 4 (`lib/spaces/*` testeable, `lib/api/errors.ts`); excluye Server Actions (`*.server.ts`) y UI.
+- **Web:** `pnpm --filter @wealthspace/web test:cov` — Vitest + v8 sobre helpers (`lib/spaces/*`, `lib/api/*`, `lib/finance/*`); excluye Server Actions (`*.server.ts`) y UI.
+- **E2E:** Playwright (`apps/web/e2e/`) solo en local; no forma parte de la CI hasta la fase 10.
 
 Los directorios `coverage/` están en `.gitignore`.
 

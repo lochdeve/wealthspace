@@ -2,6 +2,8 @@
 
 El frontend (`apps/web`) consume únicamente la API REST (`apps/api`) bajo el prefijo `/api/v1`.
 
+**Catálogo de endpoints implementados.** Lo mantiene el chat de **backend** (fuente de verdad de los contratos) al cerrar cada endpoint. Los endpoints previstos y las convenciones están en [api-design.md](../architecture/api-design.md). Solo lo que figura aquí puede integrarse en la web.
+
 ## Configuración
 
 | Variable              | App | Uso                                                                        |
@@ -103,12 +105,16 @@ Disponible en `main` (Fase 5 API). Membresía **ACTIVE** en el espacio (mismo gu
 
 **UI (slice 3–4):** archivar cuenta + `?archived=1`; `/spaces/:id/transactions` (historial + filtros); `/spaces/:id/transactions/:txId` (PATCH); `/spaces/:id/expenses/new` (SHARED); categorías en cualquier espacio; nav finanzas en detalle de espacio.
 
-**SHARED expense:** `accountId` opcional; sin cuenta → `displayCurrency` del espacio o `currency` en body. Atribución: Owner/Admin → cualquier ACTIVE; Member → solo sí mismo.
+**Gasto individual en SHARED** (`POST .../transactions/expense` con `attributedToUserId`): imputa el gasto a **un** miembro, sin reparto ni deuda. **No es un gasto compartido** (P-14 en [decisions.md](../product/decisions.md)); la web lo presenta hoy como «gasto compartido» (`createSharedExpense`, `/spaces/:id/expenses/new`) y debe renombrarse (F-R2.2). `accountId` opcional; sin cuenta → `displayCurrency` del espacio o `currency` en el body. Atribución: Owner/Admin → cualquier ACTIVE; Member → solo él mismo.
 
 Códigos: `ATTRIBUTION_REQUIRED`, `ATTRIBUTION_NOT_ALLOWED`, `ATTRIBUTEE_NOT_ACTIVE_MEMBER`, `ACCOUNT_REQUIRED`, `CURRENCY_REQUIRED`, `CURRENCY_MISMATCH`, `SAME_ACCOUNT_TRANSFER`, más los de slice 1–2.
 
-`SharedExpense` / liquidaciones: **fase posterior**.
+## No implementado todavía
 
-## Fuera de alcance (fases posteriores)
-
-Dashboards financieros agregados. Transferencia de ownership: **entrega 4.1** — [spaces-membership-mvp.md](../product/spaces-membership-mvp.md).
+| Área                                                      | Fase | Contrato previsto                                                                                 |
+| --------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------- |
+| Gastos compartidos (reparto, preview, edición, anulación) | 6    | [api-design.md](../architecture/api-design.md#gastos-compartidos-deudas-y-liquidaciones-previsto) |
+| Saldos y liquidaciones                                    | 7    | Ídem                                                                                              |
+| Cuentas personales vinculadas, aportaciones               | 8    | En análisis ([accounts-model.md](../product/accounts-model.md))                                   |
+| Presupuestos, informes, dashboard, edición de perfil      | 9    | Pendiente (P-17)                                                                                  |
+| Transferencia de ownership                                | 4.1  | [spaces-membership-mvp.md](../product/spaces-membership-mvp.md)                                   |

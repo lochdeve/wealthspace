@@ -1,0 +1,74 @@
+# Roadmap backend (`apps/api`)
+
+Entregas del chat de backend. Las fases, sus dependencias y los criterios globales están en [roadmap.md](./roadmap.md); aquí solo el detalle del API. Estado verificado el 2026-11-15.
+
+Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · ✨ nueva · ⛔ bloqueada por una decisión.
+
+---
+
+## Hecho (fases 0–5)
+
+| Área          | Implementado                                                                                                               | Tests                              |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| Fundación     | Config validada, `PrismaService`, health/readiness, Swagger                                                                | Unit (env, health)                 |
+| Auth          | Registro atómico, login/logout con cookie JWT, `GET /auth/me`, `JwtAuthGuard`                                              | Integración                        |
+| Espacios      | Listar, crear SHARED, detalle, miembros, `SpaceMembershipGuard`                                                            | Integración + IDOR                 |
+| Invitaciones  | Crear, listar, revocar, aceptar, rechazar; TTL de 7 días                                                                   | Integración                        |
+| Membresía     | Leave/remove con reglas de rol y del único OWNER                                                                           | Integración                        |
+| Cuentas       | Crear, listar, detalle con saldo on-read, archivar                                                                         | Integración                        |
+| Categorías    | Crear, listar por tipo                                                                                                     | Integración                        |
+| Movimientos   | Saldo inicial, ingreso, gasto (PERSONAL y SHARED atribuido), transferencia, listado, detalle, PATCH optimista con revisión | Integración                        |
+| Integridad BD | FK compuestas, CHECK, triggers inmediatos y diferidos                                                                      | `test/database/integrity*.spec.ts` |
+
+Huecos conocidos que **no** se priorizan salvo petición: renombrar cuenta o categoría, paginación con cursor, cobertura unitaria de servicios (la lógica se cubre con tests de integración).
+
+---
+
+## B-R1 — 🔧 Apoyo a decisiones (sin código)
+
+Responder a coordinación sobre la viabilidad y el coste de P-03, P-13, P-15 y P-19, y preparar el **borrador** de la migración de la fase 6 (`migrate dev --create-only`, sin aplicar) para su revisión.
+
+**Aceptación:** borrador de migración + bloque `custom-integrity.sql` actualizado, revisados por coordinación. No se aplica nada.
+
+## B-6 — ✨ Gastos compartidos ⛔ (R1)
+
+| Entrega | Contenido                                                                                                                         | Aceptación                                                                                                                           |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| B-6.0   | Migración aprobada (anulación lógica, origen de pago, mínimo de participantes) + tests de integridad actualizados                 | `pnpm test:db` en verde; casos nuevos de trigger (anulado excluido, mínimo de participantes)                                         |
+| B-6.1   | Función pura de reparto `allocate(total, currency, mode, shares)`: mayor resto, unidades menores ISO 4217, desempate por `userId` | Tests unitarios con los ejemplos de [shared-expenses.md §4](../product/shared-expenses.md#4-reglas-de-reparto) + propiedad Σ = total |
+| B-6.2   | `POST /shared-expenses/preview` y `POST /shared-expenses` (pagador miembro y `SPACE_ACCOUNT` en una transacción)                  | Criterios 1–5, 7 y 8 de la fase 6 en [roadmap.md](./roadmap.md)                                                                      |
+| B-6.3   | `GET` listado (filtros, paginación) y detalle con `generatedDebts`                                                                | Sin datos de otros espacios; incluye `version`                                                                                       |
+| B-6.4   | `PATCH` (recalcula el reparto; revisión con participantes) y `POST /void`; historial `GET /revisions`                             | Criterio 6 de la fase 6; permisos según P-09 con 403                                                                                 |
+| B-6.5   | OpenAPI + catálogo en [frontend-api-dependencies.md](./frontend-api-dependencies.md) con códigos de error definitivos             | La web puede integrar sin preguntar                                                                                                  |
+
+## B-7 — ✨ Saldos y liquidaciones ⛔ (R1: P-10, P-11, P-12, P-19)
+
+| Entrega | Contenido                                                             | Aceptación                                                                  |
+| ------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| B-7.0   | Migración (sustituir `status` por anulación lógica; ajuste P-19)      | `pnpm test:db` en verde                                                     |
+| B-7.1   | Función pura de cálculo de deudas netas por par y moneda              | Tests unitarios: ejemplo de referencia, compensación, multimoneda, anulados |
+| B-7.2   | `GET /balances`                                                       | Criterios 1, 3 y 4 de la fase 7                                             |
+| B-7.3   | `POST /settlements`, `GET /settlements`, `POST /settlements/:id/void` | Criterios 2, 5 y 6 de la fase 7; permisos P-10                              |
+| B-7.4   | OpenAPI + catálogo                                                    | Igual que B-6.5                                                             |
+
+## B-8 — ✨ Cuentas personales vinculadas y aportaciones ⛔ (accounts-model)
+
+Diseño de referencia: [accounts-model.md](../product/accounts-model.md). Se detallará en entregas al aprobarse. Requisitos no negociables: transacción única para ambos lados del vínculo, verificación de titularidad y tests de no filtración de datos personales en las respuestas del espacio SHARED.
+
+## B-9 — ✨ Presupuestos, informes y perfil ⛔ (P-17)
+
+- `PATCH /auth/me` (o equivalente) para `displayName` y `timezone` — puede adelantarse si coordinación lo asigna.
+- Presupuestos e informes mensuales en `User.timezone`.
+
+## B-4.1 — ✨ Transferencia de ownership (paralela, no bloqueante)
+
+`POST /spaces/:spaceId/ownership/transfer` según [spaces-membership-mvp.md](../product/spaces-membership-mvp.md); auditoría mínima; tests de leave del antiguo OWNER después de la transferencia.
+
+---
+
+## Reglas para el chat de backend
+
+- El backend es la fuente de verdad de los contratos: al terminar cada entrega, actualiza OpenAPI y [frontend-api-dependencies.md](./frontend-api-dependencies.md).
+- Si una decisión necesaria no está APROBADA en [decisions.md](../product/decisions.md), no la implementes; avisa a coordinación.
+- Toda migración: borrador → revisión → aprobación → aplicar; SQL de integridad sincronizado.
+- Dinero con `Prisma.Decimal`; nunca `number`.

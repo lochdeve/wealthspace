@@ -1,185 +1,170 @@
-# Wealthspace — Development Roadmap
+# Roadmap de Wealthspace
 
-## 1. Product objective
+Estado real del proyecto (verificado contra el código el **2026-11-15**) y plan de fases. Detalle por área: [roadmap-backend.md](./roadmap-backend.md) · [roadmap-frontend.md](./roadmap-frontend.md). Estado operativo del día a día: [current-status.md](./current-status.md). Decisiones: [decisions.md](../product/decisions.md).
 
-Wealthspace is a personal finance and shared-expenses web application.
+Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refactorización (cambia algo existente) · ✨ funcionalidad nueva.
 
-The goal is to help users manage personal finances, organize shared spaces, track expenses, distribute shared costs and understand balances between members.
+---
 
-The product will be developed as a modular monolith.
+## 1. Resumen de estado
 
-## 2. Current project status
+| Fase | Contenido                                                      | API | Web | Notas                                                                                     |
+| ---- | -------------------------------------------------------------- | --- | --- | ----------------------------------------------------------------------------------------- |
+| 0    | Monorepo, CI, esquema y migración inicial, tests de integridad | ✅  | ✅  | Job `database-integrity` en CI. E2E no se ejecuta en CI.                                  |
+| 1    | Fundación backend (config, Prisma, health, Swagger)            | ✅  | —   |                                                                                           |
+| 2    | Autenticación API (registro atómico, login, sesión, perfil)    | ✅  | —   | Sin edición de perfil ni zona horaria.                                                    |
+| 3    | Autenticación web                                              | —   | ✅  | E2E de auth existe (`apps/web/e2e`), no se ejecuta en CI.                                 |
+| 4    | Espacios, invitaciones, membresía                              | ✅  | ✅  | 4.1 (transferencia de ownership) y 4.2 sin implementar.                                   |
+| 5    | Cuentas, categorías, movimientos                               | ✅  | 🟡  | Web en la rama `feat/web-phase-5-accounts` (3 commits sin merge + cambios sin commitear). |
+| R1   | 🔧 Cierre de decisiones de producto                            | —   | —   | Coordinación. Bloquea la fase 6.                                                          |
+| R2   | 🔧 Alineación de la fase 5 con el nuevo modelo                 | —   | ⬜  | Renombrar el falso «gasto compartido».                                                    |
+| 6    | ✨ Gastos compartidos con reparto                              | ⬜  | ⬜  | Requiere migración.                                                                       |
+| 7    | ✨ Saldos (deudas) y liquidaciones                             | ⬜  | ⬜  | Requiere migración.                                                                       |
+| 8    | ✨ Cuentas personales vinculadas y aportaciones                | ⬜  | ⬜  | En análisis.                                                                              |
+| 9    | ✨ Presupuestos, informes y dashboard                          | ⬜  | ⬜  | Bloqueada por P-17.                                                                       |
+| 10   | Preparación para producción                                    | ⬜  | ⬜  |                                                                                           |
+| 4.1  | ✨ Transferencia de ownership (paralela)                       | ⬜  | ⬜  | Diseño aprobado; no bloquea nada.                                                         |
 
-### Technical foundation
+### Funcionalidad implementada y verificada
 
-- [x] pnpm monorepo
-- [x] Next.js frontend bootstrap
-- [x] NestJS backend bootstrap
-- [x] PostgreSQL 17 configuration
-- [x] Prisma schema and initial migration
-- [x] Database integrity tests
-- [x] GitHub Actions quality job
-- [x] GitHub Actions database-integrity job
-- [x] Initial product and architecture documentation
-- [ ] Verify CI on GitHub after publishing commits
-- [ ] Confirm proprietary license changes
+- Registro con creación atómica de usuario, espacio PERSONAL y membresía OWNER; login/logout con cookie HttpOnly; `GET /auth/me`.
+- Espacios: listar, crear SHARED, detalle, miembros; invitaciones con TTL de 7 días; leave/remove con protección del único OWNER; espacio activo en la web.
+- Cuentas (crear, listar, detalle con saldo on-read, archivar), categorías, saldo inicial, ingresos, gastos, transferencias, listado y edición optimista de movimientos con revisión.
+- Integridad en BD: FK compuestas, triggers de reparto y SPACE_ACCOUNT, validación temporal de liquidaciones, revisiones inmutables (tests en `apps/api/test/database/`).
 
-### Backend
+### Parcialmente implementado
 
-- [x] NestJS application bootstrap
-- [x] Health endpoint
-- [x] Prisma integration
-- [x] Environment validation
-- [x] Database health check
-- [ ] Users module
-- [x] Authentication module (register, login, session cookie, profile)
-- [x] Registration (atomic user + PERSONAL space + OWNER membership)
-- [x] Login and session management (JWT HttpOnly cookie)
-- [x] Logout
-- [x] Authenticated user profile (`GET /auth/me`)
-- [x] JwtAuthGuard (base for protected routes)
-- [x] List user spaces (ACTIVE memberships)
-- [x] Space-scoped guard (`SpaceMembershipGuard`) for `GET /spaces/:spaceId`
-- [x] Create shared space (`POST /spaces`)
-- [x] Invitations (create, list, accept, reject, revoke)
-- [x] Membership lifecycle (leave / remove)
-- [x] Authorization tests for shared-space mutations
-- [x] OpenAPI documentation (health + Swagger UI)
+- **Web fase 5**: completa en su rama, pendiente de merge; cambios en curso sin commitear (selector de categorías).
+- **Gasto en SHARED**: la web lo presenta como «gasto compartido», pero crea un gasto individual atribuido a un solo miembro, sin reparto ni deuda (P-14).
+- **Esquema sin uso**: `SharedExpense`, `ExpenseParticipant`, `Settlement` y `Budget` existen en BD, sin API ni UI.
+- **Zona horaria**: el campo existe, pero no hay endpoint para editarla.
 
-### Frontend
+### Requiere refactorización
 
-- [x] Next.js application bootstrap
-- [x] Static landing page
-- [x] API integration (client + CORS)
-- [x] Registration page
-- [x] Login page
-- [x] Session management (cookie + `/auth/me`)
-- [x] Protected routes (`(app)`)
-- [x] Authenticated application layout
-- [ ] End-to-end authentication flow against live API (optional CI)
-- [x] Spaces list and create shared space UI
-- [x] Space detail and invitation management (OWNER/ADMIN)
-- [x] User pending invitations (accept / reject)
-- [x] Active space selection (cookie + header switcher)
-- [x] Membership leave/remove UI
-- [x] Phase 5 accounts, categories and transactions UI (MVP)
+| Elemento                                                                                      | Motivo                                        | Fase |
+| --------------------------------------------------------------------------------------------- | --------------------------------------------- | ---- |
+| Web: formulario y ruta «gasto compartido» (`/spaces/:id/expenses/new`, `createSharedExpense`) | Nombre engañoso; contradice A-06              | R2   |
+| BD: `PaymentSource` `CASH`/`EXTERNAL_PERSONAL`                                                | Distinción sin efecto funcional (P-03)        | 6    |
+| BD: mínimo de 2 participantes                                                                 | Impide «pago solo por otra persona» (P-15)    | 6    |
+| BD: `Settlement.status` `CONFIRMED`/`CANCELLED`                                               | Sugiere una confirmación que no existe (P-12) | 7    |
+| BD: validación temporal de liquidaciones                                                      | Impide saldar deudas de ex-miembros (P-19)    | 7    |
+| BD/API: movimientos sin anulación                                                             | A-05 exige anular con historial (P-13)        | 6+   |
+| Docs: métricas de dashboard del diseño inicial                                                | Dependen del modelo de cuentas (P-17)         | 9    |
 
-## 3. Development phases
+## 2. Dependencias
 
-### Phase 0 — Project closure
+```mermaid
+flowchart LR
+  F5[Fase 5 web merge] --> R2
+  R1[R1 Decisiones P-03 P-04 P-08 P-09 P-13 P-14 P-15 P-16] --> M6[Migración fase 6]
+  M6 --> A6[API fase 6]
+  A6 --> W6[Web fase 6]
+  R2 --> W6
+  R1b[Decisiones P-10 P-11 P-12 P-19] --> A7[API fase 7]
+  A6 --> A7
+  A7 --> W7[Web fase 7]
+  W6 --> W7
+  ACC[Aprobación accounts-model P-01 a P-07] --> A8[API fase 8]
+  A7 --> A8 --> W8[Web fase 8]
+  P17[P-17 + edición de zona horaria] --> A9[API fase 9]
+  A8 --> A9 --> W9[Web fase 9]
+  W9 --> F10[Fase 10]
+```
 
-- Verify Git status and remote.
-- Publish initial commits when ready.
-- Verify GitHub Actions.
-- Finalize proprietary license.
-- Verify local development environment.
+Regla general: **la API de cada fase precede a su web**; la web puede maquetar con el contrato orientativo de [api-design.md](../architecture/api-design.md), pero solo integra contra endpoints reales.
 
-### Phase 1 — Backend foundation
+## 3. Fases pendientes y criterios de aceptación
 
-- Environment configuration and validation.
-- PrismaService and PrismaModule.
-- PostgreSQL connection lifecycle.
-- Database connectivity checks.
-- Integration tests for API and database.
+### R1 — 🔧 Cierre de decisiones (coordinación)
 
-### Phase 2 — Authentication and users
+Aprobar o modificar en [decisions.md](../product/decisions.md) como mínimo: P-03, P-04, P-08, P-09, P-13, P-14, P-15 y P-16 (para la fase 6); P-10, P-11, P-12 y P-19 (para la fase 7).
 
-- Users module.
-- Auth module.
-- Registration with secure password hashing.
-- Atomic creation of User, PERSONAL Space and OWNER Membership.
-- Login.
-- Secure session management.
-- Logout.
-- Authenticated profile endpoint.
-- Authorization guards.
-- Security and integration tests.
-- OpenAPI documentation.
+**Aceptación:** esas decisiones están en estado APROBADA, con `shared-expenses.md` y `api-design.md` actualizados, y la migración de la fase 6 aprobada.
 
-### Phase 3 — Frontend authentication
+### R2 — 🔧 Alineación de la fase 5
 
-- API client.
-- Registration and login forms.
-- Form validation.
-- Session handling.
-- Logout.
-- Protected routes.
-- Authenticated application layout.
-- End-to-end authentication tests.
+- Mergear la web de la fase 5.
+- Renombrar en la web el «gasto compartido» actual a «Gasto individual» y retirarlo del acceso principal del espacio (P-14).
 
-### Phase 4 — Spaces and memberships
+**Aceptación:** `main` contiene la web de la fase 5; ningún texto de la UI llama «compartido» a un gasto sin reparto; la CI está en verde.
 
-- Personal space.
-- Shared spaces.
-- Invitations.
-- Membership lifecycle.
-- Owner, Admin and Member roles.
-- Active space selection.
+### Fase 6 — ✨ Gastos compartidos
 
-### Phase 5 — Accounts and financial transactions
+- Migración: anulación lógica, origen de pago unificado y mínimo de participantes (según R1).
+- API: preview, alta, listado, detalle, edición, anulación e historial de gastos compartidos; pagador miembro y `SPACE_ACCOUNT`.
+- Web: «Añadir gasto» con los tres métodos, previsualización, listado, detalle con «tu parte», edición, anulación e historial.
 
-- Accounts.
-- Categories.
-- Income.
-- Expenses.
-- Transfers.
-- Opening balances.
-- Account archive.
-- Transaction history and revisions.
+**Aceptación (verificable con tests):**
 
-### Phase 6 — Shared expenses and settlements
+1. 120 € EQUAL Ana/Carlos/María pagado por Ana → participaciones 40/40/40; el detalle muestra Carlos → Ana 40 € y María → Ana 40 €.
+2. 100 € EQUAL entre 3 → 33,34/33,33/33,33 (el céntimo, al `userId` menor); la suma es exactamente 100,00.
+3. PERCENTAGE que suma 99,99 → 400 `SPLIT_PERCENT_SUM_INVALID`; FIXED_AMOUNT que no suma el total → 400 `SPLIT_AMOUNT_SUM_INVALID`.
+4. Ningún saldo de cuenta cambia salvo en `SPACE_ACCOUNT` (baja el saldo de la cuenta compartida).
+5. Ningún flujo pide confirmación a los participantes.
+6. Editar crea una revisión; una edición concurrente devuelve 409; anular excluye el gasto de totales y deudas, que sigue visible como «Anulado».
+7. Usuario de otro espacio → 404; espacio PERSONAL → 400; pagador no permitido → 403.
+8. El preview devuelve los mismos importes que el alta posterior.
 
-- Shared expense creation.
-- Equal, percentage and custom splits.
-- Participants and attribution.
-- Net balances.
-- Partial and full settlements.
-- Historical revisions.
+### Fase 7 — ✨ Saldos y liquidaciones
 
-### Phase 7 — Budgets, reports and dashboards
+- API: `GET /balances`; alta, listado y anulación de liquidaciones.
+- Web: vista «Saldos» (quién debe a quién y saldo por miembro), «Registrar pago» con importe sugerido igual a la deuda pendiente, listado y anulación.
 
-- Personal dashboard.
-- Shared dashboard.
-- Global dashboard.
-- Budgets.
-- Search, filters and pagination.
-- Multi-currency reports.
-- Basic exports.
+**Aceptación:**
 
-### Phase 8 — Production readiness
+1. Con el escenario de la fase 6, una liquidación Carlos → Ana de 15 € deja Carlos → Ana 25 € y María → Ana 40 €; saldo neto Ana +65 €.
+2. Anular la liquidación devuelve la deuda a 40 €.
+3. Si Ana debe 10 € a Carlos por otro gasto, se muestra el neto: Carlos → Ana 30 €.
+4. Las deudas se separan por moneda.
+5. Liquidar más de lo pendiente sigue la decisión P-11.
+6. Liquidación con un usuario que no era miembro en `occurredAt` → 400 (con la excepción que fije P-19).
 
-- Security review.
-- Rate limiting.
-- Logging and monitoring.
-- Backup and restore procedures.
-- Production migrations.
-- E2E coverage.
-- Deployment.
-- Privacy policy and terms of service.
+### Fase 8 — ✨ Cuentas personales vinculadas y aportaciones
 
-## 4. Execution rules
+Requiere aprobar [accounts-model.md](../product/accounts-model.md). Alcance recomendado: pago desde cuenta personal con movimiento vinculado (P-02), aportaciones con aportante (P-05), movimientos personal ↔ compartida (P-06) y, opcionalmente, liquidaciones vinculadas (P-07).
 
-- Work on one deliverable at a time.
-- Do not implement future phases prematurely.
-- Preserve approved architecture and domain decisions.
-- Do not change the Prisma schema without a concrete requirement.
-- Add or update tests for every meaningful behavior.
-- Run relevant quality checks before closing a deliverable.
-- Keep commits small and focused.
-- Never push without explicit approval.
-- Update this roadmap and current-status.md when a deliverable is completed.
+**Aceptación (provisional):** Ana paga 120 € desde su cuenta personal → el saldo de su cuenta baja 120 € y la respuesta del espacio SHARED no contiene ningún dato de esa cuenta (test de no filtración); anular el gasto anula el movimiento vinculado.
 
-## 5. Definition of done
+### Fase 9 — ✨ Presupuestos, informes y dashboard
 
-A deliverable is complete only when:
+Requiere P-17 y un endpoint de edición de perfil y zona horaria. Presupuestos por espacio, informes mensuales en la zona horaria del usuario, dashboard global por moneda.
 
-1. The implementation works.
-2. Relevant tests pass.
-3. Lint, typecheck and formatting checks pass where applicable.
-4. No unrelated changes are included.
-5. The implementation and relevant decisions are documented.
-6. The next task is clearly identified.
+**Aceptación:** se definirá al aprobar P-17.
 
-## 6. Current priority
+### Fase 10 — Producción
 
-The next implementation task is merge Phase 5 web PR; then dashboards / SharedExpense or Phase 6 per roadmap.
+Revisión de seguridad, rate limiting, logging y monitorización, backups, migraciones de producción, E2E en CI, despliegue, política de privacidad y términos.
+
+### 4.1 — ✨ Transferencia de ownership (paralela)
+
+Según [spaces-membership-mvp.md](../product/spaces-membership-mvp.md). **Aceptación:** el OWNER transfiere a un miembro ACTIVE, que pasa a OWNER, y el antiguo OWNER pasa a ADMIN; queda registro de auditoría; después el antiguo OWNER puede hacer leave.
+
+## 4. Riesgos
+
+| Riesgo                                                                     | Mitigación                                                      |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Empezar la fase 6 sin cerrar R1 → reglas inventadas por backend o frontend | Prioridad de coordinación; los chats bloquean y consultan       |
+| Divergencia de redondeo entre web y API                                    | Preview desde la API (P-16); la web no calcula                  |
+| Migraciones sin el bloque SQL de integridad (drift con Prisma)             | Checklist de `database-design.md`; tests `pnpm test:db` en CI   |
+| Fuga de datos personales al vincular cuentas (fase 8)                      | Tests de no filtración obligatorios; DTOs separados por espacio |
+| Doble conteo en informes (pago adelantado frente a consumo)                | Resolver P-17 antes de la fase 9                                |
+| Ramas largas sin merge (fase 5 web)                                        | R2 al principio; PRs pequeños                                   |
+| Deudas imposibles de saldar con ex-miembros                                | Decidir P-19 antes de la fase 7                                 |
+
+## 5. Reglas de ejecución
+
+- Una entrega a la vez; no implementar fases futuras por adelantado.
+- No inventar reglas de negocio: usar `docs/product/` o marcar **PENDIENTE DE DECISIÓN** y consultar a coordinación.
+- No cambiar el esquema sin una decisión aprobada y una migración aprobada.
+- Tests para cada comportamiento relevante; lint, typecheck y formato en verde antes de cerrar.
+- Commits pequeños (Conventional Commits en inglés); nunca push sin aprobación explícita.
+- Al cerrar una entrega: actualizar [current-status.md](./current-status.md), el roadmap del área y, si cambia el contrato, [frontend-api-dependencies.md](./frontend-api-dependencies.md).
+
+## 6. Definición de terminado
+
+1. Implementación funcionando y cumpliendo los criterios de aceptación de la fase.
+2. Tests relevantes en verde (unitarios; integración con BD en el API).
+3. Lint, typecheck y formato en verde.
+4. Sin cambios ajenos a la entrega.
+5. Documentación y contratos actualizados.
+6. Siguiente tarea identificada en `current-status.md`.
