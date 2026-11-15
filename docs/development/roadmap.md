@@ -8,22 +8,22 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 
 ## 1. Resumen de estado
 
-| Fase | Contenido                                                      | API | Web | Notas                                                     |
-| ---- | -------------------------------------------------------------- | --- | --- | --------------------------------------------------------- |
-| 0    | Monorepo, CI, esquema y migración inicial, tests de integridad | ✅  | ✅  | Job `database-integrity` en CI. E2E no se ejecuta en CI.  |
-| 1    | Fundación backend (config, Prisma, health, Swagger)            | ✅  | —   |                                                           |
-| 2    | Autenticación API (registro atómico, login, sesión, perfil)    | ✅  | —   | Sin edición de perfil ni zona horaria.                    |
-| 3    | Autenticación web                                              | —   | ✅  | E2E de auth existe (`apps/web/e2e`), no se ejecuta en CI. |
-| 4    | Espacios, invitaciones, membresía                              | ✅  | ✅  | 4.1 (transferencia de ownership) y 4.2 sin implementar.   |
-| 5    | Cuentas, categorías, movimientos                               | ✅  | ✅  | Web integrada en `main` (push pendiente).                 |
-| R1   | 🔧 Cierre de decisiones de producto                            | —   | —   | Fase 6 aprobada; fase 7 pendiente.                        |
-| R2   | 🔧 Alineación de la fase 5 con el nuevo modelo                 | —   | ⬜  | Renombrar el falso «gasto compartido».                    |
-| 6    | ✨ Gastos compartidos con reparto                              | ⬜  | ⬜  | Requiere migración.                                       |
-| 7    | ✨ Saldos (deudas) y liquidaciones                             | ⬜  | ⬜  | Requiere migración.                                       |
-| 8    | ✨ Cuentas personales vinculadas y aportaciones                | ⬜  | ⬜  | En análisis.                                              |
-| 9    | ✨ Presupuestos, informes y dashboard                          | ⬜  | ⬜  | Bloqueada por P-17.                                       |
-| 10   | Preparación para producción                                    | ⬜  | ⬜  |                                                           |
-| 4.1  | ✨ Transferencia de ownership (paralela)                       | ⬜  | ⬜  | Diseño aprobado; no bloquea nada.                         |
+| Fase | Contenido                                                      | API | Web | Notas                                                      |
+| ---- | -------------------------------------------------------------- | --- | --- | ---------------------------------------------------------- |
+| 0    | Monorepo, CI, esquema y migración inicial, tests de integridad | ✅  | ✅  | Job `database-integrity` en CI. E2E no se ejecuta en CI.   |
+| 1    | Fundación backend (config, Prisma, health, Swagger)            | ✅  | —   |                                                            |
+| 2    | Autenticación API (registro atómico, login, sesión, perfil)    | ✅  | —   | Sin edición de perfil ni zona horaria.                     |
+| 3    | Autenticación web                                              | —   | ✅  | E2E de auth existe (`apps/web/e2e`), no se ejecuta en CI.  |
+| 4    | Espacios, invitaciones, membresía                              | ✅  | ✅  | 4.1 (transferencia de ownership) y 4.2 sin implementar.    |
+| 5    | Cuentas, categorías, movimientos                               | ✅  | ✅  | Web integrada en `main` (push pendiente).                  |
+| R1   | 🔧 Cierre de decisiones de producto                            | —   | —   | Fase 6 aprobada; fase 7 pendiente.                         |
+| R2   | 🔧 Alineación de la fase 5 con el nuevo modelo                 | —   | ⬜  | Renombrar el falso «gasto compartido».                     |
+| 6    | ✨ Gastos compartidos con reparto                              | ⬜  | ⬜  | 🔧 Migración sobre tablas existentes + ✨ API y UI nuevas. |
+| 7    | ✨ Saldos (deudas) y liquidaciones                             | ⬜  | ⬜  | Requiere migración.                                        |
+| 8    | ✨ Cuentas personales vinculadas y aportaciones                | ⬜  | ⬜  | En análisis.                                               |
+| 9    | ✨ Presupuestos, informes y dashboard                          | ⬜  | ⬜  | Bloqueada por P-17.                                        |
+| 10   | Preparación para producción                                    | ⬜  | ⬜  |                                                            |
+| 4.1  | ✨ Transferencia de ownership (paralela)                       | ⬜  | ⬜  | Diseño aprobado; no bloquea nada.                          |
 
 ### Funcionalidad implementada y verificada
 
