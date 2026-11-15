@@ -87,14 +87,14 @@ Fuente única: [shared-expenses.md](./shared-expenses.md). Resumen:
 
 ## 4. Glosario UI ↔ dominio
 
-| Término en la UI                         | Concepto de dominio                                                                                                     |
-| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Gasto compartido / Añadir gasto (SHARED) | `SharedExpense` con participantes                                                                                       |
-| Gasto individual (SHARED)                | `FinancialTransaction` `EXPENSE` con `attributedToUserId` (P-14). **Hoy la web lo llama «gasto compartido» por error.** |
-| Tu parte                                 | `ExpenseParticipant.allocatedAmount` del usuario                                                                        |
-| Saldos / Quién debe a quién              | Deudas derivadas (P-08)                                                                                                 |
-| Liquidar / Registrar pago                | `Settlement`                                                                                                            |
-| Anulado                                  | Anulación lógica (P-13)                                                                                                 |
+| Término en la UI                         | Concepto de dominio                                                                                                                                                                                                    |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Gasto compartido / Añadir gasto (SHARED) | `SharedExpense` con participantes                                                                                                                                                                                      |
+| Gasto individual (SHARED)                | `FinancialTransaction` `EXPENSE` con `attributedToUserId` (P-14, C-04). Imputa a una persona; sin reparto ni deudas entre miembros. Para «lo pago yo y es solo mío» (o imputar a un miembro) en el espacio compartido. |
+| Tu parte                                 | `ExpenseParticipant.allocatedAmount` del usuario                                                                                                                                                                       |
+| Saldos / Quién debe a quién              | Deudas derivadas (P-08)                                                                                                                                                                                                |
+| Liquidar / Registrar pago                | `Settlement`                                                                                                                                                                                                           |
+| Anulado                                  | Anulación lógica (P-13)                                                                                                                                                                                                |
 
 ## Documentación relacionada
 

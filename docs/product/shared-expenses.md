@@ -32,6 +32,10 @@ Reglas transversales:
 7. Guarda. Las participaciones quedan fijadas y las deudas aparecen al momento en los saldos del espacio.
 8. Los demás miembros ven el gasto en el listado y, en el detalle, **su parte** y **a quién se la deben**.
 
+### Gasto individual en SHARED (no confundir)
+
+Si el gasto **no se reparte** (p. ej. lo pagas tú y es solo tuyo, o lo imputas a un solo miembro), no uses este flujo: es el **Gasto individual** (`EXPENSE` con `attributedToUserId`, P-14/C-04). No genera deudas entre miembros. En la UI debe ser fácil de encontrar junto al alta de gasto compartido.
+
 ## 3. Métodos de reparto
 
 | Método (UI)                | `splitMode`    | Qué introduce el usuario                           | Validación                                                             |
