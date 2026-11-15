@@ -9,34 +9,37 @@ alwaysApply: false
 ## Responsabilidades
 
 - Lógica de negocio, validación, autorización, persistencia y cálculos financieros.
-- Organización por **módulos** Nest (`*.module`, `*.controller`, `*.service`).
+- **Fuente de verdad de los contratos REST**: al cerrar cada endpoint, actualizar OpenAPI y `docs/development/frontend-api-dependencies.md`.
+- Organización por **módulos** Nest (`*.module`, `*.controller`, `*.service`); cálculos de reparto y deudas en funciones puras testeadas.
 
 ## Prácticas
 
 - Validar todos los inputs (DTOs + class-validator).
-- Guards/policies para autenticación y permisos por espacio antes de servicios.
+- Guards para la sesión y la membresía ACTIVE antes de los servicios; recurso de otro espacio → 404.
 - Queries Prisma siempre acotadas al espacio autorizado; tests de aislamiento cross-space.
-- Dinero: sin float; ISO 4217 + reparto mayor resto; ver `docs/architecture/database-design.md`.
-- Informes/presupuestos: periodo en `User.timezone`; `occurredAt` UTC.
-- Atribución EXPENSE: matriz Owner/Admin/Member en `docs/architecture/security.md`.
-- `SharedExpense`/`Settlement` solo en espacios SHARED.
-- EXPENSE SHARED: `accountId` opcional (sin cuenta no afecta saldo); PERSONAL: cuenta obligatoria.
-- OPENING_BALANCE: signo libre; pago SPACE_ACCOUNT sin `attributedToUserId`.
-- Integridad SQL: `docs/architecture/database-design.md` + `first-migration-design.md`.
-- `$transaction` para invariantes multi-tabla (alta usuario, edición shared, etc.).
-- Ediciones: `expectedVersion` → 409 Conflict.
-- Excepciones HTTP con `code` estable para el cliente.
+- Dinero con `Prisma.Decimal`, nunca float; ISO 4217; reparto por mayor resto en unidades menores con desempate por `userId` (`docs/product/shared-expenses.md` §4).
+- `$transaction` para invariantes multitabla (alta de usuario, gasto con participantes, SPACE_ACCOUNT).
+- Ediciones y anulaciones: `expectedVersion` → 409 + `FinancialRevision`.
+- Excepciones HTTP con `code` estable.
+- Informes y presupuestos: periodo en `User.timezone`; `occurredAt` en UTC.
 
-## Finanzas compartidas
+## Gastos compartidos, deudas y liquidaciones
 
-- `SharedExpense` = coste + reparto; cuenta solo en tx vinculada (`SPACE_ACCOUNT`). EXPENSE en SHARED usa `attributedToUserId`. Revisiones con FK explícita (no polimórfica). Schema: `apps/api/prisma/schema.prisma`.
-- Tests unitarios para redondeo, porcentajes (suma 100 %) y repartos (Jest ESM en Nest 12).
+- Especificación: `docs/product/shared-expenses.md`; permisos: `docs/architecture/security.md`.
+- Sin confirmaciones de participantes; las participaciones se fijan al guardar.
+- Deuda calculada al leer (no hay tabla de deudas) salvo que coordinación decida otra cosa (P-08).
+- Liquidación: entidad propia; reduce la deuda neta del par; no verifica pagos.
+- `SharedExpense`/`Settlement` solo en SHARED. Integridad SQL: `docs/architecture/database-design.md` + `prisma/sql/custom-integrity.sql`.
+- Antes de implementar, comprueba en `docs/product/decisions.md` que las decisiones de la entrega están APROBADAS.
+
+## Migraciones
+
+- Ninguna migración nueva sin aprobación explícita de coordinación. Flujo: `migrate dev --create-only` → revisar y sincronizar el SQL de integridad → aprobación → aplicar. Nunca `db push`.
 
 ## Prohibido
 
 - Exponer Prisma o SQL al frontend.
-- Alterar liquidaciones confirmadas sin dejar revisión en historial (`FinancialRevision`).
-- Endpoints sin comprobar membresía activa del espacio (anti-IDOR).
-- Modelar cobros, reclamaciones o `EconomicParty` en MVP.
-
-Ver `docs/architecture/security.md` y `docs/development/testing-strategy.md`.
+- Devolver datos de un espacio PERSONAL en respuestas de un espacio SHARED.
+- Borrado físico de movimientos, gastos o liquidaciones; correcciones mediante edición o anulación con revisión.
+- Endpoints sin comprobar la membresía activa del espacio.
+- Modelar cobros, reclamaciones o `EconomicParty`.

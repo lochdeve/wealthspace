@@ -13,7 +13,7 @@ alwaysApply: true
 ## Comunicación
 
 - Frontend → Backend únicamente por **REST** (JSON).
-- OpenAPI documentará contratos en el API.
+- OpenAPI (`/api/v1/docs`) documenta los contratos; el backend es su fuente de verdad y mantiene el catálogo `docs/development/frontend-api-dependencies.md`.
 
 ## Capas
 
@@ -27,6 +27,7 @@ alwaysApply: true
 
 - Monolito **modular** NestJS; un módulo por capacidad de producto.
 - Transacciones DB para operaciones multi-entidad (gastos compartidos, liquidaciones).
+- Saldos de cuenta y deudas se calculan al leer; no se almacenan como valores editables.
 
 ## Seguridad
 

@@ -1,34 +1,42 @@
 ---
-description: Contexto global de Wealthspace, stack y principios de trabajo
+description: Reglas globales de Wealthspace
 alwaysApply: true
 ---
 
 # Wealthspace — reglas globales
 
-Wealthspace gestiona finanzas personales y compartidas mediante **Spaces** (espacios aislados). Cada usuario tiene espacio personal y puede participar en espacios compartidos.
+Wealthspace gestiona finanzas personales y gastos compartidos mediante **Spaces** (espacios aislados). Cada usuario tiene un espacio PERSONAL y puede participar en espacios SHARED.
 
 ## Stack
 
 - Monorepo pnpm: `apps/web` (Next.js App Router), `apps/api` (NestJS REST), `packages/contracts`. Node 24 LTS, pnpm 12.x.
-- Producto: SHARED (EXPENSE con/sin cuenta + `SharedExpense`); saldos de cuenta on-read; integridad en `docs/architecture/database-design.md` y plan `first-migration-design.md`; Prisma Decimal + UUID — ver `docs/product/` y `apps/api/prisma/schema.prisma`.
-- PostgreSQL + Prisma (solo backend). Tests: Jest/Supertest, Vitest/RTL, Playwright (E2E).
+- PostgreSQL + Prisma 7 (solo backend); Decimal + UUID. Tests: Jest/Supertest, Vitest/RTL, Playwright.
+
+## Fuente de verdad
+
+1. `docs/product/decisions.md` — decisiones APROBADAS y PENDIENTES (P-xx). Solo se implementa lo aprobado.
+2. `docs/development/current-status.md` — siguiente tarea por chat; `docs/development/roadmap*.md` — fases.
+3. Especificaciones: `docs/product/` (`shared-expenses.md`, `spaces-membership-mvp.md`, `domain-model.md`, `accounts-model.md` en análisis).
+4. Contratos: implementados en `docs/development/frontend-api-dependencies.md` (mantenido por backend); previstos en `docs/architecture/api-design.md`.
+5. Coordinación entre chats: `docs/development/chat-handoff.md`.
+
+## Modelo de producto (resumen)
+
+- Gasto compartido con reparto a partes iguales (por defecto), por porcentajes (suma 100 %) o por importes (suma = total); calculado en el servidor.
+- **Sin confirmaciones**: las deudas existen desde que se guarda el gasto.
+- **Gasto ≠ deuda ≠ liquidación**. La deuda se calcula; la liquidación es un pago real registrado a mano, parcial o completo.
+- Registrar un gasto no mueve dinero de quien no pagó. Wealthspace no verifica ni ejecuta pagos.
 
 ## Principios
 
-- Backend es autoridad de negocio, permisos y cálculos financieros.
-- Aislamiento estricto por `spaceId`; evitar IDOR.
-- Sin funcionalidad fuera del alcance pedido en la tarea.
-- Revisar código y docs existentes (`docs/`, ADRs) antes de cambiar comportamiento.
-- No inventar reglas de negocio: usar `docs/product/domain-model.md` y marcar gaps como **PENDIENTE DE DECISIÓN**.
-- Preferir cambios pequeños; no microservicios ni abstracciones prematuras.
+- El backend es la autoridad de negocio, permisos y cálculos financieros.
+- Aislamiento estricto por `spaceId`; anti-IDOR.
+- Sin funcionalidad fuera del alcance de la tarea.
+- No inventar reglas de negocio: si no está APROBADA, marcar **PENDIENTE DE DECISIÓN** y escalar a coordinación.
+- No cambiar el esquema de BD sin una decisión y una migración aprobadas.
+- Cambios pequeños; sin microservicios ni abstracciones prematuras.
 
 ## Convenciones
 
-- TypeScript strict; Conventional Commits (mensajes en inglés).
-- Documentación en español en `docs/`; código e identificadores en inglés salvo copy de UI acordado.
-
-## Referencias
-
-- Producto: `docs/product/`
-- Arquitectura: `docs/architecture/`
-- Desarrollo: `docs/development/`
+- TypeScript strict; Conventional Commits con mensajes en inglés; nunca push sin aprobación explícita.
+- Documentación en español en `docs/`; código e identificadores en inglés salvo el copy de la UI.

@@ -8,24 +8,32 @@ alwaysApply: false
 
 ## Stack
 
-- Next.js App Router, React, TypeScript strict bajo `src/`.
+- Next.js App Router, React, TypeScript strict bajo `src/`. Este Next.js tiene cambios incompatibles: leer `apps/web/AGENTS.md`.
 
 ## Responsabilidades
 
-- Presentación y flujos de usuario; **no** reglas de negocio críticas ni acceso a DB.
-- No confiar en permisos calculados solo en cliente; la API debe denegar acciones no autorizadas.
+- Presentación y flujos de usuario; **no** reglas de negocio críticas ni acceso a la BD.
+- No confiar en permisos calculados solo en el cliente; la API debe denegar las acciones no autorizadas.
+- Consumir solo los endpoints implementados del catálogo `docs/development/frontend-api-dependencies.md`. Si falta algo, pedirlo al backend a través de coordinación.
 
 ## Prácticas
 
-- Capa API centralizada (cliente fetch o módulo `lib/api`) con manejo de errores tipado.
-- Estados loading / empty / error en pantallas con datos remotos.
+- Capa API centralizada (`lib/api`) con errores tipados por `code`.
+- Estados de carga, vacío y error en las pantallas con datos remotos.
 - Accesibilidad (labels, foco, contraste) y diseño responsive por defecto.
-- Componentes pequeños; hooks para lógica reutilizable de UI.
+- Componentes pequeños; hooks para la lógica de UI reutilizable.
 - Server Components cuando no haga falta interactividad; `"use client"` solo donde corresponda.
+- Copy coherente con el glosario de `docs/product/domain-model.md` §4.
+
+## Gastos compartidos
+
+- Reparto por defecto a partes iguales con todos los miembros; el flujo habitual debe ser mínimo.
+- La previsualización de importes viene de la API (dry-run); la web solo valida formato y sumas como feedback.
+- Ningún estado ni texto de «confirmar gasto» o «pendiente de confirmación». Liquidar = «Registrar pago».
+- Mostrar por separado: gasto (qué y quién pagó), tu parte y deudas, y liquidaciones.
 
 ## Prohibido
 
-- Duplicar algoritmos de reparto o saldos como fuente de verdad.
-- Secretos o credenciales en el bundle (`NEXT_PUBLIC_*` solo datos públicos).
-
-Ver `docs/architecture/api-design.md`.
+- Duplicar algoritmos de reparto, deudas o saldos como fuente de verdad.
+- Inventar campos o endpoints no documentados por el backend.
+- Secretos o credenciales en el bundle (`NEXT_PUBLIC_*` solo para datos públicos).
