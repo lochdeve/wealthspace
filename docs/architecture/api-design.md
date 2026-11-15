@@ -38,19 +38,19 @@ Una sola transacción de BD: INSERT del movimiento → INSERT del gasto comparti
 
 ### Endpoints
 
-| Recurso                | Método | Ruta                                             | Notas                                                                   |
-| ---------------------- | ------ | ------------------------------------------------ | ----------------------------------------------------------------------- |
-| Previsualizar reparto  | POST   | `/spaces/:spaceId/shared-expenses/preview`       | Mismo body que el alta; no persiste (P-16)                              |
-| Crear gasto compartido | POST   | `/spaces/:spaceId/shared-expenses`               | **201** con el detalle                                                  |
-| Listar gastos          | GET    | `/spaces/:spaceId/shared-expenses`               | Filtros: `from`, `to`, `participantUserId`, `includeVoided`; paginación |
-| Detalle                | GET    | `/spaces/:spaceId/shared-expenses/:id`           | Incluye participantes, deudas generadas y `version`                     |
-| Editar                 | PATCH  | `/spaces/:spaceId/shared-expenses/:id`           | `expectedVersion` + campos; recalcula el reparto                        |
-| Anular                 | POST   | `/spaces/:spaceId/shared-expenses/:id/void`      | `expectedVersion`, `reason?` (P-13)                                     |
-| Historial              | GET    | `/spaces/:spaceId/shared-expenses/:id/revisions` | Revisiones inmutables                                                   |
-| Saldos del espacio     | GET    | `/spaces/:spaceId/balances`                      | Deudas netas por par y saldo por miembro, por moneda (P-08)             |
-| Registrar liquidación  | POST   | `/spaces/:spaceId/settlements`                   | **201**                                                                 |
-| Listar liquidaciones   | GET    | `/spaces/:spaceId/settlements`                   | Filtros: `userId`, `includeVoided`                                      |
-| Anular liquidación     | POST   | `/spaces/:spaceId/settlements/:id/void`          | `expectedVersion`, `reason?` (P-10, P-13)                               |
+| Recurso                | Método | Ruta                                             | Notas                                                                       |
+| ---------------------- | ------ | ------------------------------------------------ | --------------------------------------------------------------------------- |
+| Previsualizar reparto  | POST   | `/spaces/:spaceId/shared-expenses/preview`       | Mismo body que el alta; no persiste (P-16)                                  |
+| Crear gasto compartido | POST   | `/spaces/:spaceId/shared-expenses`               | **201** con el detalle                                                      |
+| Listar gastos          | GET    | `/spaces/:spaceId/shared-expenses`               | Filtros: `from`, `to`, `participantUserId`, `includeVoided`; `limit` (≤100) |
+| Detalle                | GET    | `/spaces/:spaceId/shared-expenses/:id`           | Incluye participantes, deudas generadas y `version`                         |
+| Editar                 | PATCH  | `/spaces/:spaceId/shared-expenses/:id`           | `expectedVersion` + campos; recalcula el reparto                            |
+| Anular                 | POST   | `/spaces/:spaceId/shared-expenses/:id/void`      | `expectedVersion`, `reason?` (P-13)                                         |
+| Historial              | GET    | `/spaces/:spaceId/shared-expenses/:id/revisions` | Revisiones inmutables                                                       |
+| Saldos del espacio     | GET    | `/spaces/:spaceId/balances`                      | Deudas netas por par y saldo por miembro, por moneda (P-08)                 |
+| Registrar liquidación  | POST   | `/spaces/:spaceId/settlements`                   | **201**                                                                     |
+| Listar liquidaciones   | GET    | `/spaces/:spaceId/settlements`                   | Filtros: `userId`, `includeVoided`                                          |
+| Anular liquidación     | POST   | `/spaces/:spaceId/settlements/:id/void`          | `expectedVersion`, `reason?` (P-10, P-13)                                   |
 
 Todas exigen espacio SHARED; si el espacio es PERSONAL → **400** `SHARED_SPACE_REQUIRED`.
 
@@ -73,6 +73,7 @@ Todas exigen espacio SHARED; si el espacio es PERSONAL → **400** `SHARED_SPACE
   - `{ "mode": "EQUAL", "participantUserIds": [...] }`
   - `{ "mode": "PERCENTAGE", "shares": [{ "userId", "percent": "33.33" }] }`
   - `{ "mode": "FIXED_AMOUNT", "shares": [{ "userId", "amount": "50.00" }] }`
+- Importes de entrada con, como máximo, los decimales de la moneda (`"120.00"` en EUR). Las respuestas siempre devuelven 4 decimales (`"40.0000"`), como el resto de la API. Porcentajes con un máximo de 2 decimales.
 - `currency`: opcional si el espacio tiene `displayCurrency`. Con `SPACE_ACCOUNT` es la moneda de la cuenta.
 
 ### Respuesta de detalle (orientativa)
@@ -81,29 +82,29 @@ Todas exigen espacio SHARED; si el espacio es PERSONAL → **400** `SHARED_SPACE
 {
   "id": "…",
   "description": "Compra semanal",
-  "totalAmount": "120.00",
+  "totalAmount": "120.0000",
   "currency": "EUR",
   "occurredAt": "…",
   "splitMode": "EQUAL",
   "payment": { "source": "MEMBER", "paidByUserId": "…ana…" },
   "participants": [
-    { "userId": "…ana…", "displayName": "Ana", "allocatedAmount": "40.00", "sharePercent": null },
+    { "userId": "…ana…", "displayName": "Ana", "allocatedAmount": "40.0000", "sharePercent": null },
     {
       "userId": "…carlos…",
       "displayName": "Carlos",
-      "allocatedAmount": "40.00",
+      "allocatedAmount": "40.0000",
       "sharePercent": null
     },
     {
       "userId": "…maria…",
       "displayName": "María",
-      "allocatedAmount": "40.00",
+      "allocatedAmount": "40.0000",
       "sharePercent": null
     }
   ],
   "generatedDebts": [
-    { "fromUserId": "…carlos…", "toUserId": "…ana…", "amount": "40.00" },
-    { "fromUserId": "…maria…", "toUserId": "…ana…", "amount": "40.00" }
+    { "fromUserId": "…carlos…", "toUserId": "…ana…", "amount": "40.0000" },
+    { "fromUserId": "…maria…", "toUserId": "…ana…", "amount": "40.0000" }
   ],
   "recordedByUserId": "…ana…",
   "voidedAt": null,
@@ -121,13 +122,13 @@ Una respuesta del espacio SHARED **nunca** incluye identificadores ni datos de c
     {
       "currency": "EUR",
       "debts": [
-        { "fromUserId": "…carlos…", "toUserId": "…ana…", "amount": "25.00" },
-        { "fromUserId": "…maria…", "toUserId": "…ana…", "amount": "40.00" }
+        { "fromUserId": "…carlos…", "toUserId": "…ana…", "amount": "25.0000" },
+        { "fromUserId": "…maria…", "toUserId": "…ana…", "amount": "40.0000" }
       ],
       "members": [
-        { "userId": "…ana…", "net": "65.00" },
-        { "userId": "…carlos…", "net": "-25.00" },
-        { "userId": "…maria…", "net": "-40.00" }
+        { "userId": "…ana…", "net": "65.0000" },
+        { "userId": "…carlos…", "net": "-25.0000" },
+        { "userId": "…maria…", "net": "-40.0000" }
       ]
     }
   ]
@@ -144,6 +145,8 @@ El backend los fija al implementar y actualiza el catálogo.
 | `SPLIT_PERCENT_SUM_INVALID`     | 400  | Los porcentajes no suman 100                 |
 | `SPLIT_AMOUNT_SUM_INVALID`      | 400  | Los importes no suman el total               |
 | `AMOUNT_PRECISION_INVALID`      | 400  | Más decimales de los que admite la moneda    |
+| `CURRENCY_NOT_SUPPORTED`        | 400  | Moneda que no es ISO 4217                    |
+| `SPLIT_SHARE_ZERO`              | 400  | El reparto deja a un participante con 0      |
 | `INSUFFICIENT_PARTICIPANTS`     | 400  | No se cumple el mínimo (P-15)                |
 | `DUPLICATE_PARTICIPANT`         | 400  | Usuario repetido                             |
 | `PARTICIPANT_NOT_MEMBER`        | 400  | Participante sin membresía en `occurredAt`   |

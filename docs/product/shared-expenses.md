@@ -41,6 +41,7 @@ Reglas transversales:
 | Importes personalizados    | `FIXED_AMOUNT` | Un importe por participante                        | Suma **exactamente** el total (A-03); cada uno > 0                     |
 
 - Los participantes con parte 0 no se incluyen (la BD exige `allocated_amount > 0`).
+- Si el cálculo deja a algún participante con 0 (p. ej. 0,02 € entre 3, o un 1 % de 1,00 €), el gasto se **rechaza** (`SPLIT_SHARE_ZERO`); el usuario debe ajustar el importe, los participantes o el reparto.
 - En porcentajes, la UI propone por defecto un reparto equitativo (p. ej. 33,33 / 33,33 / 33,34) que el usuario puede modificar antes de guardar.
 - En importes personalizados, la UI muestra en todo momento el importe que falta o sobra para llegar al total; la API rechaza cualquier diferencia.
 
@@ -126,7 +127,7 @@ La cuenta personal de Ana tampoco cambia salvo que registre el pago (hoy, como g
 ## 9. Edición, anulación e historial (A-05)
 
 - **Editar** un gasto: importe, fecha, concepto, categoría, pagador, participantes y método de reparto. El servidor recalcula las participaciones. Concurrencia optimista con `expectedVersion` (**409** si hay conflicto) y revisión inmutable con instantánea completa, participantes incluidos.
-- **Anular**: anulación lógica (P-13). El gasto deja de contar en deudas y totales, pero sigue visible como «Anulado» con autor, fecha y motivo.
+- **Anular**: anulación lógica (P-13). El gasto deja de contar en deudas y totales, pero sigue visible como «Anulado» con autor, fecha y motivo. Si se pagó con una cuenta compartida, el movimiento vinculado se anula en la misma operación y **el saldo de la cuenta se restaura**.
 - **No hay borrado físico** de gastos ni liquidaciones.
 - Permisos: P-09 para gastos (aprobada) y P-10 para liquidaciones (pendiente). La API devuelve **403** con un código estable si no se cumplen.
 - Historial: cualquier miembro del espacio puede consultar las revisiones de un gasto o una liquidación.
