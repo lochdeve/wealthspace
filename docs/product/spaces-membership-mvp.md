@@ -2,7 +2,7 @@
 
 Decisiones de producto acordadas (coordinación). Fuente para API y web; no inventar reglas fuera de este documento — marcar gaps como **PENDIENTE DE DECISIÓN**.
 
-Criterio de cierre **Fase 4 (MVP):** espacios, invitaciones, leave/remove y espacio activo operativos, con único OWNER y salida del único OWNER bloqueada (409) hasta **entrega 4.1** (transferencia). Pendientes documentados aquí **no impiden Fase 5**.
+Criterio de cierre **Fase 4 (MVP):** espacios, invitaciones, leave/remove y espacio activo operativos, con único OWNER y salida del único OWNER bloqueada (409) hasta **entrega 4.1** (transferencia). Pendientes documentados aquí **no impiden fases posteriores**. Estado: Fase 4 cerrada (MVP); 4.1 y 4.2 no implementadas (verificado 2026-11-15).
 
 ---
 
@@ -26,6 +26,7 @@ Criterio de cierre **Fase 4 (MVP):** espacios, invitaciones, leave/remove y espa
 - **Leave:** cualquier ACTIVE salvo el **único OWNER ACTIVE** → **409** `CANNOT_LEAVE_AS_SOLE_OWNER` hasta transferencia (4.1).
 - **Remove:** OWNER expulsa MEMBER y ADMIN; ADMIN solo MEMBER; no auto-expulsión → **409** `USE_LEAVE_INSTEAD`; no expulsar al único OWNER → **409** `CANNOT_REMOVE_SOLE_OWNER`.
 - **LEFT** / **REMOVED** fijan `leftAt`; historial para atribución y liquidaciones en **[joinedAt, leftAt)**.
+- Deudas pendientes al salir: el miembro conserva participaciones, deudas y liquidaciones históricas. Saldar deudas después de la salida sigue **PENDIENTE DE DECISIÓN** (P-19 en [decisions.md](./decisions.md)).
 
 ## Transferencia de ownership (entrega 4.1 — no bloquea Fase 5)
 
@@ -37,14 +38,14 @@ Criterio de cierre **Fase 4 (MVP):** espacios, invitaciones, leave/remove y espa
 
 ## Pendientes posteriores (comportamiento seguro hasta entonces)
 
-| Tema | Hasta implementar |
-| ---- | ----------------- |
-| Transferencia 4.1 | 409 sole OWNER en leave/remove |
-| Último miembro ACTIVE hace leave (4.2) | Propuesta: 409 `LAST_ACTIVE_MEMBER` |
-| Disolver / archivar espacio | Fuera MVP |
-| Varios OWNERs | Fuera MVP |
-| TTL configurable / email invitación | Fuera MVP |
-| Confirmación del receptor en transferencia | Post-MVP |
+| Tema                                       | Hasta implementar                   |
+| ------------------------------------------ | ----------------------------------- |
+| Transferencia 4.1                          | 409 sole OWNER en leave/remove      |
+| Último miembro ACTIVE hace leave (4.2)     | Propuesta: 409 `LAST_ACTIVE_MEMBER` |
+| Disolver / archivar espacio                | Fuera MVP                           |
+| Varios OWNERs                              | Fuera MVP                           |
+| TTL configurable / email invitación        | Fuera MVP                           |
+| Confirmación del receptor en transferencia | Post-MVP                            |
 
 ## Invariante técnica
 
@@ -52,6 +53,7 @@ El schema Prisma **no** garantiza un solo OWNER ACTIVE por espacio; la aplicaci�
 
 ## Documentación relacionada
 
+- [Registro de decisiones](./decisions.md)
 - [Alcance funcional](./functional-scope.md)
 - [Modelo de dominio](./domain-model.md)
 - [Handoff para chats de implementación](../development/chat-handoff.md)
