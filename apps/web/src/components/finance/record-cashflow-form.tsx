@@ -6,6 +6,7 @@ import type { Category } from '@/lib/api/finance-types';
 import { createExpense, createIncome } from '@/lib/api/transactions';
 import { financeActionErrorMessage } from '@/lib/finance/finance-messages';
 import { isPositiveAmount, normalizeAmountInput } from '@/lib/finance/amount';
+import { CategorySelectField } from '@/components/finance/category-select-field';
 import { Button } from '@/components/ui/button';
 import { Field, TextInput } from '@/components/ui/field';
 import styles from './finance-forms.module.css';
@@ -98,24 +99,15 @@ export function RecordCashflowForm({
           disabled={pending}
         />
       </Field>
-      {categories.length > 0 ? (
-        <Field id={`${kind}-category`} label="Categoría (opcional)">
-          <select
-            id={`${kind}-category`}
-            className={styles.selectNative}
-            value={categoryId}
-            onChange={(event) => setCategoryId(event.target.value)}
-            disabled={pending}
-          >
-            <option value="">Sin categoría</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </Field>
-      ) : null}
+      <CategorySelectField
+        id={`${kind}-category`}
+        spaceId={spaceId}
+        categories={categories}
+        categoryType={kind}
+        value={categoryId}
+        onChange={setCategoryId}
+        disabled={pending}
+      />
       <Button type="submit" disabled={pending}>
         {pending ? 'Guardando…' : 'Guardar'}
       </Button>

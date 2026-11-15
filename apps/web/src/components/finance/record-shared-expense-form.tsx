@@ -9,6 +9,7 @@ import { canPickAttributionFor } from '@/lib/finance/attribution';
 import { isPositiveAmount, normalizeAmountInput } from '@/lib/finance/amount';
 import type { MembershipRole } from '@/lib/api/space-types';
 import { membershipRoleLabel } from '@/lib/spaces/labels';
+import { CategorySelectField } from '@/components/finance/category-select-field';
 import { Button } from '@/components/ui/button';
 import { Field, TextInput } from '@/components/ui/field';
 import styles from './finance-forms.module.css';
@@ -162,24 +163,15 @@ export function RecordSharedExpenseForm({
           required
         />
       </Field>
-      {categories.length > 0 ? (
-        <Field id="shared-category" label="Categoría (opcional)">
-          <select
-            id="shared-category"
-            className={styles.selectNative}
-            value={categoryId}
-            onChange={(event) => setCategoryId(event.target.value)}
-            disabled={pending}
-          >
-            <option value="">Sin categoría</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </Field>
-      ) : null}
+      <CategorySelectField
+        id="shared-category"
+        spaceId={spaceId}
+        categories={categories}
+        categoryType="EXPENSE"
+        value={categoryId}
+        onChange={setCategoryId}
+        disabled={pending}
+      />
       <Field id="shared-description" label="Concepto (opcional)">
         <TextInput
           id="shared-description"

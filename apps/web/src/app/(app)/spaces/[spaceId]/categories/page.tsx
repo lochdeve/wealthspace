@@ -41,7 +41,10 @@ export default async function SpaceCategoriesPage({ params }: PageProps) {
           <h1 id="categories-title" className={styles.title}>
             Categorías
           </h1>
-          <p className={styles.lead}>Etiquetas de ingreso y gasto en este espacio.</p>
+          <p className={styles.lead}>
+            Créalas aquí y elige la categoría al registrar ingresos, gastos o gastos compartidos en
+            una cuenta.
+          </p>
         </div>
         <nav className={styles.pageHeaderActions} aria-label="Acciones">
           <Link href={`/spaces/${spaceId}/accounts`}>← Cuentas</Link>
