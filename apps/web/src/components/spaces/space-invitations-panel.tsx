@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { revokeSpaceInvitation } from '@/lib/api/invitations';
-import { ApiError } from '@/lib/api/errors';
+import { invitationActionErrorMessage } from '@/lib/spaces/invitation-messages';
 import type { Invitation } from '@/lib/api/space-types';
 import { membershipRoleLabel } from '@/lib/spaces/labels';
 import { Button } from '@/components/ui/button';
@@ -26,7 +26,7 @@ export function SpaceInvitationsPanel({ spaceId, invitations }: SpaceInvitations
       await revokeSpaceInvitation(spaceId, invitationId);
       router.refresh();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'No se pudo revocar la invitación.');
+      setError(invitationActionErrorMessage(err, 'No se pudo revocar la invitación.'));
     } finally {
       setPendingId(null);
     }

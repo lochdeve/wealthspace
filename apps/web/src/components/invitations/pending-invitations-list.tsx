@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { acceptInvitation, rejectInvitation } from '@/lib/api/invitations';
-import { ApiError } from '@/lib/api/errors';
+import { invitationActionErrorMessage } from '@/lib/spaces/invitation-messages';
 import type { Invitation, SpaceListItem } from '@/lib/api/space-types';
 import { membershipRoleLabel } from '@/lib/spaces/labels';
 import { Button } from '@/components/ui/button';
@@ -32,7 +32,7 @@ export function PendingInvitationsList({ invitations, spacesById }: PendingInvit
       }
       router.refresh();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'No se pudo actualizar la invitación.');
+      setError(invitationActionErrorMessage(err, 'No se pudo actualizar la invitación.'));
     } finally {
       setPendingId(null);
       setAction(null);

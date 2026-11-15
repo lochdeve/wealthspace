@@ -1,4 +1,4 @@
-import { ApiError } from '@/lib/api/errors';
+import { userErrorMessage } from '@/lib/api/errors';
 
 const FINANCE_ERROR_MESSAGES: Record<string, string> = {
   ACCOUNT_NOT_FOUND: 'No se encontró la cuenta en este espacio.',
@@ -23,11 +23,5 @@ const FINANCE_ERROR_MESSAGES: Record<string, string> = {
 };
 
 export function financeActionErrorMessage(error: unknown): string {
-  if (error instanceof ApiError && error.code) {
-    const mapped = FINANCE_ERROR_MESSAGES[error.code];
-    if (mapped) {
-      return mapped;
-    }
-  }
-  return error instanceof ApiError ? error.message : 'No se pudo completar la acción.';
+  return userErrorMessage(error, FINANCE_ERROR_MESSAGES);
 }

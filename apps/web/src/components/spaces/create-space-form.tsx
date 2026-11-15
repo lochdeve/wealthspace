@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 import { createSharedSpace } from '@/lib/api/spaces';
-import { ApiError } from '@/lib/api/errors';
+import { userErrorMessage } from '@/lib/api/errors';
 import { Button } from '@/components/ui/button';
 import { Field, TextInput } from '@/components/ui/field';
 import styles from './spaces-forms.module.css';
@@ -50,7 +50,7 @@ export function CreateSpaceForm() {
       router.replace(`/spaces/${space.id}`);
       router.refresh();
     } catch (error) {
-      setFormError(error instanceof ApiError ? error.message : 'No se pudo crear el espacio.');
+      setFormError(userErrorMessage(error, {}, 'No se pudo crear el espacio.'));
     } finally {
       setPending(false);
     }

@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 import { createSpaceInvitation } from '@/lib/api/invitations';
-import { ApiError } from '@/lib/api/errors';
+import { invitationActionErrorMessage } from '@/lib/spaces/invitation-messages';
 import { Button } from '@/components/ui/button';
 import { Field, TextInput } from '@/components/ui/field';
 import styles from './spaces-forms.module.css';
@@ -45,7 +45,7 @@ export function InviteMemberForm({ spaceId }: InviteMemberFormProps) {
       setEmail('');
       router.refresh();
     } catch (error) {
-      setFormError(error instanceof ApiError ? error.message : 'No se pudo enviar la invitación.');
+      setFormError(invitationActionErrorMessage(error, 'No se pudo enviar la invitación.'));
     } finally {
       setPending(false);
     }

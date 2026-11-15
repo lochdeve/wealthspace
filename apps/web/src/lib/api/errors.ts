@@ -49,12 +49,38 @@ export async function parseErrorResponse(response: Response): Promise<ApiError> 
   return new ApiError(response.status, payload);
 }
 
-/** User-facing copy when the API cannot reach PostgreSQL or returns 5xx. */
-export function apiUnavailableUserMessage(error: ApiError): string {
-  if (error.statusCode >= 500) {
-    return 'El servidor o la base de datos no están disponibles. Comprueba que Docker y PostgreSQL estén en marcha (docker compose up -d) y vuelve a intentarlo.';
+export const GENERIC_ERROR_MESSAGE = 'No se pudo completar la acción. Inténtalo de nuevo.';
+export const SERVICE_UNAVAILABLE_MESSAGE =
+  'El servicio no está disponible en este momento. Inténtalo de nuevo en unos minutos.';
+export const SESSION_EXPIRED_MESSAGE = 'Tu sesión ha caducado. Vuelve a iniciar sesión.';
+export const INVALID_INPUT_MESSAGE = 'Revisa los datos introducidos.';
+
+/**
+ * User-facing copy for an API failure, resolved by stable `code`.
+ * Never returns the API `message`, which is English and not meant for end users.
+ */
+export function userErrorMessage(
+  error: unknown,
+  messagesByCode: Readonly<Record<string, string>>,
+  fallback: string = GENERIC_ERROR_MESSAGE,
+): string {
+  if (!(error instanceof ApiError)) {
+    return fallback;
   }
-  return error.message;
+  const mapped = error.code ? messagesByCode[error.code] : undefined;
+  if (mapped) {
+    return mapped;
+  }
+  if (error.statusCode >= 500) {
+    return SERVICE_UNAVAILABLE_MESSAGE;
+  }
+  if (error.statusCode === 401) {
+    return SESSION_EXPIRED_MESSAGE;
+  }
+  if (error.statusCode === 400) {
+    return INVALID_INPUT_MESSAGE;
+  }
+  return fallback;
 }
 
 /** Stable codes returned by auth endpoints (for UX branching). */

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 import { register } from '@/lib/api/auth';
-import { ApiError, AUTH_ERROR_CODES, apiUnavailableUserMessage } from '@/lib/api/errors';
+import { AUTH_ERROR_CODES, userErrorMessage } from '@/lib/api/errors';
 import { Button } from '@/components/ui/button';
 import { Field, TextInput } from '@/components/ui/field';
 import styles from './auth-forms.module.css';
@@ -62,13 +62,13 @@ export function RegisterForm() {
       });
       router.replace('/login?registered=1');
     } catch (error) {
-      if (error instanceof ApiError && error.code === AUTH_ERROR_CODES.EMAIL_ALREADY_REGISTERED) {
-        setFormError('Ese correo ya está registrado.');
-      } else if (error instanceof ApiError) {
-        setFormError(apiUnavailableUserMessage(error));
-      } else {
-        setFormError('No se pudo crear la cuenta. Inténtalo de nuevo.');
-      }
+      setFormError(
+        userErrorMessage(
+          error,
+          { [AUTH_ERROR_CODES.EMAIL_ALREADY_REGISTERED]: 'Ese correo ya está registrado.' },
+          'No se pudo crear la cuenta. Inténtalo de nuevo.',
+        ),
+      );
     } finally {
       setPending(false);
     }

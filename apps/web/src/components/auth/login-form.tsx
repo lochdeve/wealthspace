@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 import { login } from '@/lib/api/auth';
-import { ApiError, AUTH_ERROR_CODES, apiUnavailableUserMessage } from '@/lib/api/errors';
+import { AUTH_ERROR_CODES, userErrorMessage } from '@/lib/api/errors';
 import { Button } from '@/components/ui/button';
 import { Field, TextInput } from '@/components/ui/field';
 import styles from './auth-forms.module.css';
@@ -49,13 +49,13 @@ export function LoginForm() {
       router.replace(destination);
       router.refresh();
     } catch (error) {
-      if (error instanceof ApiError && error.code === AUTH_ERROR_CODES.INVALID_CREDENTIALS) {
-        setFormError('Correo o contraseña incorrectos.');
-      } else if (error instanceof ApiError) {
-        setFormError(apiUnavailableUserMessage(error));
-      } else {
-        setFormError('No se pudo iniciar sesión. Inténtalo de nuevo.');
-      }
+      setFormError(
+        userErrorMessage(
+          error,
+          { [AUTH_ERROR_CODES.INVALID_CREDENTIALS]: 'Correo o contraseña incorrectos.' },
+          'No se pudo iniciar sesión. Inténtalo de nuevo.',
+        ),
+      );
     } finally {
       setPending(false);
     }

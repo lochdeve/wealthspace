@@ -1,9 +1,13 @@
 import {
   ApiError,
-  apiUnavailableUserMessage,
   formatApiMessage,
+  GENERIC_ERROR_MESSAGE,
+  INVALID_INPUT_MESSAGE,
   isApiErrorPayload,
   parseErrorResponse,
+  SERVICE_UNAVAILABLE_MESSAGE,
+  SESSION_EXPIRED_MESSAGE,
+  userErrorMessage,
 } from '@/lib/api/errors';
 
 describe('formatApiMessage', () => {
@@ -80,14 +84,30 @@ describe('parseErrorResponse', () => {
   });
 });
 
-describe('apiUnavailableUserMessage', () => {
-  it('returns Spanish copy for 5xx errors', () => {
-    const error = new ApiError(503, { message: 'raw' });
-    expect(apiUnavailableUserMessage(error)).toContain('no están disponibles');
+describe('userErrorMessage', () => {
+  const messages = { KNOWN: 'Mensaje conocido' };
+
+  it('maps known codes', () => {
+    const error = new ApiError(409, { code: 'KNOWN', message: 'raw' });
+    expect(userErrorMessage(error, messages)).toBe('Mensaje conocido');
   });
 
-  it('returns the ApiError message for non-5xx', () => {
-    const error = new ApiError(409, { message: 'Conflicto' });
-    expect(apiUnavailableUserMessage(error)).toBe('Conflicto');
+  it.each([
+    [503, SERVICE_UNAVAILABLE_MESSAGE],
+    [401, SESSION_EXPIRED_MESSAGE],
+    [400, INVALID_INPUT_MESSAGE],
+    [409, 'Alternativa'],
+  ])('uses Spanish copy by status %i for unknown codes', (status, expected) => {
+    const error = new ApiError(status, { code: 'OTHER', message: 'English API message' });
+    expect(userErrorMessage(error, messages, 'Alternativa')).toBe(expected);
+  });
+
+  it('never exposes the API message', () => {
+    const error = new ApiError(400, { message: ['amount must be a positive decimal'] });
+    expect(userErrorMessage(error, messages)).not.toContain('amount');
+  });
+
+  it('returns the fallback for non-API errors', () => {
+    expect(userErrorMessage(new Error('boom'), messages)).toBe(GENERIC_ERROR_MESSAGE);
   });
 });

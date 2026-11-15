@@ -15,6 +15,7 @@ export default defineConfig({
       include: [
         'src/lib/spaces/labels.ts',
         'src/lib/spaces/membership-messages.ts',
+        'src/lib/spaces/invitation-messages.ts',
         'src/lib/spaces/resolve-active-space.ts',
         'src/lib/api/errors.ts',
         'src/lib/api/query.ts',
