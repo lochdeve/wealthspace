@@ -34,11 +34,11 @@ Reglas transversales:
 
 ## 3. Métodos de reparto
 
-| Método (UI)                | `splitMode`    | Qué introduce el usuario                           | Validación                                         |
-| -------------------------- | -------------- | -------------------------------------------------- | -------------------------------------------------- |
-| A partes iguales (defecto) | `EQUAL`        | Solo los participantes                             | ≥1 participante distinto del pagador (P-15)        |
-| Por porcentajes            | `PERCENTAGE`   | Un porcentaje por participante (hasta 2 decimales) | Suma **exactamente** 100,00 % (A-02); cada uno > 0 |
-| Importes personalizados    | `FIXED_AMOUNT` | Un importe por participante                        | Suma **exactamente** el total (A-03); cada uno > 0 |
+| Método (UI)                | `splitMode`    | Qué introduce el usuario                           | Validación                                                             |
+| -------------------------- | -------------- | -------------------------------------------------- | ---------------------------------------------------------------------- |
+| A partes iguales (defecto) | `EQUAL`        | Solo los participantes                             | ≥1 participante distinto del pagador; con cuenta compartida, ≥1 (P-15) |
+| Por porcentajes            | `PERCENTAGE`   | Un porcentaje por participante (hasta 2 decimales) | Suma **exactamente** 100,00 % (A-02); cada uno > 0                     |
+| Importes personalizados    | `FIXED_AMOUNT` | Un importe por participante                        | Suma **exactamente** el total (A-03); cada uno > 0                     |
 
 - Los participantes con parte 0 no se incluyen (la BD exige `allocated_amount > 0`).
 - En porcentajes, la UI propone por defecto un reparto equitativo (p. ej. 33,33 / 33,33 / 33,34) que el usuario puede modificar antes de guardar.
@@ -72,13 +72,13 @@ Ejemplos:
 | Origen de pago                                             | Deuda que genera                                                                                                                              |
 | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Un miembro** (efectivo, tarjeta propia, cuenta personal) | Cada participante distinto del pagador debe su participación al pagador. La participación del propio pagador es su consumo y no genera deuda. |
-| **Cuenta compartida del espacio**                          | Ninguna entre miembros (recomendación P-04). Las participaciones indican quién consumió (informativo).                                        |
+| **Cuenta compartida del espacio**                          | Ninguna entre miembros (P-04). Las participaciones indican quién consumió (informativo).                                                      |
 
-Origen de pago en el esquema actual: `CASH`, `EXTERNAL_PERSONAL`, `SPACE_ACCOUNT`. Recomendación P-03: unificar los dos primeros en «pagado por un miembro». El pago desde una cuenta personal **registrada**, con su movimiento en el espacio personal, es una ampliación posterior (P-02) analizada en [accounts-model.md](./accounts-model.md).
+Orígenes de pago aprobados (P-03): «pagado por un miembro» (`MEMBER`) y «cuenta compartida» (`SPACE_ACCOUNT`). El esquema actual aún tiene `CASH` y `EXTERNAL_PERSONAL`; la migración de la fase 6 los unifica. El pago desde una cuenta personal **registrada**, con su movimiento en el espacio personal, es una ampliación posterior (P-02) analizada en [accounts-model.md](./accounts-model.md).
 
 El pagador **no tiene por qué ser participante**. Ejemplo: Ana compra un regalo de 60 € para Carlos y María → participantes Carlos y María (30 / 30) → cada uno debe 30 € a Ana.
 
-## 6. Cálculo de deudas (recomendación P-08)
+## 6. Cálculo de deudas (P-08)
 
 Las deudas no se almacenan: se calculan al leer, para cada espacio y **por moneda** (sin conversión), a partir de:
 
@@ -126,9 +126,9 @@ La cuenta personal de Ana tampoco cambia salvo que registre el pago (hoy, como g
 ## 9. Edición, anulación e historial (A-05)
 
 - **Editar** un gasto: importe, fecha, concepto, categoría, pagador, participantes y método de reparto. El servidor recalcula las participaciones. Concurrencia optimista con `expectedVersion` (**409** si hay conflicto) y revisión inmutable con instantánea completa, participantes incluidos.
-- **Anular**: anulación lógica (recomendación P-13). El gasto deja de contar en deudas y totales, pero sigue visible como «Anulado» con autor, fecha y motivo.
+- **Anular**: anulación lógica (P-13). El gasto deja de contar en deudas y totales, pero sigue visible como «Anulado» con autor, fecha y motivo.
 - **No hay borrado físico** de gastos ni liquidaciones.
-- Permisos: recomendación P-09 (gastos) y P-10 (liquidaciones). La API devuelve **403** con un código estable si no se cumplen.
+- Permisos: P-09 para gastos (aprobada) y P-10 para liquidaciones (pendiente). La API devuelve **403** con un código estable si no se cumplen.
 - Historial: cualquier miembro del espacio puede consultar las revisiones de un gasto o una liquidación.
 
 ## 10. Membresía

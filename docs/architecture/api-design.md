@@ -68,7 +68,7 @@ Todas exigen espacio SHARED; si el espacio es PERSONAL → **400** `SHARED_SPACE
 }
 ```
 
-- `payment`: `{ "source": "MEMBER", "paidByUserId" }` o `{ "source": "SPACE_ACCOUNT", "accountId" }`. Los valores definitivos dependen de P-03.
+- `payment`: `{ "source": "MEMBER", "paidByUserId" }` o `{ "source": "SPACE_ACCOUNT", "accountId" }`. Orígenes aprobados en P-03.
 - `split`:
   - `{ "mode": "EQUAL", "participantUserIds": [...] }`
   - `{ "mode": "PERCENTAGE", "shares": [{ "userId", "percent": "33.33" }] }`

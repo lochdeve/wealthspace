@@ -1,6 +1,6 @@
 # Modelo de cuentas — análisis y recomendación
 
-**Estado: EN ANÁLISIS.** Nada de este documento es una decisión aprobada salvo lo marcado como «implementado hoy». Las decisiones pendientes están en [decisions.md §3.2](./decisions.md#32-modelo-de-cuentas) (P-01 a P-07, P-17). **No implementar** ningún cambio de cuentas hasta su aprobación.
+**Estado: EN ANÁLISIS.** Nada de este documento es una decisión aprobada salvo lo marcado como «implementado hoy» y P-03/P-04 (aprobadas el 2026-11-15). Las decisiones pendientes están en [decisions.md §3.2](./decisions.md#32-modelo-de-cuentas) (P-01 a P-07, P-17). **No implementar** ningún cambio de cuentas hasta su aprobación.
 
 ---
 
@@ -38,7 +38,7 @@ Carlos paga 30 € en efectivo en el bar.
 
 - Gasto «pagado por Carlos» sin vínculo a cuenta. Deudas idénticas a E1.
 - Si Carlos lleva su efectivo como una cuenta personal («Cartera»), es exactamente E1.
-- Conclusión: efectivo y «cuenta externa no registrada» no se distinguen funcionalmente → recomendación **P-03** (unificar en «pagado por un miembro»).
+- Conclusión: efectivo y «cuenta externa no registrada» no se distinguen funcionalmente → **P-03, aprobada**: se unifican en «pagado por un miembro».
 
 ### E3. El gasto se paga desde una cuenta compartida del espacio
 
@@ -47,7 +47,7 @@ El piso tiene la cuenta común «Bote» (espacio SHARED). Se pagan 90 € de luz
 | Aspecto                | Comportamiento                                                                                                                                                                                                                                         |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Registro               | `SharedExpense` `SPACE_ACCOUNT` + `EXPENSE` en «Bote» (−90 €). Ya soportado por el esquema y los triggers.                                                                                                                                             |
-| Deudas                 | **Ninguna** entre miembros (recomendación P-04): nadie ha adelantado dinero personal. Las participaciones (30 / 30 / 30) son consumo informativo.                                                                                                      |
+| Deudas                 | **Ninguna** entre miembros (P-04, aprobada): nadie ha adelantado dinero personal. Las participaciones (30 / 30 / 30) son consumo informativo.                                                                                                          |
 | Saldos                 | Baja el saldo de «Bote». Las cuentas personales no cambian.                                                                                                                                                                                            |
 | Alternativa descartada | Tratar el bote como un «miembro» con cuentas de capital por persona (aportado − consumido) y derivar deudas de ahí. Es más preciso, pero introduce contabilidad de fondos, saldos negativos por miembro y explicaciones difíciles. No compensa en MVP. |
 
@@ -107,4 +107,4 @@ María pasa 100 € de su «Nómina» a «Bote», o se le devuelven 50 € desde
 2. **Fase 8**: vínculos personales (P-02, P-06, P-07) y aportaciones (P-05), después de aprobar este documento.
 3. **Fase 9**: presupuestos e informes con P-17 resuelto.
 
-Para empezar la fase 6 solo hace falta aprobar **P-03** y **P-04**.
+P-03 y P-04, las únicas necesarias para la fase 6, están **aprobadas** (2026-11-15). El resto de este documento sigue en análisis.

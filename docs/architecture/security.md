@@ -38,7 +38,7 @@ Fuente: [spaces-membership-mvp.md](../product/spaces-membership-mvp.md).
 | Gasto en PERSONAL                                    | Atribución fijada por el servidor al titular                                  |
 | Editar un movimiento vinculado a un gasto compartido | Prohibido (**409** `TRANSACTION_LINKED_TO_SHARED_EXPENSE`); se edita el gasto |
 
-### Gastos compartidos y liquidaciones (previsto — recomendaciones P-09 / P-10)
+### Gastos compartidos (aprobado, P-09) y liquidaciones (pendiente, P-10)
 
 | Acción                               | Quién                                                   |
 | ------------------------------------ | ------------------------------------------------------- |
@@ -50,7 +50,7 @@ Fuente: [spaces-membership-mvp.md](../product/spaces-membership-mvp.md).
 | Anular liquidación                   | Quien la registró, `from`, `to`, OWNER o ADMIN          |
 | Consultar gastos, saldos e historial | Cualquier miembro ACTIVE                                |
 
-Hasta que P-09 y P-10 se aprueben, el backend no implementa estas acciones.
+Las filas de gastos (P-09) están aprobadas y se implementan en la fase 6. Las de liquidaciones (P-10) siguen siendo una recomendación: el backend no las implementa hasta su aprobación.
 
 ## Privacidad
 

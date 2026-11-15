@@ -87,7 +87,7 @@ Triggers `BEFORE UPDATE` en `accounts`, `categories`, `spaces` impiden cambios d
 
 ## `SharedExpense` — reparto
 
-App: splitMode, %, redondeo, ≥2 participantes (obligatorio). Reglas funcionales: [shared-expenses.md](../product/shared-expenses.md). El mínimo de participantes puede cambiar (P-15).
+App: splitMode, %, redondeo, mínimo de participantes (obligatorio). Reglas funcionales: [shared-expenses.md](../product/shared-expenses.md). El trigger actual exige ≥2 participantes; P-15 (aprobada) lo cambia a «≥1 distinto del pagador» en la migración de la fase 6.
 
 **BD (MVP):** `ctrg_validate_shared_expense_participants` DEFERRABLE INITIALLY DEFERRED:
 
@@ -130,19 +130,19 @@ Consumo solo movimientos con `currency = budget.currency`; sin FX. Qué cuenta c
 
 ---
 
-## Cambios de esquema previstos (no aprobados)
+## Cambios de esquema previstos
 
-Necesarios para las decisiones aprobadas A-05 (anulación) y para las recomendaciones pendientes. **No ejecutar** hasta que coordinación apruebe la decisión y la migración.
+La columna **Decisión** indica si la regla de producto está aprobada. En todos los casos, **la migración concreta** necesita revisión y aprobación explícita de coordinación antes de aplicarse.
 
-| Cambio                                                                                                                                  | Motivo                 | Fase  |
-| --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ----- |
-| Anulación lógica (`voided_at`, `voided_by_user_id`) en `shared_expenses` y `settlements`; excluir anulados del trigger de participantes | A-05, P-13             | 6 / 7 |
-| Sustituir `settlements.status` por la anulación lógica                                                                                  | P-12                   | 7     |
-| Unificar `CASH` / `EXTERNAL_PERSONAL` en un único origen «miembro»                                                                      | P-03                   | 6     |
-| Relajar el mínimo de participantes a «≥1 distinto del pagador» (trigger diferido)                                                       | P-15                   | 6     |
-| Relajar la validación temporal de liquidaciones para ex-miembros                                                                        | P-19                   | 7     |
-| Anulación lógica de `financial_transactions`                                                                                            | P-13                   | 6+    |
-| Vínculo entre espacios (movimiento personal ↔ gasto, aportación o liquidación); aportante en entradas de cuentas compartidas           | P-02, P-05, P-06, P-07 | 8     |
+| Cambio                                                                                                                        | Motivo                 | Decisión  | Fase |
+| ----------------------------------------------------------------------------------------------------------------------------- | ---------------------- | --------- | ---- |
+| Anulación lógica (`voided_at`, `voided_by_user_id`) en `shared_expenses`; excluir los anulados del trigger de participantes   | A-05, P-13             | Aprobada  | 6    |
+| `PaymentSource`: sustituir `CASH` / `EXTERNAL_PERSONAL` por `MEMBER` (CHECK y trigger P5 actualizados)                        | P-03                   | Aprobada  | 6    |
+| Mínimo de participantes «≥1 distinto del pagador» (trigger diferido; con `SPACE_ACCOUNT`, ≥1 participante)                    | P-15                   | Aprobada  | 6    |
+| Anulación lógica de `financial_transactions`                                                                                  | A-05, P-13             | Aprobada  | 6+   |
+| Anulación lógica en `settlements` y sustitución de `status`                                                                   | P-12, P-13             | Pendiente | 7    |
+| Relajar la validación temporal de liquidaciones para ex-miembros                                                              | P-19                   | Pendiente | 7    |
+| Vínculo entre espacios (movimiento personal ↔ gasto, aportación o liquidación); aportante en entradas de cuentas compartidas | P-02, P-05, P-06, P-07 | Pendiente | 8    |
 
 Cada cambio se acompaña de: SQL de integridad actualizado en `custom-integrity.sql`, tests en `test/database/` y actualización de este documento.
 

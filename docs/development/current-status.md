@@ -26,15 +26,16 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 ## Decisiones recientes
 
 - **Aprobadas (A-01…A-10):** reparto igual (por defecto), por porcentajes o por importes; sin confirmaciones; gasto, deuda y liquidación separados; liquidaciones manuales parciales o completas; el gasto no mueve dinero de quien no pagó. Ver [shared-expenses.md](../product/shared-expenses.md).
+- **Aprobadas para la fase 6 (P-03, P-04, P-08, P-09, P-13, P-14, P-15, P-16):** orígenes de pago `MEMBER`/`SPACE_ACCOUNT`; sin deudas en pagos desde cuenta compartida; deuda calculada neta por par; permisos de gastos; anulación lógica; gasto individual congelado; mínimo de 1 participante distinto del pagador; previsualización desde la API.
 - **En análisis:** modelo de cuentas ([accounts-model.md](../product/accounts-model.md)).
 
 ## Siguiente tarea por chat
 
-| Chat         | Tarea                                                                                                                           | Bloqueos                              |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| Coordinación | **R1**: obtener la aprobación de P-03, P-04, P-08, P-09, P-13, P-14, P-15 y P-16 (fase 6) y de P-10, P-11, P-12 y P-19 (fase 7) | Respuesta del responsable de producto |
-| Frontend     | **F-R2.2** renombrar a «Gasto individual» (F-R2.1 hecho: fase 5 web en `main`)                                                  | Ninguno                               |
-| Backend      | **B-R1**: borrador de la migración de la fase 6 (sin aplicar) y análisis de coste de P-03/P-13/P-15/P-19. Opcional: **B-4.1**   | La migración solo se aplica tras R1   |
+| Chat         | Tarea                                                                                                                                       | Bloqueos                                                    |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19. Revisar el borrador de la migración de la fase 6 cuando llegue                            | Respuesta del responsable de producto                       |
+| Frontend     | **F-R2.2** renombrar a «Gasto individual» (F-R2.1 hecho: fase 5 web en `main`)                                                              | Ninguno                                                     |
+| Backend      | **B-6.1** función pura de reparto + **B-6.0** borrador de la migración de la fase 6 (sin aplicar); después B-6.2–B-6.5. Opcional: **B-4.1** | Aplicar la migración requiere la aprobación de coordinación |
 
 ## Notas operativas
 

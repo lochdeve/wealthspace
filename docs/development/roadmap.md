@@ -16,7 +16,7 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 | 3    | Autenticación web                                              | —   | ✅  | E2E de auth existe (`apps/web/e2e`), no se ejecuta en CI. |
 | 4    | Espacios, invitaciones, membresía                              | ✅  | ✅  | 4.1 (transferencia de ownership) y 4.2 sin implementar.   |
 | 5    | Cuentas, categorías, movimientos                               | ✅  | ✅  | Web integrada en `main` (push pendiente).                 |
-| R1   | 🔧 Cierre de decisiones de producto                            | —   | —   | Coordinación. Bloquea la fase 6.                          |
+| R1   | 🔧 Cierre de decisiones de producto                            | —   | —   | Fase 6 aprobada; fase 7 pendiente.                        |
 | R2   | 🔧 Alineación de la fase 5 con el nuevo modelo                 | —   | ⬜  | Renombrar el falso «gasto compartido».                    |
 | 6    | ✨ Gastos compartidos con reparto                              | ⬜  | ⬜  | Requiere migración.                                       |
 | 7    | ✨ Saldos (deudas) y liquidaciones                             | ⬜  | ⬜  | Requiere migración.                                       |
@@ -76,7 +76,7 @@ Regla general: **la API de cada fase precede a su web**; la web puede maquetar c
 
 ### R1 — 🔧 Cierre de decisiones (coordinación)
 
-Aprobar o modificar en [decisions.md](../product/decisions.md) como mínimo: P-03, P-04, P-08, P-09, P-13, P-14, P-15 y P-16 (para la fase 6); P-10, P-11, P-12 y P-19 (para la fase 7).
+Aprobar o modificar en [decisions.md](../product/decisions.md): ✅ P-03, P-04, P-08, P-09, P-13, P-14, P-15 y P-16 (fase 6, aprobadas el 2026-11-15); ⬜ P-10, P-11, P-12 y P-19 (fase 7).
 
 **Aceptación:** esas decisiones están en estado APROBADA, con `shared-expenses.md` y `api-design.md` actualizados, y la migración de la fase 6 aprobada.
 

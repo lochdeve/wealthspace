@@ -27,7 +27,8 @@ alwaysApply: false
 
 - Especificación: `docs/product/shared-expenses.md`; permisos: `docs/architecture/security.md`.
 - Sin confirmaciones de participantes; las participaciones se fijan al guardar.
-- Deuda calculada al leer (no hay tabla de deudas) salvo que coordinación decida otra cosa (P-08).
+- Deuda calculada al leer, neta por par y moneda; no hay tabla de deudas (P-08).
+- Orígenes de pago: `MEMBER` y `SPACE_ACCOUNT` (P-03); un gasto pagado desde una cuenta compartida no genera deudas (P-04).
 - Liquidación: entidad propia; reduce la deuda neta del par; no verifica pagos.
 - `SharedExpense`/`Settlement` solo en SHARED. Integridad SQL: `docs/architecture/database-design.md` + `prisma/sql/custom-integrity.sql`.
 - Antes de implementar, comprueba en `docs/product/decisions.md` que las decisiones de la entrega están APROBADAS.
