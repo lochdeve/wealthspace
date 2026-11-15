@@ -14,14 +14,14 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 ## Por área
 
-| Área                    | API               | Web                                                                |
-| ----------------------- | ----------------- | ------------------------------------------------------------------ |
-| Auth                    | ✅                | ✅                                                                 |
-| Espacios y membresía    | ✅ (sin 4.1/4.2)  | ✅                                                                 |
-| Cuentas y movimientos   | ✅                | ✅                                                                 |
-| Gastos compartidos      | ✅ API fase 6 (B-6.5)     | ⬜ UI F-6 (puede arrancar)                                          |
-| Deudas y liquidaciones  | ⬜ (solo esquema) | ⬜                                                                 |
-| Presupuestos e informes | ⬜                | ⬜                                                                 |
+| Área                    | API                   | Web                        |
+| ----------------------- | --------------------- | -------------------------- |
+| Auth                    | ✅                    | ✅                         |
+| Espacios y membresía    | ✅ (sin 4.1/4.2)      | ✅                         |
+| Cuentas y movimientos   | ✅                    | ✅                         |
+| Gastos compartidos      | ✅ API fase 6 (B-6.5) | ⬜ UI F-6 (puede arrancar) |
+| Deudas y liquidaciones  | ⬜ (solo esquema)     | ⬜                         |
+| Presupuestos e informes | ⬜                    | ⬜                         |
 
 ## Decisiones recientes
 
@@ -31,11 +31,11 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 ## Siguiente tarea por chat
 
-| Chat         | Tarea                                                                                                                                                      | Bloqueos                              |
-| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19                                                                                                           | Respuesta del responsable de producto |
-| Frontend     | **F-6** gastos compartidos (API B-6 lista): alta con preview; listado/detalle; editar/anular/revisiones. En paralelo o después: **F-R2.4**                   | Ninguno para F-6                      |
-| Backend      | **B-6** cerrado. Siguiente: **B-7** bloqueado hasta P-10…P-19 (coordinación)                                                                                 | Decisiones fase 7                     |
+| Chat         | Tarea                                                                                                                               | Bloqueos                              |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19                                                                                    | Respuesta del responsable de producto |
+| Frontend     | **F-R2.6** (C-04: Gasto individual visible en menú finanzas SHARED); **F-6** gastos compartidos; **F-R2.4** en paralelo si conviene | Ninguno                               |
+| Backend      | **B-6** cerrado. Siguiente: **B-7** bloqueado hasta P-10…P-19 (coordinación)                                                        | Decisiones fase 7                     |
 
 ## Notas operativas
 
