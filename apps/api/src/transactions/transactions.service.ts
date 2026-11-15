@@ -271,6 +271,7 @@ export class TransactionsService {
     const rows = await this.prisma.financialTransaction.findMany({
       where: {
         spaceId,
+        voidedAt: null,
         ...(options.type !== undefined ? { type: options.type } : {}),
         ...(options.accountId !== undefined
           ? {
@@ -306,13 +307,14 @@ export class TransactionsService {
     const hasPatch =
       dto.description !== undefined ||
       dto.occurredAt !== undefined ||
-      dto.amount !== undefined;
+      dto.amount !== undefined ||
+      dto.categoryId !== undefined;
     if (!hasPatch) {
       throw new BadRequestException({
         statusCode: 400,
         code: 'NO_CHANGES',
         message:
-          'At least one of description, occurredAt or amount is required',
+          'At least one of description, occurredAt, amount or categoryId is required',
       });
     }
 
@@ -348,6 +350,14 @@ export class TransactionsService {
         });
       }
 
+      if (dto.categoryId !== undefined && dto.categoryId !== null) {
+        const expected =
+          current.type === TransactionType.INCOME
+            ? CategoryType.INCOME
+            : CategoryType.EXPENSE;
+        await this.resolveCategory(spaceId, dto.categoryId, expected);
+      }
+
       const data: Prisma.FinancialTransactionUpdateInput = {
         version: { increment: 1 },
       };
@@ -360,6 +370,9 @@ export class TransactionsService {
       }
       if (dto.amount !== undefined) {
         data.amount = this.parseAmountForType(current.type, dto.amount);
+      }
+      if (dto.categoryId !== undefined) {
+        data.categoryId = dto.categoryId;
       }
 
       const lastRev = await tx.financialRevision.findFirst({
@@ -500,7 +513,7 @@ export class TransactionsService {
       accountId: tx.accountId ?? undefined,
       sourceAccountId: tx.sourceAccountId ?? undefined,
       destinationAccountId: tx.destinationAccountId ?? undefined,
-      categoryId: tx.categoryId ?? undefined,
+      categoryId: tx.categoryId,
       attributedToUserId: tx.attributedToUserId ?? undefined,
       version: tx.version,
       createdAt: tx.createdAt.toISOString(),

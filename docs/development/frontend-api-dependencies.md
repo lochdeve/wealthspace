@@ -56,6 +56,7 @@ Espacio activo (solo UI): cookie `wealthspace_active_space`, establecida con Ser
 - `SPACE_NOT_FOUND` (404) — detalle de espacio
 - `INSUFFICIENT_ROLE` (403) — gestionar invitaciones
 - `INVITATION_ALREADY_PENDING`, `INVITEE_ALREADY_MEMBER` (409) — crear invitación
+- `INVITATION_NOT_FOUND` (404) — aceptar o rechazar invitación inexistente o no dirigida al usuario
 - `INVITATION_EXPIRED`, `ALREADY_MEMBER` (409) — aceptar
 - `CANNOT_LEAVE_AS_SOLE_OWNER`, `USE_LEAVE_INSTEAD`, `CANNOT_REMOVE_SOLE_OWNER` (409) — leave/remove
 - `MEMBER_NOT_FOUND` (404) — remove
@@ -99,15 +100,20 @@ Disponible en `main` (Fase 5 API). Membresía **ACTIVE** en el espacio (mismo gu
 | Transferencia | POST   | `/spaces/:spaceId/transactions/transfer`               | Misma moneda; cuentas distintas                     |
 | Listar txs    | GET    | `/spaces/:spaceId/transactions`                        | `accountId`, `type`, `limit` (≤100)                 |
 | Detalle tx    | GET    | `/spaces/:spaceId/transactions/:transactionId`         | Incluye `version`                                   |
-| Editar tx     | PATCH  | `/spaces/:spaceId/transactions/:transactionId`         | `expectedVersion` + cambios; revisión en BD         |
+| Editar tx     | PATCH  | `/spaces/:spaceId/transactions/:transactionId`         | `expectedVersion` + `description`, `occurredAt`, `amount`, `categoryId` (nullable); revisión en BD |
 
 **UI (slice 2 PERSONAL):** transferencia en detalle de cuenta; categorías ver arriba.
 
-**UI (slice 3–4):** archivar cuenta + `?archived=1`; `/spaces/:id/transactions` (historial + filtros); `/spaces/:id/transactions/:txId` (PATCH); `/spaces/:id/expenses/new` (SHARED); categorías en cualquier espacio; nav finanzas en detalle de espacio.
+**UI (slice 3–4):** archivar cuenta + `?archived=1`; `/spaces/:id/transactions` (historial + filtros); `/spaces/:id/transactions/:txId` (PATCH); `/spaces/:id/expenses/individual/new` (gasto individual en SHARED, F-R2.2); categorías en cualquier espacio; nav finanzas en detalle de espacio.
 
-**Gasto individual en SHARED** (`POST .../transactions/expense` con `attributedToUserId`): imputa el gasto a **un** miembro, sin reparto ni deuda. **No es un gasto compartido** (P-14 en [decisions.md](../product/decisions.md)); la web lo presenta hoy como «gasto compartido» (`createSharedExpense`, `/spaces/:id/expenses/new`) y debe renombrarse (F-R2.2). `accountId` opcional; sin cuenta → `displayCurrency` del espacio o `currency` en el body. Atribución: Owner/Admin → cualquier ACTIVE; Member → solo él mismo.
+**Gasto individual en SHARED** (`POST .../transactions/expense` con `attributedToUserId`): imputa el gasto a **un** miembro, sin reparto ni deuda. **No es un gasto compartido** (P-14 en [decisions.md](../product/decisions.md)). UI: `/spaces/:id/expenses/individual/new`. `accountId` opcional; sin cuenta → `displayCurrency` del espacio o `currency` en el body. Atribución: Owner/Admin → cualquier ACTIVE; Member → solo él mismo.
 
-Códigos: `ATTRIBUTION_REQUIRED`, `ATTRIBUTION_NOT_ALLOWED`, `ATTRIBUTEE_NOT_ACTIVE_MEMBER`, `ACCOUNT_REQUIRED`, `CURRENCY_REQUIRED`, `CURRENCY_MISMATCH`, `SAME_ACCOUNT_TRANSFER`, más los de slice 1–2.
+### Errores transversales (validación y concurrencia)
+
+- `VALIDATION_ERROR` (400) — body inválido (`ValidationPipe`); incluye `field` cuando es posible; la web traduce por `code`, no por `message`.
+- `VERSION_CONFLICT` (409) — `expectedVersion` desactualizado en PATCH de transacciones.
+
+Códigos: `ATTRIBUTION_REQUIRED`, `ATTRIBUTION_NOT_ALLOWED`, `ATTRIBUTEE_NOT_ACTIVE_MEMBER`, `ACCOUNT_REQUIRED`, `CURRENCY_REQUIRED`, `CURRENCY_MISMATCH`, `SAME_ACCOUNT_TRANSFER`, `CATEGORY_NOT_FOUND`, `INVALID_CATEGORY_TYPE`, `NO_CHANGES`, más los de slice 1–2.
 
 ## No implementado todavía
 

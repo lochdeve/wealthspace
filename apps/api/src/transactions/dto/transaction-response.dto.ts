@@ -33,8 +33,8 @@ export class FinancialTransactionDto {
   @ApiPropertyOptional({ format: 'uuid' })
   destinationAccountId?: string;
 
-  @ApiPropertyOptional({ format: 'uuid' })
-  categoryId?: string;
+  @ApiPropertyOptional({ format: 'uuid', nullable: true })
+  categoryId?: string | null;
 
   @ApiPropertyOptional({ format: 'uuid' })
   attributedToUserId?: string;

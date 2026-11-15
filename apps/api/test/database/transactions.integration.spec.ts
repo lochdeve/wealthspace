@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import cookieParser from 'cookie-parser';
 import request from 'supertest';
@@ -13,6 +13,7 @@ import {
   withClient,
 } from './helpers';
 import { applyTestApiEnv } from './test-api-env';
+import { createTestValidationPipe } from './test-validation-pipe';
 
 type UserProfileBody = {
   id: string;
@@ -28,6 +29,7 @@ type TxBody = {
   amount: string;
   version?: number;
   description?: string;
+  categoryId?: string | null;
 };
 
 function asCookieSetHeader(setCookie: string | string[] | undefined): string[] {
@@ -51,14 +53,7 @@ describe('Transactions (integration)', () => {
     app = moduleFixture.createNestApplication();
     app.use(cookieParser());
     app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-        transformOptions: { enableImplicitConversion: false },
-      }),
-    );
+    app.useGlobalPipes(createTestValidationPipe());
     setupSwagger(app);
     await app.init();
   });
@@ -369,6 +364,97 @@ describe('Transactions (integration)', () => {
       .expect(409)
       .expect((res) => {
         expect((res.body as { code?: string }).code).toBe('VERSION_CONFLICT');
+      });
+  });
+
+  it('PATCH can set, change and clear categoryId', async () => {
+    const { cookies, profile } = await registerAndLogin('tx-category');
+
+    const incomeCat = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${profile.personalSpaceId}/categories`)
+      .set('Cookie', cookies)
+      .send({ name: 'Salary', type: 'INCOME' })
+      .expect(201);
+
+    const expenseCat = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${profile.personalSpaceId}/categories`)
+      .set('Cookie', cookies)
+      .send({ name: 'Groceries', type: 'EXPENSE' })
+      .expect(201);
+
+    const incomeCategoryId = (incomeCat.body as { id: string }).id;
+    const expenseCategoryId = (expenseCat.body as { id: string }).id;
+    const accountId = await createAccount(cookies, profile.personalSpaceId);
+
+    const createRes = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${profile.personalSpaceId}/transactions/income`)
+      .set('Cookie', cookies)
+      .send({ accountId, amount: '50', categoryId: incomeCategoryId })
+      .expect(201);
+
+    const tx = createRes.body as TxBody & { version: number; id: string };
+    expect(tx.categoryId).toBe(incomeCategoryId);
+
+    const patchRes = await request(app.getHttpServer())
+      .patch(`/api/v1/spaces/${profile.personalSpaceId}/transactions/${tx.id}`)
+      .set('Cookie', cookies)
+      .send({ expectedVersion: tx.version, categoryId: null })
+      .expect(200);
+
+    expect((patchRes.body as TxBody).categoryId).toBeNull();
+
+    const patchExpense = await request(app.getHttpServer())
+      .patch(`/api/v1/spaces/${profile.personalSpaceId}/transactions/${tx.id}`)
+      .set('Cookie', cookies)
+      .send({
+        expectedVersion: (patchRes.body as TxBody & { version: number })
+          .version,
+        categoryId: expenseCategoryId,
+      })
+      .expect(400);
+
+    expect((patchExpense.body as { code?: string }).code).toBe(
+      'INVALID_CATEGORY_TYPE',
+    );
+  });
+
+  it('PATCH categoryId returns 404 for category in another space', async () => {
+    const userA = await registerAndLogin('tx-cat-a');
+    const userB = await registerAndLogin('tx-cat-b');
+
+    const foreignCategory = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${userB.profile.personalSpaceId}/categories`)
+      .set('Cookie', userB.cookies)
+      .send({ name: 'Other', type: 'INCOME' })
+      .expect(201);
+
+    const accountId = await createAccount(
+      userA.cookies,
+      userA.profile.personalSpaceId,
+    );
+
+    const createRes = await request(app.getHttpServer())
+      .post(
+        `/api/v1/spaces/${userA.profile.personalSpaceId}/transactions/income`,
+      )
+      .set('Cookie', userA.cookies)
+      .send({ accountId, amount: '30' })
+      .expect(201);
+
+    const tx = createRes.body as TxBody & { version: number; id: string };
+
+    await request(app.getHttpServer())
+      .patch(
+        `/api/v1/spaces/${userA.profile.personalSpaceId}/transactions/${tx.id}`,
+      )
+      .set('Cookie', userA.cookies)
+      .send({
+        expectedVersion: tx.version,
+        categoryId: (foreignCategory.body as { id: string }).id,
+      })
+      .expect(404)
+      .expect((res) => {
+        expect((res.body as { code?: string }).code).toBe('CATEGORY_NOT_FOUND');
       });
   });
 });

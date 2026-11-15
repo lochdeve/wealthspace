@@ -5,9 +5,11 @@ import {
   IsInt,
   IsOptional,
   IsString,
+  IsUUID,
   Matches,
   MaxLength,
   Min,
+  ValidateIf,
 } from 'class-validator';
 
 export class UpdateTransactionDto {
@@ -44,6 +46,16 @@ export class UpdateTransactionDto {
     message: 'amount must be a decimal with up to 4 fractional digits',
   })
   amount?: string;
+
+  @ApiPropertyOptional({
+    format: 'uuid',
+    nullable: true,
+    description: 'Category of the same space and compatible transaction type',
+  })
+  @IsOptional()
+  @ValidateIf((_dto, value) => value !== null)
+  @IsUUID()
+  categoryId?: string | null;
 
   @ApiPropertyOptional({ description: 'Audit note stored on the revision' })
   @Transform(({ value }: { value: unknown }) =>

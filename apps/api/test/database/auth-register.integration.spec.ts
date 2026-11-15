@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import cookieParser from 'cookie-parser';
 import request from 'supertest';
@@ -14,6 +14,7 @@ import {
   withClient,
 } from './helpers';
 import { applyTestApiEnv } from './test-api-env';
+import { createTestValidationPipe } from './test-validation-pipe';
 
 type RegisterResponseBody = {
   id: string;
@@ -42,14 +43,7 @@ describe('POST /auth/register (integration)', () => {
     app = moduleFixture.createNestApplication();
     app.use(cookieParser());
     app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-        transformOptions: { enableImplicitConversion: false },
-      }),
-    );
+    app.useGlobalPipes(createTestValidationPipe());
     setupSwagger(app);
     await app.init();
   });
@@ -124,6 +118,26 @@ describe('POST /auth/register (integration)', () => {
       .expect(409)
       .expect((r) => {
         expect((r.body as ConflictBody).code).toBe('EMAIL_ALREADY_REGISTERED');
+      });
+  });
+
+  it('returns VALIDATION_ERROR for invalid register DTO', async () => {
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/register')
+      .send({
+        email: 'not-an-email',
+        password: 'short',
+        displayName: '',
+        timezone: 'UTC',
+      })
+      .expect(400)
+      .expect((r) => {
+        const body = r.body as {
+          code?: string;
+          field?: string;
+        };
+        expect(body.code).toBe('VALIDATION_ERROR');
+        expect(body.field).toBeDefined();
       });
   });
 });
