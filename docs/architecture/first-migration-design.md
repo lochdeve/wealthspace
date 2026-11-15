@@ -1,6 +1,8 @@
-# Diseño de la primera migración (no ejecutable)
+# Diseño de la primera migración
 
-Documento de revisión. Migración ejecutable: `apps/api/prisma/migrations/20260328183000_init/`. SQL reutilizable: `apps/api/prisma/sql/custom-integrity.sql`. Esquema Prisma: [`schema.prisma`](../../apps/api/prisma/schema.prisma).
+**Documento de referencia histórico:** describe la migración inicial, que ya está aplicada y en uso. Las reglas vigentes y los cambios previstos se mantienen en [database-design.md](./database-design.md); si ambos documentos difieren, prevalece `database-design.md` junto con `custom-integrity.sql`.
+
+Migración ejecutable: `apps/api/prisma/migrations/20260328183000_init/`. SQL reutilizable: `apps/api/prisma/sql/custom-integrity.sql`. Esquema Prisma: [`schema.prisma`](../../apps/api/prisma/schema.prisma).
 
 **FK compuestas y constraint triggers:** aprobados para MVP. **No** representados en Prisma; **obligatorios** en SQL manual de la primera migración y **reaplicados/revisados** en cada migración posterior (bloque `-- custom integrity`).
 

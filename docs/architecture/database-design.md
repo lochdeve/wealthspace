@@ -1,8 +1,8 @@
 # Diseño de base de datos
 
-PostgreSQL + Prisma 7. Esquema: [`apps/api/prisma/schema.prisma`](../../apps/api/prisma/schema.prisma). Plan migración: [`first-migration-design.md`](./first-migration-design.md).
+PostgreSQL + Prisma 7. Esquema: [`apps/api/prisma/schema.prisma`](../../apps/api/prisma/schema.prisma). Migración inicial aplicada: `apps/api/prisma/migrations/20260328183000_init/` (diseño en [`first-migration-design.md`](./first-migration-design.md)). SQL de integridad: `apps/api/prisma/sql/custom-integrity.sql`.
 
-**No** ejecutar migraciones hasta aprobación explícita.
+**Política de migraciones:** la migración inicial está en uso (`prisma migrate deploy`). **Cualquier migración nueva** (cambio de esquema, de triggers o de CHECK) requiere aprobación explícita de coordinación, con la decisión de producto que la motiva referenciada por ID ([decisions.md](../product/decisions.md)).
 
 ---
 
@@ -26,19 +26,34 @@ PostgreSQL + Prisma 7. Esquema: [`apps/api/prisma/schema.prisma`](../../apps/api
 
 ## Precisión monetaria (ISO 4217)
 
-Almacenamiento 4 decimales; reparto mayor resto; desempate `userId`.
+Almacenamiento `NUMERIC(19,4)`. Los importes de gastos compartidos y sus participaciones se expresan en las unidades menores de la moneda; reparto por mayor resto con desempate por `userId` ascendente ([shared-expenses.md §4](../product/shared-expenses.md#4-reglas-de-reparto)).
 
 ---
 
 ## `FinancialTransaction` — combinaciones válidas
 
-(Véase tabla previa: INCOME, EXPENSE, TRANSFER, OPENING_BALANCE; EXPENSE SHARED sin cuenta; SPACE_ACCOUNT sin atribución en tx.)
+Garantizadas por CHECK `financial_transactions_fields_by_type_check` y el trigger `trg_financial_tx_business_rules`.
+
+| `type`            | `account_id`                            | `source/destination_account_id` | `attributed_to_user_id`                                              | `category_id`  | `amount`  |
+| ----------------- | --------------------------------------- | ------------------------------- | -------------------------------------------------------------------- | -------------- | --------- |
+| `INCOME`          | Obligatoria                             | NULL                            | NULL                                                                 | INCOME o NULL  | > 0       |
+| `EXPENSE`         | PERSONAL: obligatoria; SHARED: opcional | NULL                            | Obligatoria salvo pago `SPACE_ACCOUNT` de un gasto compartido (NULL) | EXPENSE o NULL | > 0       |
+| `TRANSFER`        | NULL                                    | Ambas, distintas, mismo espacio | NULL                                                                 | NULL           | > 0       |
+| `OPENING_BALANCE` | Obligatoria                             | NULL                            | NULL                                                                 | NULL           | Con signo |
+
+`EXPENSE` sin atribución solo es válido emparejado con un `SharedExpense` `SPACE_ACCOUNT` (trigger diferido, reglas P1–P5 de la sección siguiente).
 
 ---
 
 ## SPACE_ACCOUNT — integridad diferida
 
-Orden insert: tx → shared → participantes. Validación al **commit** vía `ctrg_validate_space_account_pairing` (INITIALLY DEFERRED). Reglas P1–P5 sin cambio semántico.
+Orden insert: tx → shared → participantes. Validación al **commit** vía `ctrg_validate_space_account_pairing` (INITIALLY DEFERRED):
+
+- **P1** — Todo `EXPENSE` sin `attributed_to_user_id` está vinculado a un `SharedExpense` `SPACE_ACCOUNT`.
+- **P2** — Todo `SharedExpense` `SPACE_ACCOUNT` tiene `financial_transaction_id` y no tiene `paid_by_user_id`.
+- **P3** — El movimiento vinculado es `EXPENSE`, con cuenta, sin atribución, del mismo espacio, misma moneda e igual importe que el gasto.
+- **P4** — Ningún movimiento vinculado a un gasto compartido tiene atribución.
+- **P5** — `CASH` / `EXTERNAL_PERSONAL` tienen `paid_by_user_id` y no tienen movimiento vinculado (CHECK `shared_expenses_payment_source_check`).
 
 ---
 
@@ -72,7 +87,7 @@ Triggers `BEFORE UPDATE` en `accounts`, `categories`, `spaces` impiden cambios d
 
 ## `SharedExpense` — reparto
 
-App: splitMode, %, redondeo, ≥2 participantes (obligatorio).
+App: splitMode, %, redondeo, ≥2 participantes (obligatorio). Reglas funcionales: [shared-expenses.md](../product/shared-expenses.md). El mínimo de participantes puede cambiar (P-15).
 
 **BD (MVP):** `ctrg_validate_shared_expense_participants` DEFERRABLE INITIALLY DEFERRED:
 
@@ -97,6 +112,8 @@ Aplicar a **`from_user_id`** y **`to_user_id`**. Válido aunque hoy estén LEFT/
 
 **No** exigir membresía ACTIVE en el momento del registro si `occurredAt` es pasado y el intervalo histórico lo permite.
 
+**Limitación conocida:** con esta regla, una deuda de un miembro que ya salió no puede saldarse con fecha posterior a su salida. Cambio propuesto en P-19 ([decisions.md](../product/decisions.md)).
+
 **Auditoría:** `recordedByUserId`, `createdAt`/`updatedAt` registran quién y cuándo se introduce la fila; no sustituyen la validación temporal.
 
 ---
@@ -109,7 +126,25 @@ Algoritmo sin `SELECT FOR UPDATE`: UPDATE condicional por `version`, snapshot pr
 
 ## Presupuestos y monedas
 
-Consumo solo movimientos con `currency = budget.currency`; sin FX.
+Consumo solo movimientos con `currency = budget.currency`; sin FX. Qué cuenta como consumo en presupuestos personales y compartidos: **PENDIENTE DE DECISIÓN** (P-17).
+
+---
+
+## Cambios de esquema previstos (no aprobados)
+
+Necesarios para las decisiones aprobadas A-05 (anulación) y para las recomendaciones pendientes. **No ejecutar** hasta que coordinación apruebe la decisión y la migración.
+
+| Cambio                                                                                                                                  | Motivo                 | Fase  |
+| --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ----- |
+| Anulación lógica (`voided_at`, `voided_by_user_id`) en `shared_expenses` y `settlements`; excluir anulados del trigger de participantes | A-05, P-13             | 6 / 7 |
+| Sustituir `settlements.status` por la anulación lógica                                                                                  | P-12                   | 7     |
+| Unificar `CASH` / `EXTERNAL_PERSONAL` en un único origen «miembro»                                                                      | P-03                   | 6     |
+| Relajar el mínimo de participantes a «≥1 distinto del pagador» (trigger diferido)                                                       | P-15                   | 6     |
+| Relajar la validación temporal de liquidaciones para ex-miembros                                                                        | P-19                   | 7     |
+| Anulación lógica de `financial_transactions`                                                                                            | P-13                   | 6+    |
+| Vínculo entre espacios (movimiento personal ↔ gasto, aportación o liquidación); aportante en entradas de cuentas compartidas           | P-02, P-05, P-06, P-07 | 8     |
+
+Cada cambio se acompaña de: SQL de integridad actualizado en `custom-integrity.sql`, tests en `test/database/` y actualización de este documento.
 
 ---
 
@@ -146,10 +181,10 @@ Consumo solo movimientos con `currency = budget.currency`; sin FX.
 ## Prisma 7
 
 ```bash
-DATABASE_URL=postgresql://... npx prisma validate
+DATABASE_URL=postgresql://... pnpm --filter @wealthspace/api prisma:validate
 ```
 
-Sin `migrate` / `db push` hasta aprobación.
+Nunca `db push`. Nuevas migraciones con `migrate dev --create-only`, revisión del SQL de integridad y aprobación previa (ver política al inicio).
 
 ---
 
