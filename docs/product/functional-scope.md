@@ -31,15 +31,15 @@ Fuente: [spaces-membership-mvp.md](./spaces-membership-mvp.md).
 
 Fuente: [domain-model.md §3.2](./domain-model.md#32-cuentas-y-movimientos-implementado).
 
-| Requisito                                                                  | Estado                           |
-| -------------------------------------------------------------------------- | -------------------------------- |
-| Cuentas por espacio (crear, listar, detalle con saldo on-read, archivar)   | 🟡 API ✅; web en rama sin merge |
-| Categorías INCOME/EXPENSE                                                  | 🟡 ídem                          |
-| Saldo inicial, ingreso, gasto, transferencia en el mismo espacio           | 🟡 ídem                          |
-| Listado y detalle de movimientos; edición con `expectedVersion` y revisión | 🟡 ídem                          |
-| Gasto individual atribuido en SHARED (B-08)                                | 🟡 ídem; congelado (P-14)        |
-| Anulación de movimientos                                                   | ⬜ (P-13)                        |
-| Renombrar cuenta o categoría; paginación real                              | ⬜ (no priorizado)               |
+| Requisito                                                                  | Estado                    |
+| -------------------------------------------------------------------------- | ------------------------- |
+| Cuentas por espacio (crear, listar, detalle con saldo on-read, archivar)   | ✅                        |
+| Categorías INCOME/EXPENSE                                                  | 🟡 ídem                   |
+| Saldo inicial, ingreso, gasto, transferencia en el mismo espacio           | 🟡 ídem                   |
+| Listado y detalle de movimientos; edición con `expectedVersion` y revisión | 🟡 ídem                   |
+| Gasto individual atribuido en SHARED (B-08)                                | 🟡 ídem; congelado (P-14) |
+| Anulación de movimientos                                                   | ⬜ (P-13)                 |
+| Renombrar cuenta o categoría; paginación real                              | ⬜ (no priorizado)        |
 
 ### Gastos en un espacio compartido
 

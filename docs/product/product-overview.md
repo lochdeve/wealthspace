@@ -29,7 +29,7 @@ Compartir un espacio **no** implica tener una cuenta bancaria conjunta. Un espac
 | ----------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | Registro, sesión y espacio personal                               | Implementado                                                               |
 | Espacios compartidos, invitaciones y membresía                    | Implementado (transferencia de ownership pendiente)                        |
-| Cuentas, categorías, ingresos, gastos y transferencias            | Implementado (web pendiente de merge)                                      |
+| Cuentas, categorías, ingresos, gastos y transferencias            | Implementado                                                               |
 | Gastos compartidos con reparto igual, % o importes                | Especificado ([shared-expenses.md](./shared-expenses.md)); no implementado |
 | Deudas y liquidaciones                                            | Especificado; no implementado                                              |
 | Cuentas personales vinculadas a gastos compartidos y aportaciones | En análisis ([accounts-model.md](./accounts-model.md))                     |

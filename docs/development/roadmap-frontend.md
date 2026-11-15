@@ -8,12 +8,12 @@ Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · 
 
 ## Hecho (fases 3–5)
 
-| Área     | Implementado                                                                                                                                                                               | Rama                                    |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------- |
-| Auth     | `/login`, `/register`, layout protegido `(app)`, logout                                                                                                                                    | `main`                                  |
-| Espacios | `/spaces`, `/spaces/new`, `/spaces/[id]` (miembros, invitaciones, leave/remove), `/invitations`, selector de espacio activo                                                                | `main`                                  |
-| Finanzas | `/accounts`, `/spaces/[id]/accounts` (+ `new`, `[accountId]`), categorías, `/spaces/[id]/transactions` (+ detalle con edición), transferencias, saldo inicial, `/spaces/[id]/expenses/new` | `feat/web-phase-5-accounts` (sin merge) |
-| Tests    | Vitest para helpers (`lib/api`, `lib/spaces`, `lib/finance`); Playwright `e2e/auth.spec.ts`, `e2e/home.spec.ts` (fuera de la CI)                                                           | —                                       |
+| Área     | Implementado                                                                                                                                                                               | Rama   |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| Auth     | `/login`, `/register`, layout protegido `(app)`, logout                                                                                                                                    | `main` |
+| Espacios | `/spaces`, `/spaces/new`, `/spaces/[id]` (miembros, invitaciones, leave/remove), `/invitations`, selector de espacio activo                                                                | `main` |
+| Finanzas | `/accounts`, `/spaces/[id]/accounts` (+ `new`, `[accountId]`), categorías, `/spaces/[id]/transactions` (+ detalle con edición), transferencias, saldo inicial, `/spaces/[id]/expenses/new` | `main` |
+| Tests    | Vitest para helpers (`lib/api`, `lib/spaces`, `lib/finance`); Playwright `e2e/auth.spec.ts`, `e2e/home.spec.ts` (fuera de la CI)                                                           | —      |
 
 `/dashboard` redirige a `/spaces`; no hay dashboard financiero.
 
@@ -21,10 +21,10 @@ Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · 
 
 ## F-R2 — 🔧 Alineación de la fase 5 (puede empezar ya)
 
-| Entrega | Contenido                                                                                                                                                                                                                  | Aceptación                                                                                  |
-| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| F-R2.1  | Cerrar los cambios en curso (selector de categorías), PR y merge de `feat/web-phase-5-accounts`                                                                                                                            | `main` con la fase 5; CI en verde                                                           |
-| F-R2.2  | Renombrar el formulario actual de gasto en SHARED a «Gasto individual» (UI, `RecordSharedExpenseForm` → nombre neutro, `createSharedExpense` → `createAttributedExpense` o similar) y quitarlo del acceso principal (P-14) | Ningún texto ni identificador llama «compartido» a un gasto sin reparto; tests actualizados |
+| Entrega   | Contenido                                                                                                                                                                                                                  | Aceptación                                                                                  |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| F-R2.1 ✅ | Cerrar los cambios en curso (selector de categorías), PR y merge de `feat/web-phase-5-accounts`                                                                                                                            | `main` con la fase 5; CI en verde                                                           |
+| F-R2.2    | Renombrar el formulario actual de gasto en SHARED a «Gasto individual» (UI, `RecordSharedExpenseForm` → nombre neutro, `createSharedExpense` → `createAttributedExpense` o similar) y quitarlo del acceso principal (P-14) | Ningún texto ni identificador llama «compartido» a un gasto sin reparto; tests actualizados |
 
 ## F-6 — ✨ Gastos compartidos ⛔ (B-6.2+)
 

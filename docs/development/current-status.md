@@ -6,12 +6,11 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 ## Repositorio
 
-| Elemento                    | Estado                                                                                                                    |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `main`                      | Fases 0–4 completas + API de la fase 5. Sincronizada con `origin/main`.                                                   |
-| `feat/web-phase-5-accounts` | Web de la fase 5 (3 commits por delante de `main`) + cambios sin commitear del chat de frontend (selector de categorías). |
-| `feat/api-phase-5-accounts` | Rama local ya integrada en `main`.                                                                                        |
-| CI                          | `quality` (formato, lint, typecheck, tests unitarios, cobertura, build) y `database-integrity`. Sin E2E.                  |
+| Elemento         | Estado                                                                                                                                                           |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `main`           | Fases 0–5 completas (API y web, con el selector de categorías) + documentación del nuevo modelo. Por delante de `origin/main`; **push pendiente de aprobación**. |
+| Ramas de trabajo | Ninguna abierta (`feat/api-phase-5-accounts` y `feat/web-phase-5-accounts` integradas y borradas).                                                               |
+| CI               | `quality` (formato, lint, typecheck, tests unitarios, cobertura, build) y `database-integrity`. Sin E2E.                                                         |
 
 ## Por área
 
@@ -19,7 +18,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | ----------------------- | ----------------- | ------------------------------------------------------------------ |
 | Auth                    | ✅                | ✅                                                                 |
 | Espacios y membresía    | ✅ (sin 4.1/4.2)  | ✅                                                                 |
-| Cuentas y movimientos   | ✅                | 🟡 en rama, pendiente de merge                                     |
+| Cuentas y movimientos   | ✅                | ✅                                                                 |
 | Gastos compartidos      | ⬜ (solo esquema) | ⬜ (el «gasto compartido» actual es un gasto individual atribuido) |
 | Deudas y liquidaciones  | ⬜ (solo esquema) | ⬜                                                                 |
 | Presupuestos e informes | ⬜                | ⬜                                                                 |
@@ -34,7 +33,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Chat         | Tarea                                                                                                                           | Bloqueos                              |
 | ------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
 | Coordinación | **R1**: obtener la aprobación de P-03, P-04, P-08, P-09, P-13, P-14, P-15 y P-16 (fase 6) y de P-10, P-11, P-12 y P-19 (fase 7) | Respuesta del responsable de producto |
-| Frontend     | **F-R2.1** merge de la web de la fase 5 → **F-R2.2** renombrar a «Gasto individual»                                             | Ninguno                               |
+| Frontend     | **F-R2.2** renombrar a «Gasto individual» (F-R2.1 hecho: fase 5 web en `main`)                                                  | Ninguno                               |
 | Backend      | **B-R1**: borrador de la migración de la fase 6 (sin aplicar) y análisis de coste de P-03/P-13/P-15/P-19. Opcional: **B-4.1**   | La migración solo se aplica tras R1   |
 
 ## Notas operativas
