@@ -71,7 +71,7 @@ export default async function SpaceDetailPage({ params }: PageProps) {
 
       <div className={styles.section}>
         <h2 className={styles.sectionHeading}>Finanzas</h2>
-        <SpaceFinanceNav spaceId={spaceId} spaceType={space.type} />
+        <SpaceFinanceNav spaceId={spaceId} />
       </div>
 
       {isShared ? (

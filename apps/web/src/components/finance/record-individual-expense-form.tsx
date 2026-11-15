@@ -3,7 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 import type { Account, Category } from '@/lib/api/finance-types';
-import { createSharedExpense } from '@/lib/api/transactions';
+import { ApiError } from '@/lib/api/errors';
+import { createAttributedExpense } from '@/lib/api/transactions';
 import { financeActionErrorMessage } from '@/lib/finance/finance-messages';
 import { canPickAttributionFor } from '@/lib/finance/attribution';
 import { isPositiveAmount, normalizeAmountInput } from '@/lib/finance/amount';
@@ -22,7 +23,7 @@ type MemberOption = {
   role: MembershipRole;
 };
 
-type RecordSharedExpenseFormProps = {
+type RecordIndividualExpenseFormProps = {
   spaceId: string;
   currentUserId: string;
   actorRole: MembershipRole;
@@ -30,9 +31,22 @@ type RecordSharedExpenseFormProps = {
   accounts: Account[];
   categories: Category[];
   displayCurrency: string | null;
+  defaultAccountId?: string;
 };
 
-export function RecordSharedExpenseForm({
+type FieldName = 'attributed' | 'account' | 'amount' | 'currency';
+
+const FIELD_BY_ERROR_CODE: Record<string, FieldName> = {
+  ATTRIBUTION_REQUIRED: 'attributed',
+  ATTRIBUTION_NOT_ALLOWED: 'attributed',
+  ATTRIBUTEE_NOT_ACTIVE_MEMBER: 'attributed',
+  ACCOUNT_NOT_FOUND: 'account',
+  ACCOUNT_ARCHIVED: 'account',
+  INVALID_AMOUNT: 'amount',
+  CURRENCY_REQUIRED: 'currency',
+};
+
+export function RecordIndividualExpenseForm({
   spaceId,
   currentUserId,
   actorRole,
@@ -40,7 +54,8 @@ export function RecordSharedExpenseForm({
   accounts,
   categories,
   displayCurrency,
-}: RecordSharedExpenseFormProps) {
+  defaultAccountId,
+}: RecordIndividualExpenseFormProps) {
   const router = useRouter();
   const attributionOptions = members.filter((member) =>
     canPickAttributionFor(actorRole, currentUserId, member.userId),
@@ -49,14 +64,18 @@ export function RecordSharedExpenseForm({
     attributionOptions.find((m) => m.userId === currentUserId)?.userId ??
     attributionOptions[0]?.userId ??
     '';
+  const activeAccounts = accounts.filter((row) => !row.archivedAt);
+  const initialAccountId = activeAccounts.some((row) => row.id === defaultAccountId)
+    ? (defaultAccountId ?? '')
+    : '';
 
   const [attributedToUserId, setAttributedToUserId] = useState(defaultAttributed);
-  const [accountId, setAccountId] = useState('');
+  const [accountId, setAccountId] = useState(initialAccountId);
   const [currency, setCurrency] = useState(displayCurrency ?? 'EUR');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldName, string>>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -66,9 +85,9 @@ export function RecordSharedExpenseForm({
     event.preventDefault();
     setFormError(null);
     const normalized = normalizeAmountInput(amount);
-    const errors: Record<string, string> = {};
+    const errors: Partial<Record<FieldName, string>> = {};
     if (!attributedToUserId) {
-      errors.attributed = 'Selecciona la atribución.';
+      errors.attributed = 'Indica de quién es el gasto.';
     }
     if (!isPositiveAmount(normalized)) {
       errors.amount = 'Importe positivo con hasta 4 decimales.';
@@ -83,7 +102,7 @@ export function RecordSharedExpenseForm({
 
     setPending(true);
     try {
-      await createSharedExpense(spaceId, {
+      await createAttributedExpense(spaceId, {
         amount: normalized,
         attributedToUserId,
         accountId: accountId || undefined,
@@ -91,10 +110,17 @@ export function RecordSharedExpenseForm({
         description: description.trim() || undefined,
         categoryId: categoryId || undefined,
       });
-      router.push(`/spaces/${spaceId}`);
+      router.push(`/spaces/${spaceId}/transactions`);
       router.refresh();
     } catch (error) {
-      setFormError(financeActionErrorMessage(error));
+      const message = financeActionErrorMessage(error);
+      const field =
+        error instanceof ApiError && error.code ? FIELD_BY_ERROR_CODE[error.code] : undefined;
+      if (field) {
+        setFieldErrors({ [field]: message });
+      } else {
+        setFormError(message);
+      }
     } finally {
       setPending(false);
     }
@@ -107,13 +133,22 @@ export function RecordSharedExpenseForm({
           {formError}
         </p>
       ) : null}
-      <Field id="shared-attributed" label="Atribuido a" error={fieldErrors.attributed}>
+      <Field
+        id="individual-attributed"
+        label="Atribuido a"
+        hint="El gasto cuenta solo para esta persona."
+        error={fieldErrors.attributed}
+      >
         <select
-          id="shared-attributed"
+          id="individual-attributed"
           className={styles.selectNative}
           value={attributedToUserId}
           onChange={(event) => setAttributedToUserId(event.target.value)}
           disabled={pending || attributionOptions.length <= 1}
+          aria-invalid={Boolean(fieldErrors.attributed) || undefined}
+          aria-describedby={
+            fieldErrors.attributed ? 'individual-attributed-error' : 'individual-attributed-hint'
+          }
         >
           {attributionOptions.map((member) => (
             <option key={member.userId} value={member.userId}>
@@ -122,28 +157,28 @@ export function RecordSharedExpenseForm({
           ))}
         </select>
       </Field>
-      <Field id="shared-account" label="Cuenta (opcional)">
+      <Field id="individual-account" label="Cuenta (opcional)" error={fieldErrors.account}>
         <select
-          id="shared-account"
+          id="individual-account"
           className={styles.selectNative}
           value={accountId}
           onChange={(event) => setAccountId(event.target.value)}
           disabled={pending}
+          aria-invalid={Boolean(fieldErrors.account) || undefined}
+          aria-describedby={fieldErrors.account ? 'individual-account-error' : undefined}
         >
           <option value="">Sin cuenta — no mueve saldo</option>
-          {accounts
-            .filter((row) => !row.archivedAt)
-            .map((account) => (
-              <option key={account.id} value={account.id}>
-                {account.name} ({account.currency})
-              </option>
-            ))}
+          {activeAccounts.map((account) => (
+            <option key={account.id} value={account.id}>
+              {account.name} ({account.currency})
+            </option>
+          ))}
         </select>
       </Field>
       {showCurrencyField ? (
-        <Field id="shared-currency" label="Moneda" error={fieldErrors.currency}>
+        <Field id="individual-currency" label="Moneda" error={fieldErrors.currency}>
           <TextInput
-            id="shared-currency"
+            id="individual-currency"
             value={currency}
             onChange={(event) => setCurrency(event.target.value)}
             hasError={Boolean(fieldErrors.currency)}
@@ -152,9 +187,9 @@ export function RecordSharedExpenseForm({
           />
         </Field>
       ) : null}
-      <Field id="shared-amount" label="Importe" error={fieldErrors.amount}>
+      <Field id="individual-amount" label="Importe" error={fieldErrors.amount}>
         <TextInput
-          id="shared-amount"
+          id="individual-amount"
           inputMode="decimal"
           value={amount}
           onChange={(event) => setAmount(event.target.value)}
@@ -164,7 +199,7 @@ export function RecordSharedExpenseForm({
         />
       </Field>
       <CategorySelectField
-        id="shared-category"
+        id="individual-category"
         spaceId={spaceId}
         categories={categories}
         categoryType="EXPENSE"
@@ -172,16 +207,16 @@ export function RecordSharedExpenseForm({
         onChange={setCategoryId}
         disabled={pending}
       />
-      <Field id="shared-description" label="Concepto (opcional)">
+      <Field id="individual-description" label="Concepto (opcional)">
         <TextInput
-          id="shared-description"
+          id="individual-description"
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           disabled={pending}
         />
       </Field>
       <Button type="submit" disabled={pending}>
-        {pending ? 'Guardando…' : 'Registrar gasto'}
+        {pending ? 'Guardando…' : 'Registrar gasto individual'}
       </Button>
     </form>
   );

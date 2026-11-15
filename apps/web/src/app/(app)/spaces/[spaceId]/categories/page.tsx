@@ -42,8 +42,7 @@ export default async function SpaceCategoriesPage({ params }: PageProps) {
             Categorías
           </h1>
           <p className={styles.lead}>
-            Créalas aquí y elige la categoría al registrar ingresos, gastos o gastos compartidos en
-            una cuenta.
+            Créalas aquí y elige la categoría al registrar ingresos o gastos.
           </p>
         </div>
         <nav className={styles.pageHeaderActions} aria-label="Acciones">

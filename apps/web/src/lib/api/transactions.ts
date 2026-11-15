@@ -1,10 +1,10 @@
 import { apiRequest } from '@/lib/api/client';
 import { toQueryString } from '@/lib/api/query';
 import type {
+  CreateAttributedExpenseInput,
   CreateExpenseInput,
   CreateIncomeInput,
   CreateOpeningBalanceInput,
-  CreateSharedExpenseInput,
   CreateTransferInput,
   FinancialTransaction,
   ListTransactionsQuery,
@@ -113,9 +113,9 @@ export function updateTransaction(
   });
 }
 
-export function createSharedExpense(
+export function createAttributedExpense(
   spaceId: string,
-  data: CreateSharedExpenseInput,
+  data: CreateAttributedExpenseInput,
 ): Promise<FinancialTransaction> {
   return apiRequest<FinancialTransaction>(`/spaces/${spaceId}/transactions/expense`, {
     method: 'POST',

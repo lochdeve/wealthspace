@@ -13,6 +13,7 @@ import { RecordCashflowForm } from '@/components/finance/record-cashflow-form';
 import { ArchiveAccountButton } from '@/components/finance/archive-account-button';
 import { RecordTransferForm } from '@/components/finance/record-transfer-form';
 import { formatMoneyAmount } from '@/lib/finance/format-money';
+import { individualExpenseHref } from '@/lib/finance/routes';
 import { SyncActiveSpace } from '@/components/spaces/sync-active-space';
 import styles from '@/app/(app)/app-pages.module.css';
 import financeStyles from '@/components/finance/finance-forms.module.css';
@@ -100,12 +101,29 @@ export default async function AccountDetailPage({ params }: PageProps) {
             kind="INCOME"
             categories={incomeCategories}
           />
-          <RecordCashflowForm
-            spaceId={spaceId}
-            accountId={accountId}
-            kind="EXPENSE"
-            categories={expenseCategories}
-          />
+          {space.type === 'SHARED' ? (
+            <section className={financeStyles.form} aria-labelledby="account-expense-title">
+              <h3 id="account-expense-title" className={financeStyles.sectionTitle}>
+                Registrar gasto
+              </h3>
+              <p className={financeStyles.meta}>
+                En un espacio compartido, el gasto se imputa a una persona como «Gasto individual» y
+                descuenta el saldo de esta cuenta.
+              </p>
+              <p>
+                <Link href={individualExpenseHref(spaceId, accountId)}>
+                  Registrar gasto individual con esta cuenta
+                </Link>
+              </p>
+            </section>
+          ) : (
+            <RecordCashflowForm
+              spaceId={spaceId}
+              accountId={accountId}
+              kind="EXPENSE"
+              categories={expenseCategories}
+            />
+          )}
           <RecordTransferForm
             spaceId={spaceId}
             sourceAccount={account}

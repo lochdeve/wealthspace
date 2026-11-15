@@ -80,7 +80,8 @@ export type CreateTransferInput = {
   occurredAt?: string;
 };
 
-export type CreateSharedExpenseInput = {
+/** EXPENSE attributed to a single member in a SHARED space (no split, no debt — P-14). */
+export type CreateAttributedExpenseInput = {
   amount: string;
   attributedToUserId: string;
   accountId?: string;

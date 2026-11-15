@@ -5,6 +5,7 @@ import { ApiError } from '@/lib/api/errors';
 import type { TransactionType } from '@/lib/api/finance-types';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { listTransactionsWithCookie } from '@/lib/api/transactions';
+import { individualExpenseHref } from '@/lib/finance/routes';
 import { SpaceTransactionsPanel } from '@/components/finance/space-transactions-panel';
 import { SyncActiveSpace } from '@/components/spaces/sync-active-space';
 import styles from '@/app/(app)/app-pages.module.css';
@@ -56,6 +57,9 @@ export default async function SpaceTransactionsPage({ params, searchParams }: Pa
           <p className={styles.lead}>{space.name}</p>
         </div>
         <nav className={styles.pageHeaderActions} aria-label="Acciones">
+          {space.type === 'SHARED' ? (
+            <Link href={individualExpenseHref(spaceId)}>Registrar gasto individual</Link>
+          ) : null}
           <Link href={`/spaces/${spaceId}/accounts`}>Cuentas</Link>
           <Link href={`/spaces/${spaceId}`}>← Espacio</Link>
         </nav>

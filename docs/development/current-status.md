@@ -34,7 +34,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Chat         | Tarea                                                                                                                                                                         | Bloqueos                                                    |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
 | Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19. Revisar el borrador de la migración de la fase 6 cuando llegue                                                              | Respuesta del responsable de producto                       |
-| Frontend     | **F-R2.2** «Gasto individual» + arreglo del gasto en cuentas SHARED (C-01); después F-R2.3–F-R2.5                                                                             | Ninguno                                                     |
+| Frontend     | **F-R2.3** errores por `code` y copy de leave (F-R2.2 + C-01 hechos en `fix/web-individual-expense`, merge pendiente); después F-R2.4–F-R2.5                                  | Ninguno                                                     |
 | Backend      | **B-6.1** función pura de reparto + **B-6.0** borrador de la migración de la fase 6 (sin aplicar); después **B-R1** (C-02, C-03, catálogo) y B-6.2–B-6.5. Opcional: **B-4.1** | Aplicar la migración requiere la aprobación de coordinación |
 
 ## Notas operativas
