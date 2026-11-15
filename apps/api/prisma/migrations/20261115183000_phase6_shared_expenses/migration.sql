@@ -1,4 +1,4 @@
--- B-6.0 draft (fase 6): P-03 MEMBER, P-13 void, P-15 participantes. Do not apply without coordination approval.
+-- B-6.0 (fase 6): P-03 MEMBER, P-13 void (opción B), P-15 participantes. Aprobada por coordinación 2026-11-15.
 -- After apply: sync manual integrity in prisma/sql/custom-integrity.sql (source of truth).
 
 -- PaymentSource: MEMBER replaces CASH / EXTERNAL_PERSONAL

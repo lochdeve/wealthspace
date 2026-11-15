@@ -92,14 +92,14 @@ Disponible en `main` (Fase 5 API). Membresía **ACTIVE** en el espacio (mismo gu
 
 ### Transacciones
 
-| Recurso       | Método | Ruta                                                   | Notas                                               |
-| ------------- | ------ | ------------------------------------------------------ | --------------------------------------------------- |
-| Saldo inicial | POST   | `/spaces/:spaceId/accounts/:accountId/opening-balance` | Una por cuenta                                      |
-| Ingreso       | POST   | `/spaces/:spaceId/transactions/income`                 | `accountId` obligatorio (PERSONAL y SHARED)         |
-| Gasto         | POST   | `/spaces/:spaceId/transactions/expense`                | PERSONAL: `accountId`; SHARED: `attributedToUserId` |
-| Transferencia | POST   | `/spaces/:spaceId/transactions/transfer`               | Misma moneda; cuentas distintas                     |
-| Listar txs    | GET    | `/spaces/:spaceId/transactions`                        | `accountId`, `type`, `limit` (≤100)                 |
-| Detalle tx    | GET    | `/spaces/:spaceId/transactions/:transactionId`         | Incluye `version`                                   |
+| Recurso       | Método | Ruta                                                   | Notas                                                                                              |
+| ------------- | ------ | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| Saldo inicial | POST   | `/spaces/:spaceId/accounts/:accountId/opening-balance` | Una por cuenta                                                                                     |
+| Ingreso       | POST   | `/spaces/:spaceId/transactions/income`                 | `accountId` obligatorio (PERSONAL y SHARED)                                                        |
+| Gasto         | POST   | `/spaces/:spaceId/transactions/expense`                | PERSONAL: `accountId`; SHARED: `attributedToUserId`                                                |
+| Transferencia | POST   | `/spaces/:spaceId/transactions/transfer`               | Misma moneda; cuentas distintas                                                                    |
+| Listar txs    | GET    | `/spaces/:spaceId/transactions`                        | `accountId`, `type`, `limit` (≤100)                                                                |
+| Detalle tx    | GET    | `/spaces/:spaceId/transactions/:transactionId`         | Incluye `version`                                                                                  |
 | Editar tx     | PATCH  | `/spaces/:spaceId/transactions/:transactionId`         | `expectedVersion` + `description`, `occurredAt`, `amount`, `categoryId` (nullable); revisión en BD |
 
 **UI (slice 2 PERSONAL):** transferencia en detalle de cuenta; categorías ver arriba.

@@ -134,6 +134,8 @@ Consumo solo movimientos con `currency = budget.currency`; sin FX. Qué cuenta c
 
 La columna **Decisión** indica si la regla de producto está aprobada. En todos los casos, **la migración concreta** necesita revisión y aprobación explícita de coordinación antes de aplicarse.
 
+**Migración fase 6 aprobada (2026-11-15):** `20261115183000_phase6_shared_expenses` — `MEMBER`, void en `shared_expenses` y `financial_transactions`, trigger P-15 y emparejamiento `SPACE_ACCOUNT` con parejas anuladas (validación solo si ambos `voided_at` son NULL). `prisma/sql/custom-integrity.sql` sincronizado para `test:db`.
+
 | Cambio                                                                                                                                                                                                                                                                                               | Motivo                 | Decisión  | Fase |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | --------- | ---- |
 | Anulación lógica (`voided_at`, `voided_by_user_id`) en `shared_expenses`; un gasto anulado no se edita                                                                                                                                                                                               | A-05, P-13             | Aprobada  | 6    |

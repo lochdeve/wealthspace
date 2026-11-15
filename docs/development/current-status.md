@@ -31,11 +31,11 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 ## Siguiente tarea por chat
 
-| Chat         | Tarea                                                                                                                                                                         | Bloqueos                                                    |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19. Revisar el borrador de la migración de la fase 6 cuando llegue                                                              | Respuesta del responsable de producto                       |
-| Frontend     | **F-R2.4** UX sobre contratos existentes en `main` local (F-R2.2–F-R2.3 integradas; C-03 espera a B-R1.2)                                                                     | Ninguno                                                     |
-| Backend      | **B-6.2–B-6.5** (gastos compartidos API) tras **aprobación** del borrador B-6.0 por coordinación. Hecho en local: B-6.1, B-R1, borrador B-6.0. Opcional: **B-4.1** | No aplicar migración fase 6 hasta aprobación explícita |
+| Chat         | Tarea                                                                                                                                                      | Bloqueos                              |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19                                                                                                           | Respuesta del responsable de producto |
+| Frontend     | **F-R2.4** UX sobre contratos existentes en `main` local (F-R2.2–F-R2.3 integradas; C-03 espera a B-R1.2)                                                  | Ninguno                               |
+| Backend      | **Aplicar** migración `20261115183000_phase6_shared_expenses` (aprobada 2026-11-15); luego **B-6.2–B-6.5**. B-6.1 y B-R1 ya en local si no están en `main` | Ninguno para B-6.0                    |
 
 ## Notas operativas
 
