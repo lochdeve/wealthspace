@@ -1,4 +1,4 @@
-// Wealthspace — esquema MVP (sin migraciones aplicadas).
+// Wealthspace — esquema MVP. Migración inicial aplicada; cambios de fase vía migraciones aprobadas.
 // Integridad SQL (FK compuestas, triggers deferidos INITIALLY DEFERRED): docs/architecture/database-design.md
 // Plan primera migración — SQL manual obligatorio en cada migrate: docs/architecture/first-migration-design.md
 
@@ -42,8 +42,7 @@ enum CategoryType {
 
 enum PaymentSource {
   SPACE_ACCOUNT
-  CASH
-  EXTERNAL_PERSONAL
+  MEMBER
 }
 
 enum SplitMode {
@@ -88,6 +87,8 @@ model User {
   settlementsFrom          Settlement[]           @relation("SettlementFrom")
   settlementsTo            Settlement[]           @relation("SettlementTo")
   financialRevisions       FinancialRevision[]    @relation("RevisionAuthor")
+  voidedTransactions       FinancialTransaction[] @relation("TransactionVoidedBy")
+  voidedSharedExpenses     SharedExpense[]        @relation("SharedExpenseVoidedBy")
 
   @@map("users")
 }
@@ -228,11 +229,14 @@ model FinancialTransaction {
   destinationAccountId String?         @map("destination_account_id") @db.Uuid
   categoryId           String?         @map("category_id") @db.Uuid
   version              Int             @default(1)
+  voidedAt             DateTime?       @map("voided_at") @db.Timestamptz(6)
+  voidedByUserId       String?         @map("voided_by_user_id") @db.Uuid
   createdAt            DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt            DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   space        Space     @relation(fields: [spaceId], references: [id], onDelete: Restrict)
   recordedBy   User      @relation("TransactionRecorder", fields: [recordedByUserId], references: [id], onDelete: Restrict)
+  voidedBy     User?     @relation("TransactionVoidedBy", fields: [voidedByUserId], references: [id], onDelete: Restrict)
   attributedTo User?     @relation("TransactionAttributed", fields: [attributedToUserId], references: [id], onDelete: Restrict)
   account            Account?  @relation("TransactionAccount", fields: [accountId], references: [id], onDelete: Restrict)
   sourceAccount      Account?  @relation("TransferSource", fields: [sourceAccountId], references: [id], onDelete: Restrict)
@@ -263,12 +267,15 @@ model SharedExpense {
   financialTransactionId String?       @unique @map("financial_transaction_id") @db.Uuid
   categoryId             String?       @map("category_id") @db.Uuid
   version                Int           @default(1)
+  voidedAt               DateTime?     @map("voided_at") @db.Timestamptz(6)
+  voidedByUserId         String?       @map("voided_by_user_id") @db.Uuid
   createdAt              DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt              DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   space                Space                 @relation(fields: [spaceId], references: [id], onDelete: Restrict)
   recordedBy           User                  @relation("SharedExpenseRecorder", fields: [recordedByUserId], references: [id], onDelete: Restrict)
   paidBy               User?                 @relation("SharedExpensePayer", fields: [paidByUserId], references: [id], onDelete: Restrict)
+  voidedBy             User?                 @relation("SharedExpenseVoidedBy", fields: [voidedByUserId], references: [id], onDelete: Restrict)
   financialTransaction FinancialTransaction? @relation("SharedExpensePayment", fields: [financialTransactionId], references: [id], onDelete: Restrict)
   category             Category?             @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 

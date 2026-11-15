@@ -474,7 +474,7 @@ describe('PostgreSQL integrity — extended', () => {
       });
     });
 
-    it('rejects move that leaves source with fewer than two participants', async () => {
+    it('rejects move that leaves source without participant distinct from payer (P-15)', async () => {
       await withClient(async (c) => {
         const ctx = await seedMinimalSharedSpace(c);
         const s1 = await insertCashShared(c, ctx, 100, [
@@ -500,7 +500,7 @@ describe('PostgreSQL integrity — extended', () => {
             [s2, partB],
           );
           await expect(c.query('COMMIT')).rejects.toThrow(
-            /at least two participants/i,
+            /distinct from payer|participant sum/i,
           );
         } finally {
           await c.query('ROLLBACK');
@@ -580,7 +580,7 @@ describe('PostgreSQL integrity — extended', () => {
       });
     });
 
-    it('rejects deleting one participant leaving fewer than two', async () => {
+    it('rejects deleting participant leaving only payer (P-15)', async () => {
       await withClient(async (c) => {
         const ctx = await seedMinimalSharedSpace(c);
         const sharedId = await insertCashShared(c, ctx, 100, [

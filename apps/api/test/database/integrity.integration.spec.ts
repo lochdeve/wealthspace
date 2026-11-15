@@ -155,7 +155,7 @@ describe('PostgreSQL integrity (disposable DB)', () => {
         await c.query(
           `INSERT INTO shared_expenses
            (id, space_id, payment_source, total_amount, currency, occurred_at, split_mode, recorded_by_user_id, paid_by_user_id, updated_at)
-           VALUES ($1, $2, 'CASH', 100, 'EUR', $3, 'EQUAL', $4, $4, $3)`,
+           VALUES ($1, $2, 'MEMBER', 100, 'EUR', $3, 'EQUAL', $4, $4, $3)`,
           [sharedId, spaceId, now, userA],
         );
         await c.query(
@@ -170,7 +170,7 @@ describe('PostgreSQL integrity (disposable DB)', () => {
     });
   });
 
-  it('participants: fewer than two rejected at COMMIT', async () => {
+  it('participants: payer-only participant rejected at COMMIT (P-15)', async () => {
     await withClient(async (c) => {
       const { spaceId, userA } = await seedMinimalSharedSpace(c);
       const sharedId = randomUUID();
@@ -180,7 +180,7 @@ describe('PostgreSQL integrity (disposable DB)', () => {
         await c.query(
           `INSERT INTO shared_expenses
            (id, space_id, payment_source, total_amount, currency, occurred_at, split_mode, recorded_by_user_id, paid_by_user_id, updated_at)
-           VALUES ($1, $2, 'CASH', 100, 'EUR', $3, 'EQUAL', $4, $4, $3)`,
+           VALUES ($1, $2, 'MEMBER', 100, 'EUR', $3, 'EQUAL', $4, $4, $3)`,
           [sharedId, spaceId, now, userA],
         );
         await c.query(
@@ -191,6 +191,37 @@ describe('PostgreSQL integrity (disposable DB)', () => {
         await expect(c.query('COMMIT')).rejects.toThrow();
       } finally {
         await c.query('ROLLBACK');
+      }
+    });
+  });
+
+  it('participants: one participant distinct from payer commits (P-15)', async () => {
+    await withClient(async (c) => {
+      const { spaceId, userA, userB } = await seedMinimalSharedSpace(c);
+      const sharedId = randomUUID();
+      const now = new Date().toISOString();
+      await c.query('BEGIN');
+      try {
+        await c.query(
+          `INSERT INTO shared_expenses
+           (id, space_id, payment_source, total_amount, currency, occurred_at, split_mode, recorded_by_user_id, paid_by_user_id, updated_at)
+           VALUES ($1, $2, 'MEMBER', 60, 'EUR', $3, 'EQUAL', $4, $4, $3)`,
+          [sharedId, spaceId, now, userA],
+        );
+        await c.query(
+          `INSERT INTO expense_participants (id, shared_expense_id, user_id, display_name_snapshot, allocated_amount)
+           VALUES ($1, $2, $3, 'B', 60)`,
+          [randomUUID(), sharedId, userB],
+        );
+        await c.query('COMMIT');
+        const { rowCount } = await c.query(
+          `SELECT 1 FROM shared_expenses WHERE id = $1`,
+          [sharedId],
+        );
+        expect(rowCount).toBe(1);
+      } catch (e) {
+        await c.query('ROLLBACK');
+        throw e;
       }
     });
   });

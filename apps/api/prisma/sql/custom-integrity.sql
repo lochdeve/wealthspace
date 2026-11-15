@@ -85,9 +85,7 @@ ALTER TABLE "shared_expenses" ADD CONSTRAINT "shared_expenses_total_amount_posit
 
 ALTER TABLE "shared_expenses" ADD CONSTRAINT "shared_expenses_payment_source_check"
   CHECK (
-    ("payment_source" = 'CASH'
-      AND "paid_by_user_id" IS NOT NULL AND "financial_transaction_id" IS NULL)
-    OR ("payment_source" = 'EXTERNAL_PERSONAL'
+    ("payment_source" = 'MEMBER'
       AND "paid_by_user_id" IS NOT NULL AND "financial_transaction_id" IS NULL)
     OR ("payment_source" = 'SPACE_ACCOUNT'
       AND "paid_by_user_id" IS NULL AND "financial_transaction_id" IS NOT NULL)
@@ -341,6 +339,7 @@ BEGIN
     FROM financial_transactions ft
     WHERE ft.type = 'EXPENSE'::"TransactionType"
       AND ft.attributed_to_user_id IS NULL
+      AND ft.voided_at IS NULL
       AND NOT EXISTS (
         SELECT 1 FROM shared_expenses se
         WHERE se.financial_transaction_id = ft.id
@@ -367,6 +366,8 @@ BEGIN
     FROM shared_expenses se
     INNER JOIN financial_transactions ft ON ft.id = se.financial_transaction_id
     WHERE se.payment_source = 'SPACE_ACCOUNT'::"PaymentSource"
+      AND se.voided_at IS NULL
+      AND ft.voided_at IS NULL
       AND (
         ft.type <> 'EXPENSE'::"TransactionType"
         OR ft.attributed_to_user_id IS NOT NULL
@@ -478,12 +479,20 @@ DECLARE
   total_amount numeric(19,4);
   cnt integer;
   sum_alloc numeric(19,4);
+  payment_src "PaymentSource";
+  paid_by uuid;
+  voided timestamptz;
 BEGIN
-  SELECT se.total_amount INTO total_amount
+  SELECT
+    se.total_amount,
+    se.payment_source,
+    se.paid_by_user_id,
+    se.voided_at
+  INTO total_amount, payment_src, paid_by, voided
   FROM shared_expenses se
   WHERE se.id = p_shared_expense_id;
 
-  IF NOT FOUND THEN
+  IF NOT FOUND OR voided IS NOT NULL THEN
     RETURN;
   END IF;
 
@@ -492,12 +501,28 @@ BEGIN
   FROM expense_participants
   WHERE shared_expense_id = p_shared_expense_id;
 
-  IF cnt < 2 THEN
-    RAISE EXCEPTION 'SharedExpense % must have at least two participants (has %)', p_shared_expense_id, cnt;
-  END IF;
-
   IF sum_alloc <> total_amount THEN
     RAISE EXCEPTION 'SharedExpense % participant sum % <> total %', p_shared_expense_id, sum_alloc, total_amount;
+  END IF;
+
+  IF payment_src = 'SPACE_ACCOUNT'::"PaymentSource" THEN
+    IF cnt < 1 THEN
+      RAISE EXCEPTION 'SharedExpense % must have at least one participant (has %)', p_shared_expense_id, cnt;
+    END IF;
+    RETURN;
+  END IF;
+
+  IF cnt < 1 THEN
+    RAISE EXCEPTION 'SharedExpense % must have at least one participant (has %)', p_shared_expense_id, cnt;
+  END IF;
+
+  IF paid_by IS NOT NULL AND NOT EXISTS (
+    SELECT 1
+    FROM expense_participants ep
+    WHERE ep.shared_expense_id = p_shared_expense_id
+      AND ep.user_id <> paid_by
+  ) THEN
+    RAISE EXCEPTION 'SharedExpense % must have a participant distinct from payer', p_shared_expense_id;
   END IF;
 END;
 $$;

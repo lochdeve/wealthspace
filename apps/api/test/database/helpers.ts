@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Client } from 'pg';
 
@@ -13,10 +13,21 @@ export const TEST_DB =
   'postgresql://wealthspace:wealthspace_dev@127.0.0.1:5432/wealthspace_migration_test';
 
 /** Jest runs with cwd `apps/api`; paths must not rely on `import.meta` (CommonJS typecheck). */
+const MIGRATIONS_DIR = join(process.cwd(), 'prisma/migrations');
+
 export const MIGRATION_SQL = readFileSync(
-  join(process.cwd(), 'prisma/migrations/20260328183000_init/migration.sql'),
+  join(MIGRATIONS_DIR, '20260328183000_init/migration.sql'),
   'utf8',
 );
+
+const PHASE6_MIGRATION_PATH = join(
+  MIGRATIONS_DIR,
+  '20261115183000_phase6_shared_expenses/migration.sql',
+);
+
+export const PHASE6_MIGRATION_SQL = existsSync(PHASE6_MIGRATION_PATH)
+  ? readFileSync(PHASE6_MIGRATION_PATH, 'utf8')
+  : '';
 
 export function firstRow<T>(rows: T[]): T {
   const row = rows[0];
@@ -41,6 +52,9 @@ export async function resetSchema(): Promise<void> {
     await c.query('DROP SCHEMA IF EXISTS public CASCADE');
     await c.query('CREATE SCHEMA public');
     await c.query(MIGRATION_SQL);
+    if (PHASE6_MIGRATION_SQL.length > 0) {
+      await c.query(PHASE6_MIGRATION_SQL);
+    }
   });
 }
 
@@ -146,7 +160,7 @@ export async function insertCashShared(
     await c.query(
       `INSERT INTO shared_expenses
        (id, space_id, payment_source, total_amount, currency, occurred_at, split_mode, recorded_by_user_id, paid_by_user_id, updated_at)
-       VALUES ($1, $2, 'CASH', $3, 'EUR', $4, 'EQUAL', $5, $5, $4)`,
+       VALUES ($1, $2, 'MEMBER', $3, 'EUR', $4, 'EQUAL', $5, $5, $4)`,
       [sharedId, ctx.spaceId, total, ctx.now, ctx.userA],
     );
     for (const [userId, amount] of allocations) {

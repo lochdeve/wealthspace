@@ -45,6 +45,7 @@ export async function computeAccountBalance(
   const rows = await prisma.financialTransaction.findMany({
     where: {
       spaceId,
+      voidedAt: null,
       OR: [
         { accountId },
         { sourceAccountId: accountId },
@@ -79,6 +80,7 @@ export async function computeBalancesForAccounts(
   const rows = await prisma.financialTransaction.findMany({
     where: {
       spaceId,
+      voidedAt: null,
       OR: [
         { accountId: { in: accountIds } },
         { sourceAccountId: { in: accountIds } },
