@@ -66,3 +66,21 @@ export type SharedExpenseDetail = {
   voidedAt?: string | null;
   version: number;
 };
+
+export type UpdateSharedExpenseInput = CreateSharedExpenseInput & {
+  expectedVersion: number;
+  reason?: string;
+};
+
+export type VoidSharedExpenseInput = {
+  expectedVersion: number;
+  reason?: string;
+};
+
+export type SharedExpenseRevision = {
+  revisionNumber: number;
+  changedAt: string;
+  changedByUserId: string;
+  reason?: string | null;
+  snapshot: Record<string, unknown>;
+};

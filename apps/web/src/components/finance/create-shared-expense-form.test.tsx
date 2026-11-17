@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { Account } from '@/lib/api/finance-types';
-import { createSharedExpense, previewSharedExpense } from '@/lib/api/shared-expenses';
+import { createSharedExpense, previewSharedExpense, updateSharedExpense } from '@/lib/api/shared-expenses';
+import type { SharedExpenseDetail } from '@/lib/api/shared-expense-types';
 import { CreateSharedExpenseForm } from './create-shared-expense-form';
 
 const push = vi.fn();
@@ -13,10 +14,12 @@ vi.mock('next/navigation', () => ({
 vi.mock('@/lib/api/shared-expenses', () => ({
   createSharedExpense: vi.fn(),
   previewSharedExpense: vi.fn(),
+  updateSharedExpense: vi.fn(),
 }));
 
 const createMock = vi.mocked(createSharedExpense);
 const previewMock = vi.mocked(previewSharedExpense);
+const updateMock = vi.mocked(updateSharedExpense);
 
 const members = [
   { userId: 'ana', displayName: 'Ana', email: 'a@test.dev', role: 'OWNER' as const },
@@ -135,6 +138,36 @@ describe('CreateSharedExpenseForm', () => {
         { userId: 'carlos', percent: '50.00' },
       ],
     });
+  });
+
+  it('updates an existing expense when edit props are provided', async () => {
+    updateMock.mockResolvedValueOnce({ id: 'exp-edit' } as Awaited<ReturnType<typeof updateSharedExpense>>);
+    const expense = {
+      id: 'exp-edit',
+      description: 'Cena',
+      totalAmount: '80.0000',
+      currency: 'EUR',
+      occurredAt: '2026-05-01T18:00:00.000Z',
+      splitMode: 'EQUAL' as const,
+      payment: { source: 'MEMBER' as const, paidByUserId: 'ana' },
+      participants: [
+        { userId: 'ana', displayName: 'Ana', allocatedAmount: '40.0000' },
+        { userId: 'carlos', displayName: 'Carlos', allocatedAmount: '40.0000' },
+      ],
+      generatedDebts: [],
+      recordedByUserId: 'ana',
+      version: 3,
+    } satisfies SharedExpenseDetail;
+
+    renderForm({ edit: { expenseId: 'exp-edit', expense } });
+    fireEvent.change(screen.getByLabelText('Importe total'), { target: { value: '90' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }));
+
+    await waitFor(() => expect(updateMock).toHaveBeenCalled());
+    expect(updateMock.mock.calls[0]?.[2].expectedVersion).toBe(3);
+    expect(updateMock.mock.calls[0]?.[2].totalAmount).toBe('90');
+    expect(push).not.toHaveBeenCalled();
+    expect(refresh).toHaveBeenCalled();
   });
 
   it('sends SPACE_ACCOUNT payment when selected', async () => {

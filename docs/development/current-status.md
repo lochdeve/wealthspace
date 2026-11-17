@@ -19,7 +19,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Auth                    | ✅                    | ✅                         |
 | Espacios y membresía    | ✅ (sin 4.1/4.2)      | ✅                         |
 | Cuentas y movimientos   | ✅                    | ✅                         |
-| Gastos compartidos      | ✅ API fase 6 (B-6.5) | ⬜ UI F-6 (puede arrancar) |
+| Gastos compartidos      | ✅ API fase 6 (B-6.5) | ✅ UI F-6 (rama; sin merge) |
 | Deudas y liquidaciones  | ⬜ (solo esquema)     | ⬜                         |
 | Presupuestos e informes | ⬜                    | ⬜                         |
 
@@ -34,7 +34,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Chat         | Tarea                                                                                      | Bloqueos                              |
 | ------------ | ------------------------------------------------------------------------------------------ | ------------------------------------- |
 | Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19                                           | Respuesta del responsable de producto |
-| Frontend     | **F-6.4** (editar, anular, revisiones); F-R2.4 en paralelo; F-6.1–F-6.3 ✅ en rama | Ninguno                               |
+| Frontend     | **F-6** cerrado en rama (F-6.4 ✅); siguiente **F-R2.4** / **F-7** bloqueado por B-7 | Ninguno                               |
 | Backend      | **B-6** cerrado. Siguiente: **B-7** bloqueado hasta P-10…P-19 (coordinación)               | Decisiones fase 7                     |
 
 ## Notas operativas

@@ -37,7 +37,7 @@ Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · 
 | F-6.1 ✅ | «Añadir gasto» en SHARED: concepto, importe, fecha, categoría; pagador (por defecto, yo); participantes (por defecto, todos); método (por defecto, a partes iguales)              | El flujo habitual (pagado por mí, a partes iguales, todos) se completa sin tocar más que importe y concepto |
 | F-6.2 ✅ | Porcentajes e importes personalizados: inputs por participante, contador de «falta / sobra», porcentaje equitativo propuesto, previsualización con `POST /preview` (con debounce) | Sin cálculo de reparto propio; los importes mostrados son los de la API; errores 400 traducidos por `code`  |
 | F-6.3 ✅ | Listado de gastos del espacio y detalle: participaciones, «tu parte», «debes X a Ana» o «te deben…», estado «Anulado»                                                             | Ningún texto ni estado de «pendiente de confirmar»                                                          |
-| F-6.4   | Editar (409 → recargar y avisar), anular con motivo y confirmación local, historial de revisiones                                                                                 | Las acciones sin permiso se ocultan, pero se gestiona el 403 de la API                                      |
+| F-6.4 ✅ | Editar (409 → recargar y avisar), anular con motivo y confirmación local, historial de revisiones                                                                                 | Las acciones sin permiso se ocultan, pero se gestiona el 403 de la API                                      |
 
 ## F-7 — ✨ Saldos y liquidaciones ⛔ (B-7.2+)
 

@@ -7,12 +7,14 @@ import type {
   CreateSharedExpenseInput,
   GeneratedDebt,
   PaymentSource,
+  SharedExpenseDetail,
   SharedExpenseParticipant,
   SplitMode,
   SplitInput,
 } from '@/lib/api/shared-expense-types';
 import { ApiError } from '@/lib/api/errors';
-import { createSharedExpense, previewSharedExpense } from '@/lib/api/shared-expenses';
+import { createSharedExpense, previewSharedExpense, updateSharedExpense } from '@/lib/api/shared-expenses';
+import { splitStateFromDetail, toDatetimeLocalValue } from '@/lib/finance/shared-expense-form-state';
 import { canPickAttributionFor } from '@/lib/finance/attribution';
 import { isPositiveAmount, normalizeAmountInput } from '@/lib/finance/amount';
 import { percentsForUserIds } from '@/lib/finance/equal-percent-shares';
@@ -36,6 +38,11 @@ type MemberOption = {
   role: MembershipRole;
 };
 
+type SharedExpenseEditProps = {
+  expenseId: string;
+  expense: SharedExpenseDetail;
+};
+
 type CreateSharedExpenseFormProps = {
   spaceId: string;
   currentUserId: string;
@@ -44,6 +51,7 @@ type CreateSharedExpenseFormProps = {
   accounts: Account[];
   categories: Category[];
   displayCurrency: string | null;
+  edit?: SharedExpenseEditProps;
 };
 
 type FieldName = 'amount' | 'currency' | 'payer' | 'account' | 'participants' | 'occurredAt';
@@ -76,8 +84,12 @@ export function CreateSharedExpenseForm({
   accounts,
   categories,
   displayCurrency,
+  edit,
 }: CreateSharedExpenseFormProps) {
   const router = useRouter();
+  const isEdit = Boolean(edit);
+  const seed = edit?.expense;
+  const splitSeed = seed ? splitStateFromDetail(seed) : null;
   const payerOptions = members.filter((member) =>
     canPickAttributionFor(actorRole, currentUserId, member.userId),
   );
@@ -87,22 +99,37 @@ export function CreateSharedExpenseForm({
     '';
   const activeAccounts = useMemo(() => accounts.filter((row) => !row.archivedAt), [accounts]);
 
-  const [paymentSource, setPaymentSource] = useState<PaymentSource>('MEMBER');
-  const [paidByUserId, setPaidByUserId] = useState(defaultPaidBy);
-  const [accountId, setAccountId] = useState(activeAccounts[0]?.id ?? '');
-  const [participantIds, setParticipantIds] = useState<string[]>(() =>
-    defaultParticipantIds(members),
+  const [paymentSource, setPaymentSource] = useState<PaymentSource>(
+    () => seed?.payment.source ?? 'MEMBER',
   );
-  const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
+  const [paidByUserId, setPaidByUserId] = useState(() =>
+    seed?.payment.source === 'MEMBER' ? seed.payment.paidByUserId : defaultPaidBy,
+  );
+  const [accountId, setAccountId] = useState(() =>
+    seed?.payment.source === 'SPACE_ACCOUNT'
+      ? seed.payment.accountId
+      : (activeAccounts[0]?.id ?? ''),
+  );
+  const [participantIds, setParticipantIds] = useState<string[]>(
+    () => splitSeed?.participantIds ?? defaultParticipantIds(members),
+  );
+  const [amount, setAmount] = useState(() => seed?.totalAmount ?? '');
+  const [description, setDescription] = useState(() => seed?.description ?? '');
   const [categoryId, setCategoryId] = useState('');
-  const [occurredAt, setOccurredAt] = useState('');
-  const [currency, setCurrency] = useState(displayCurrency ?? 'EUR');
-  const [splitMode, setSplitMode] = useState<SplitMode>('EQUAL');
-  const [percentageShares, setPercentageShares] = useState<Record<string, string>>(() =>
-    percentsForUserIds(defaultParticipantIds(members)),
+  const [occurredAt, setOccurredAt] = useState(() =>
+    seed ? toDatetimeLocalValue(seed.occurredAt) : '',
   );
-  const [fixedShares, setFixedShares] = useState<Record<string, string>>({});
+  const [currency, setCurrency] = useState(() => seed?.currency ?? displayCurrency ?? 'EUR');
+  const [splitMode, setSplitMode] = useState<SplitMode>(() => splitSeed?.splitMode ?? 'EQUAL');
+  const [percentageShares, setPercentageShares] = useState<Record<string, string>>(() =>
+    splitSeed?.percentageShares && Object.keys(splitSeed.percentageShares).length > 0
+      ? splitSeed.percentageShares
+      : percentsForUserIds(splitSeed?.participantIds ?? defaultParticipantIds(members)),
+  );
+  const [fixedShares, setFixedShares] = useState<Record<string, string>>(
+    () => splitSeed?.fixedShares ?? {},
+  );
+  const [editReason, setEditReason] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldName, string>>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -346,11 +373,26 @@ export function CreateSharedExpenseForm({
     const normalized = normalizeAmountInput(amount);
     setPending(true);
     try {
+      if (edit) {
+        await updateSharedExpense(spaceId, edit.expenseId, {
+          ...buildPayload(normalized),
+          expectedVersion: edit.expense.version,
+          reason: editReason.trim() || undefined,
+        });
+        router.refresh();
+        return;
+      }
       const created = await createSharedExpense(spaceId, buildPayload(normalized));
       router.push(sharedExpenseDetailHref(spaceId, created.id));
       router.refresh();
     } catch (error) {
       const message = sharedExpenseActionErrorMessage(error);
+      if (
+        error instanceof ApiError &&
+        (error.code === 'VERSION_CONFLICT' || error.code === 'ALREADY_VOIDED')
+      ) {
+        router.refresh();
+      }
       const field = error instanceof ApiError && error.code ? ERROR_FIELD[error.code] : undefined;
       if (field) {
         setFieldErrors({ [field]: message });
@@ -363,11 +405,21 @@ export function CreateSharedExpenseForm({
   }
 
   const allSelected = participantIds.length === members.length;
-  const needsAnotherMember = members.length < 2;
+  const needsAnotherMember = !isEdit && members.length < 2;
   const submitDisabled = pending || needsAnotherMember;
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit} noValidate>
+    <form
+      id={isEdit ? 'edit-shared-expense' : undefined}
+      className={styles.form}
+      onSubmit={handleSubmit}
+      noValidate
+    >
+      {isEdit ? (
+        <p className={styles.meta}>
+          Quién pagó (miembro o cuenta del espacio) no se puede cambiar al editar.
+        </p>
+      ) : null}
       {needsAnotherMember ? (
         <p className={ui.alert} role="status">
           Solo hay una persona en este espacio. Para repartir entre varios usa{' '}
@@ -424,7 +476,7 @@ export function CreateSharedExpenseForm({
           className={styles.selectNative}
           value={paymentSource}
           onChange={(event) => setPaymentSource(event.target.value as PaymentSource)}
-          disabled={pending}
+          disabled={pending || isEdit}
         >
           <option value="MEMBER">Un miembro del espacio</option>
           <option value="SPACE_ACCOUNT">Cuenta del espacio</option>
@@ -457,7 +509,7 @@ export function CreateSharedExpenseForm({
             className={styles.selectNative}
             value={accountId}
             onChange={(event) => setAccountId(event.target.value)}
-            disabled={pending || activeAccounts.length === 0}
+            disabled={pending || activeAccounts.length === 0 || isEdit}
             aria-invalid={Boolean(fieldErrors.account) || undefined}
           >
             {activeAccounts.length === 0 ? (
@@ -622,11 +674,22 @@ export function CreateSharedExpenseForm({
         generatedDebts={previewDebts}
         members={members}
       />
-      <p className={styles.meta}>
-        Al guardar, el reparto y las deudas quedan fijados; no hay confirmación de los demás.
-      </p>
+      {isEdit ? (
+        <Field id="shared-edit-reason" label="Motivo del cambio (opcional)">
+          <TextInput
+            id="shared-edit-reason"
+            value={editReason}
+            onChange={(event) => setEditReason(event.target.value)}
+            disabled={pending}
+          />
+        </Field>
+      ) : (
+        <p className={styles.meta}>
+          Al guardar, el reparto y las deudas quedan fijados; no hay confirmación de los demás.
+        </p>
+      )}
       <Button type="submit" disabled={submitDisabled}>
-        {pending ? 'Guardando…' : 'Registrar gasto compartido'}
+        {pending ? 'Guardando…' : isEdit ? 'Guardar cambios' : 'Registrar gasto compartido'}
       </Button>
     </form>
   );
