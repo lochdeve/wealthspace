@@ -1,6 +1,13 @@
 import { render, screen, within } from '@testing-library/react';
 import { SpaceFinanceNav } from './space-finance-nav';
 
+function linksHref(nav: HTMLElement): string[] {
+  return within(nav)
+    .getAllByRole('link')
+    .map((link) => link.getAttribute('href'))
+    .filter((href): href is string => href !== null);
+}
+
 describe('SpaceFinanceNav', () => {
   it('links to accounts, transactions and categories in any space', () => {
     render(<SpaceFinanceNav spaceId="space-1" spaceType="PERSONAL" />);
@@ -14,20 +21,18 @@ describe('SpaceFinanceNav', () => {
     ]);
   });
 
-  it('exposes shared and individual expense entries in SHARED spaces (C-04)', () => {
+  it('exposes shared finance entries in SHARED spaces (C-04, F-7)', () => {
     render(<SpaceFinanceNav spaceId="space-1" spaceType="SHARED" />);
     const nav = screen.getByRole('navigation', { name: 'Finanzas del espacio' });
-    expect(within(nav).getByRole('link', { name: 'Gastos compartidos' })).toHaveAttribute(
-      'href',
+    expect(linksHref(nav)).toEqual([
+      '/spaces/space-1/accounts',
+      '/spaces/space-1/transactions',
+      '/spaces/space-1/categories',
       '/spaces/space-1/expenses',
-    );
-    expect(within(nav).getByRole('link', { name: 'Registrar gasto compartido' })).toHaveAttribute(
-      'href',
       '/spaces/space-1/expenses/new',
-    );
-    expect(within(nav).getByRole('link', { name: 'Gasto individual' })).toHaveAttribute(
-      'href',
+      '/spaces/space-1/balances',
+      '/spaces/space-1/settlements',
       '/spaces/space-1/expenses/individual/new',
-    );
+    ]);
   });
 });

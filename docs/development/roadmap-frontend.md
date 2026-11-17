@@ -43,9 +43,9 @@ Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · 
 
 | Entrega | Contenido                                                                                                      | Aceptación                                                         |
 | ------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| F-7.1   | Vista «Saldos»: quién debe a quién (neto) y saldo por miembro, por moneda; destacar lo que me afecta           | Ejemplo de referencia: «Carlos debe 25 € a Ana» tras liquidar 15 € |
-| F-7.2   | «Registrar pago» desde una deuda (importe sugerido = pendiente, editable; aviso si supera la deuda según P-11) | Liquidación parcial y completa                                     |
-| F-7.3   | Listado de liquidaciones y anulación                                                                           | Anular restaura la deuda en la vista                               |
+| F-7.1 ✅ | Vista «Saldos»: quién debe a quién (neto) y saldo por miembro, por moneda; destacar lo que me afecta           | Ejemplo de referencia: «Carlos debe 25 € a Ana» tras liquidar 15 € |
+| F-7.2 ✅ | «Registrar pago» desde una deuda (importe sugerido = pendiente, editable; aviso si supera la deuda según P-11) | Liquidación parcial y completa                                     |
+| F-7.3 ✅ | Listado de liquidaciones y anulación                                                                           | Anular restaura la deuda en la vista                               |
 
 Copy: «Registrar pago» o «Liquidar», nunca «Confirmar». Mensaje fijo: «Wealthspace no realiza ni verifica pagos».
 

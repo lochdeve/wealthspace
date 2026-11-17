@@ -1,6 +1,6 @@
 # Estado actual del desarrollo
 
-**Última actualización:** 2026-11-17 — merge F-6 + F-R2.6 (gastos compartidos UI) en `main` local.
+**Última actualización:** 2026-11-17 — F-7 saldos y liquidaciones en web.
 
 Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/decisions.md) · Contratos implementados: [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 
@@ -20,7 +20,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Espacios y membresía    | ✅ (sin 4.1/4.2)      | ✅        |
 | Cuentas y movimientos   | ✅                    | ✅        |
 | Gastos compartidos      | ✅ API fase 6 (B-6.5) | ✅ UI F-6 |
-| Deudas y liquidaciones  | ✅ B-7 (migración aplicada en dev local) | ⬜ F-7 listo para arrancar |
+| Deudas y liquidaciones  | ✅ B-7 (migración aplicada en dev local) | ✅ UI F-7 |
 | Presupuestos e informes | ⬜                    | ⬜        |
 
 ## Decisiones recientes
@@ -34,7 +34,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Chat         | Tarea                                                                                       | Bloqueos                                   |
 | ------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
 | Coordinación | CI/prod: aplicar `20261117160000` cuando toque el release                                     | —                                          |
-| Frontend     | **F-7** saldos, registrar pago, listado/anulación liquidaciones                              | Contratos en `frontend-api-dependencies.md` |
+| Frontend     | **F-R2.4** / **F-R2.5** (pulido)                                                             | Ninguno                                    |
 | Backend      | **B-7** cerrado; migración aplicada en dev local                                              | —                                          |
 
 ## Notas operativas

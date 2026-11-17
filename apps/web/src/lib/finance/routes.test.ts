@@ -1,8 +1,11 @@
 import {
   individualExpenseHref,
+  registerSettlementHref,
+  settlementsHref,
   sharedExpenseDetailHref,
   sharedExpenseHref,
   sharedExpensesHref,
+  spaceBalancesHref,
 } from './routes';
 
 describe('individualExpenseHref', () => {
@@ -38,5 +41,32 @@ describe('sharedExpensesHref', () => {
 describe('sharedExpenseDetailHref', () => {
   it('points to expense detail', () => {
     expect(sharedExpenseDetailHref('space-1', 'exp-9')).toBe('/spaces/space-1/expenses/exp-9');
+  });
+});
+
+describe('spaceBalancesHref', () => {
+  it('points to balances view', () => {
+    expect(spaceBalancesHref('space-1')).toBe('/spaces/space-1/balances');
+  });
+});
+
+describe('settlementsHref', () => {
+  it('lists settlements', () => {
+    expect(settlementsHref('space-1')).toBe('/spaces/space-1/settlements');
+  });
+});
+
+describe('registerSettlementHref', () => {
+  it('prefills debtor, creditor and amount', () => {
+    expect(
+      registerSettlementHref('space-1', {
+        fromUserId: 'a',
+        toUserId: 'b',
+        amount: '25.0000',
+        currency: 'EUR',
+      }),
+    ).toBe(
+      '/spaces/space-1/settlements/new?fromUserId=a&toUserId=b&amount=25.0000&currency=EUR',
+    );
   });
 });
