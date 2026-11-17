@@ -20,7 +20,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Espacios y membresía    | ✅ (sin 4.1/4.2)      | ✅        |
 | Cuentas y movimientos   | ✅                    | ✅        |
 | Gastos compartidos      | ✅ API fase 6 (B-6.5) | ✅ UI F-6 |
-| Deudas y liquidaciones  | 🟡 B-7 (migración sin deploy) | ⬜ F-7 tras deploy API |
+| Deudas y liquidaciones  | ✅ B-7 (migración aplicada en dev local) | ⬜ F-7 listo para arrancar |
 | Presupuestos e informes | ⬜                    | ⬜        |
 
 ## Decisiones recientes
@@ -33,9 +33,9 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 | Chat         | Tarea                                                                                       | Bloqueos                                   |
 | ------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| Coordinación | Aprobar y autorizar `migrate deploy` de **B-7.0** (`20261117160000`)                         | —                                          |
-| Frontend     | **F-7** saldos/liquidaciones tras migración en el entorno API                                  | Deploy B-7.0                               |
-| Backend      | **B-7** cerrado en código; pendiente `prisma migrate deploy` en dev/CI/prod                  | Aprobación explícita migración             |
+| Coordinación | CI/prod: aplicar `20261117160000` cuando toque el release                                     | —                                          |
+| Frontend     | **F-7** saldos, registrar pago, listado/anulación liquidaciones                              | Contratos en `frontend-api-dependencies.md` |
+| Backend      | **B-7** cerrado; migración aplicada en dev local                                              | —                                          |
 
 ## Notas operativas
 
