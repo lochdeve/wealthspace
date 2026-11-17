@@ -8,6 +8,7 @@ import { listSpaceMembersWithCookie } from '@/lib/api/memberships';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { RecordIndividualExpenseForm } from '@/components/finance/record-individual-expense-form';
 import { SyncActiveSpace } from '@/components/spaces/sync-active-space';
+import { sharedExpenseHref } from '@/lib/finance/routes';
 import styles from '@/app/(app)/app-pages.module.css';
 
 type PageProps = {
@@ -58,7 +59,10 @@ export default async function NewIndividualExpensePage({ params, searchParams }:
             descuenta su saldo; sin cuenta, no mueve dinero.
           </p>
         </div>
-        <Link href={`/spaces/${spaceId}/transactions`}>← Movimientos</Link>
+        <nav className={styles.pageHeaderActions} aria-label="Acciones">
+          <Link href={sharedExpenseHref(spaceId)}>Gasto compartido</Link>
+          <Link href={`/spaces/${spaceId}/transactions`}>← Movimientos</Link>
+        </nav>
       </header>
       <RecordIndividualExpenseForm
         spaceId={spaceId}

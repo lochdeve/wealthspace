@@ -119,15 +119,15 @@ Códigos: `ATTRIBUTION_REQUIRED`, `ATTRIBUTION_NOT_ALLOWED`, `ATTRIBUTEE_NOT_ACT
 
 Membresía **ACTIVE** en espacio **SHARED** (`SHARED_SPACE_REQUIRED` en PERSONAL).
 
-| Recurso            | Método | Ruta                                                      | Notas                                                                 |
-| ------------------ | ------ | --------------------------------------------------------- | --------------------------------------------------------------------- |
-| Listar             | GET    | `/spaces/:spaceId/shared-expenses`                        | Query: `from`, `to`, `participantUserId`, `includeVoided`, `limit`≤100 |
-| Previsualizar      | POST   | `/spaces/:spaceId/shared-expenses/preview`                | **200**; mismo body que el alta; no persiste (`version: 0`, id placeholder) |
-| Crear              | POST   | `/spaces/:spaceId/shared-expenses`                        | **201**; participantes, `generatedDebts`, `version`                   |
-| Detalle            | GET    | `/spaces/:spaceId/shared-expenses/:id`                    | Incluye `generatedDebts`, `voidedAt`, `version`                       |
-| Editar             | PATCH  | `/spaces/:spaceId/shared-expenses/:id`                    | Mismo body que el alta + `expectedVersion`; `payment.source` inmutable |
-| Anular             | POST   | `/spaces/:spaceId/shared-expenses/:id/void`               | Body: `expectedVersion`, `reason?`; restaura saldo si `SPACE_ACCOUNT` |
-| Revisiones         | GET    | `/spaces/:spaceId/shared-expenses/:id/revisions`          | Instantáneas inmutables con `participants`                            |
+| Recurso       | Método | Ruta                                             | Notas                                                                       |
+| ------------- | ------ | ------------------------------------------------ | --------------------------------------------------------------------------- |
+| Listar        | GET    | `/spaces/:spaceId/shared-expenses`               | Query: `from`, `to`, `participantUserId`, `includeVoided`, `limit`≤100      |
+| Previsualizar | POST   | `/spaces/:spaceId/shared-expenses/preview`       | **200**; mismo body que el alta; no persiste (`version: 0`, id placeholder) |
+| Crear         | POST   | `/spaces/:spaceId/shared-expenses`               | **201**; participantes, `generatedDebts`, `version`                         |
+| Detalle       | GET    | `/spaces/:spaceId/shared-expenses/:id`           | Incluye `generatedDebts`, `voidedAt`, `version`                             |
+| Editar        | PATCH  | `/spaces/:spaceId/shared-expenses/:id`           | Mismo body que el alta + `expectedVersion`; `payment.source` inmutable      |
+| Anular        | POST   | `/spaces/:spaceId/shared-expenses/:id/void`      | Body: `expectedVersion`, `reason?`; restaura saldo si `SPACE_ACCOUNT`       |
+| Revisiones    | GET    | `/spaces/:spaceId/shared-expenses/:id/revisions` | Instantáneas inmutables con `participants`                                  |
 
 Body orientativo: `totalAmount`, `currency?`, `occurredAt?`, `categoryId?`, `payment` (`MEMBER` + `paidByUserId` o `SPACE_ACCOUNT` + `accountId`), `split` (`EQUAL` \| `PERCENTAGE` \| `FIXED_AMOUNT`). Importes de entrada hasta decimales de la moneda; respuesta con 4 decimales.
 
@@ -135,10 +135,10 @@ Códigos: los de reparto/alta más `SHARED_EXPENSE_NOT_FOUND` (404), `SHARED_EXP
 
 ## No implementado todavía
 
-| Área                                                      | Fase | Contrato previsto                                                                                 |
-| --------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------- |
-| Saldos netos del espacio (fase 7)                              | 7    | `GET /spaces/:spaceId/balances` (previsto)                                                        |
-| Saldos y liquidaciones                                    | 7    | Ídem                                                                                              |
-| Cuentas personales vinculadas, aportaciones               | 8    | En análisis ([accounts-model.md](../product/accounts-model.md))                                   |
-| Presupuestos, informes, dashboard, edición de perfil      | 9    | Pendiente (P-17)                                                                                  |
-| Transferencia de ownership                                | 4.1  | [spaces-membership-mvp.md](../product/spaces-membership-mvp.md)                                   |
+| Área                                                 | Fase | Contrato previsto                                               |
+| ---------------------------------------------------- | ---- | --------------------------------------------------------------- |
+| Saldos netos del espacio (fase 7)                    | 7    | `GET /spaces/:spaceId/balances` (previsto)                      |
+| Saldos y liquidaciones                               | 7    | Ídem                                                            |
+| Cuentas personales vinculadas, aportaciones          | 8    | En análisis ([accounts-model.md](../product/accounts-model.md)) |
+| Presupuestos, informes, dashboard, edición de perfil | 9    | Pendiente (P-17)                                                |
+| Transferencia de ownership                           | 4.1  | [spaces-membership-mvp.md](../product/spaces-membership-mvp.md) |

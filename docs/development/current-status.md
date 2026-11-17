@@ -1,6 +1,6 @@
 # Estado actual del desarrollo
 
-**Última actualización:** 2026-11-15 — auditoría de documentación y redefinición de gastos compartidos, deudas y liquidaciones (coordinación).
+**Última actualización:** 2026-11-17 — merge F-6 + F-R2.6 (gastos compartidos UI) en `main` local.
 
 Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/decisions.md) · Contratos implementados: [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 
@@ -8,8 +8,8 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 | Elemento         | Estado                                                                                                                                                            |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `main`           | Fases 0–5 completas (API y web, con el selector de categorías) + documentación del nuevo modelo. Por delante de `origin/main`; **push pendiente de aprobación**.  |
-| Ramas de trabajo | F-R2.2 y F-R2.3 integradas en `main` local (fast-forward `36813e9..b9cd3d1`); push a `origin` pendiente de aprobación. Ramas locales `fix/web-*` pueden borrarse. |
+| `main`           | Fases 0–6 web (F-6 gastos compartidos) + API B-6. Por delante de `origin/main`; **push pendiente de aprobación**.                                                    |
+| Ramas de trabajo | `feat/web-phase-6-shared-expenses` integrada en `main` local. Ramas locales `fix/web-*` pueden borrarse.                                                             |
 | CI               | `quality` (formato, lint, typecheck, tests unitarios, cobertura, build) y `database-integrity`. Sin E2E.                                                          |
 
 ## Por área
@@ -19,7 +19,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Auth                    | ✅                    | ✅                         |
 | Espacios y membresía    | ✅ (sin 4.1/4.2)      | ✅                         |
 | Cuentas y movimientos   | ✅                    | ✅                         |
-| Gastos compartidos      | ✅ API fase 6 (B-6.5) | ⬜ UI F-6 (puede arrancar) |
+| Gastos compartidos      | ✅ API fase 6 (B-6.5) | ✅ UI F-6                  |
 | Deudas y liquidaciones  | ⬜ (solo esquema)     | ⬜                         |
 | Presupuestos e informes | ⬜                    | ⬜                         |
 
@@ -31,11 +31,11 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 ## Siguiente tarea por chat
 
-| Chat         | Tarea                                                                                                                               | Bloqueos                              |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19                                                                                    | Respuesta del responsable de producto |
-| Frontend     | **F-R2.6** (C-04: Gasto individual visible en menú finanzas SHARED); **F-6** gastos compartidos; **F-R2.4** en paralelo si conviene | Ninguno                               |
-| Backend      | **B-6** cerrado. Siguiente: **B-7** bloqueado hasta P-10…P-19 (coordinación)                                                        | Decisiones fase 7                     |
+| Chat         | Tarea                                                                                      | Bloqueos                              |
+| ------------ | ------------------------------------------------------------------------------------------ | ------------------------------------- |
+| Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19                                           | Respuesta del responsable de producto |
+| Frontend     | **F-R2.4** (y F-R2.5); **F-7** bloqueado por B-7                                           | Ninguno                               |
+| Backend      | **B-6** cerrado. Siguiente: **B-7** bloqueado hasta P-10…P-19 (coordinación)               | Decisiones fase 7                     |
 
 ## Notas operativas
 
