@@ -457,4 +457,60 @@ describe('Transactions (integration)', () => {
         expect((res.body as { code?: string }).code).toBe('CATEGORY_NOT_FOUND');
       });
   });
+
+  it('PATCH rejects transaction linked to shared expense', async () => {
+    const owner = await registerAndLogin('linked-tx');
+    const spaceRes = await request(app.getHttpServer())
+      .post('/api/v1/spaces')
+      .set('Cookie', owner.cookies)
+      .send({ name: 'Piso', displayCurrency: 'EUR' })
+      .expect(201);
+    const spaceId = (spaceRes.body as { id: string }).id;
+
+    const accountRes = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/accounts`)
+      .set('Cookie', owner.cookies)
+      .send({ name: 'Caja', currency: 'EUR' })
+      .expect(201);
+    const accountId = (accountRes.body as AccountBody).id;
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/accounts/${accountId}/opening-balance`)
+      .set('Cookie', owner.cookies)
+      .send({ amount: '50.0000' })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/shared-expenses`)
+      .set('Cookie', owner.cookies)
+      .send({
+        totalAmount: '10.00',
+        payment: { source: 'SPACE_ACCOUNT', accountId },
+        split: {
+          mode: 'EQUAL',
+          participantUserIds: [owner.profile.id],
+        },
+      })
+      .expect(201);
+
+    const listRes = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${spaceId}/transactions`)
+      .query({ accountId })
+      .set('Cookie', owner.cookies)
+      .expect(200);
+
+    const tx = (listRes.body as (TxBody & { version: number })[])[0];
+    expect(tx).toBeDefined();
+
+    await request(app.getHttpServer())
+      .patch(`/api/v1/spaces/${spaceId}/transactions/${tx.id}`)
+      .set('Cookie', owner.cookies)
+      .send({ expectedVersion: tx.version, description: 'edited' })
+      .expect(409)
+      .expect((res) => {
+        expect((res.body as { code?: string }).code).toBe(
+          'TRANSACTION_LINKED_TO_SHARED_EXPENSE',
+        );
+      });
+  });
 });

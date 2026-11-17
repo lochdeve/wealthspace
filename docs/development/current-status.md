@@ -35,7 +35,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | ------------ | ------------------------------------------------------------------------------------------ | ------------------------------------- |
 | Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19                                           | Respuesta del responsable de producto |
 | Frontend     | **F-R2.4** (y F-R2.5); **F-7** bloqueado por B-7                                           | Ninguno                               |
-| Backend      | **B-6** cerrado. Siguiente: **B-7** bloqueado hasta P-10…P-19 (coordinación)               | Decisiones fase 7                     |
+| Backend      | **B-7.1** listo (cálculo puro). **B-7.0 / B-7.2–7.4** ⛔ hasta aprobar P-10, P-11, P-12, P-19 | Decisiones fase 7 (coordinación)      |
 
 ## Notas operativas
 

@@ -57,7 +57,7 @@ Orden recomendado: **B-6.1** → **B-R1** → **B-6.0** (aplicar, aprobada) → 
 | Entrega | Contenido                                                             | Aceptación                                                                  |
 | ------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | B-7.0   | Migración (sustituir `status` por anulación lógica; ajuste P-19)      | `pnpm test:db` en verde                                                     |
-| B-7.1   | Función pura de cálculo de deudas netas por par y moneda              | Tests unitarios: ejemplo de referencia, compensación, multimoneda, anulados |
+| B-7.1   | Función pura de cálculo de deudas netas por par y moneda (`computeSpaceBalances`) | ✅ tests unitarios (ejemplo fase 6/7, neteo, multimoneda, anulados)         |
 | B-7.2   | `GET /balances`                                                       | Criterios 1, 3 y 4 de la fase 7                                             |
 | B-7.3   | `POST /settlements`, `GET /settlements`, `POST /settlements/:id/void` | Criterios 2, 5 y 6 de la fase 7; permisos P-10                              |
 | B-7.4   | OpenAPI + catálogo                                                    | Igual que B-6.5                                                             |
