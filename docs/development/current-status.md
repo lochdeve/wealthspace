@@ -31,11 +31,11 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 ## Siguiente tarea por chat
 
-| Chat         | Tarea                                                                                                                               | Bloqueos                              |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19                                                                                    | Respuesta del responsable de producto |
-| Frontend     | **F-R2.6** (C-04: Gasto individual visible en menú finanzas SHARED); **F-6** gastos compartidos; **F-R2.4** en paralelo si conviene | Ninguno                               |
-| Backend      | **B-6** cerrado. Siguiente: **B-7** bloqueado hasta P-10…P-19 (coordinación)                                                        | Decisiones fase 7                     |
+| Chat         | Tarea                                                                                      | Bloqueos                              |
+| ------------ | ------------------------------------------------------------------------------------------ | ------------------------------------- |
+| Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19                                           | Respuesta del responsable de producto |
+| Frontend     | **F-6.4** (editar, anular, revisiones); F-R2.4 en paralelo; F-6.1–F-6.3 ✅ en rama | Ninguno                               |
+| Backend      | **B-6** cerrado. Siguiente: **B-7** bloqueado hasta P-10…P-19 (coordinación)               | Decisiones fase 7                     |
 
 ## Notas operativas
 

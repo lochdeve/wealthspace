@@ -71,7 +71,13 @@ export default async function SpaceDetailPage({ params }: PageProps) {
 
       <div className={styles.section}>
         <h2 className={styles.sectionHeading}>Finanzas</h2>
-        <SpaceFinanceNav spaceId={spaceId} />
+        <SpaceFinanceNav spaceId={spaceId} spaceType={space.type} />
+        {isShared ? (
+          <p className={styles.lead}>
+            <strong>Gasto compartido:</strong> reparto entre miembros y deudas al guardar.{' '}
+            <strong>Gasto individual:</strong> solo una persona, sin reparto ni deudas.
+          </p>
+        ) : null}
       </div>
 
       {isShared ? (
