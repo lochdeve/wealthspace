@@ -52,15 +52,15 @@ Orden recomendado: **B-6.1** → **B-R1** → **B-6.0** (aplicar, aprobada) → 
 | B-R1.2  | `code: "VALIDATION_ERROR"` (+ campo afectado si es viable) en los 400 de `ValidationPipe` (C-03) | Tests e2e de un DTO inválido; OpenAPI y catálogo actualizados                             |
 | B-R1.3  | Añadir `INVITATION_NOT_FOUND` (404 al aceptar o rechazar) al catálogo                            | Catálogo al día                                                                           |
 
-## B-7 — ✨ Saldos y liquidaciones ⛔ (pendientes P-10, P-11, P-12, P-19)
+## B-7 — ✨ Saldos y liquidaciones (P-10…P-19 aprobados 2026-11-15)
 
-| Entrega | Contenido                                                             | Aceptación                                                                  |
-| ------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| B-7.0   | Migración (sustituir `status` por anulación lógica; ajuste P-19)      | `pnpm test:db` en verde                                                     |
-| B-7.1   | Función pura de cálculo de deudas netas por par y moneda (`computeSpaceBalances`) | ✅ tests unitarios (ejemplo fase 6/7, neteo, multimoneda, anulados)         |
-| B-7.2   | `GET /balances`                                                       | Criterios 1, 3 y 4 de la fase 7                                             |
-| B-7.3   | `POST /settlements`, `GET /settlements`, `POST /settlements/:id/void` | Criterios 2, 5 y 6 de la fase 7; permisos P-10                              |
-| B-7.4   | OpenAPI + catálogo                                                    | Igual que B-6.5                                                             |
+| Entrega | Contenido                                                                         | Aceptación                                                          |
+| ------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| B-7.0   | Migración (sustituir `status` por anulación lógica; ajuste P-19)                  | `pnpm test:db` en verde                                             |
+| B-7.1   | Función pura de cálculo de deudas netas por par y moneda (`computeSpaceBalances`) | ✅ tests unitarios (ejemplo fase 6/7, neteo, multimoneda, anulados) |
+| B-7.2   | `GET /balances`                                                                   | Criterios 1, 3 y 4 de la fase 7                                     |
+| B-7.3   | `POST /settlements`, `GET /settlements`, `POST /settlements/:id/void`             | Criterios 2, 5 y 6 de la fase 7; permisos P-10                      |
+| B-7.4   | OpenAPI + catálogo                                                                | Igual que B-6.5                                                     |
 
 ## B-8 — ✨ Cuentas personales vinculadas y aportaciones ⛔ (accounts-model)
 

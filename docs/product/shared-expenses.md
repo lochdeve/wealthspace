@@ -101,9 +101,9 @@ Las deudas cambian automáticamente cuando se edita o anula un gasto o una liqui
 - Se registran a mano con: deudor (`from`), acreedor (`to`), importe, moneda, fecha (`occurredAt`) y nota opcional.
 - Pueden ser **parciales** o **completas**; reducen la deuda del par por el importe registrado.
 - No se vinculan a un gasto concreto: actúan sobre el saldo neto del par y la moneda.
-- Liquidar más de lo pendiente: recomendación P-11 (permitirlo con aviso; el saldo cambia de sentido).
-- Pueden ser retroactivas (B-07). El caso de ex-miembros sigue pendiente (P-19).
-- Permisos: recomendación P-10.
+- Liquidar más de lo pendiente: **permitido** (P-11); la API no rechaza por sobrepago; puede devolver aviso `SETTLEMENT_EXCEEDS_PENDING_DEBT`; el saldo neto puede cambiar de sentido.
+- Fecha `occurredAt` declarada del pago; liquidaciones con **ex-miembros** permitidas (P-19).
+- Permisos: P-10 (registrar/anular).
 - No crean movimientos en cuentas en MVP (P-07).
 
 ## 8. Ejemplo de referencia (criterio de aceptación de las fases 6 y 7)
@@ -133,14 +133,14 @@ La cuenta personal de Ana tampoco cambia salvo que registre el pago (hoy, como g
 - **Editar** un gasto: importe, fecha, concepto, categoría, pagador, participantes y método de reparto. El servidor recalcula las participaciones. Concurrencia optimista con `expectedVersion` (**409** si hay conflicto) y revisión inmutable con instantánea completa, participantes incluidos.
 - **Anular**: anulación lógica (P-13). El gasto deja de contar en deudas y totales, pero sigue visible como «Anulado» con autor, fecha y motivo. Si se pagó con una cuenta compartida, el movimiento vinculado se anula en la misma operación y **el saldo de la cuenta se restaura**.
 - **No hay borrado físico** de gastos ni liquidaciones.
-- Permisos: P-09 para gastos (aprobada) y P-10 para liquidaciones (pendiente). La API devuelve **403** con un código estable si no se cumplen.
+- Permisos: P-09 (gastos) y P-10 (liquidaciones). La API devuelve **403** con un código estable si no se cumplen.
 - Historial: cualquier miembro del espacio puede consultar las revisiones de un gasto o una liquidación.
 
 ## 10. Membresía
 
 - Participantes y pagador deben ser miembros del espacio en `occurredAt` (intervalo `[joinedAt, leftAt)`); quien registra debe estar ACTIVE en el momento del registro.
 - Un miembro que sale (LEFT/REMOVED) **conserva** sus participaciones, deudas y liquidaciones históricas.
-- Liquidaciones posteriores a la salida: P-19.
+- Liquidaciones con ex-miembros: P-19; aviso informativo al leave/remove si el saldo neto ≠ 0.
 
 ## 11. Fuera de alcance
 

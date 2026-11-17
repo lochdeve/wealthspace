@@ -139,29 +139,29 @@ Una respuesta del espacio SHARED **nunca** incluye identificadores ni datos de c
 
 El backend los fija al implementar y actualiza el catálogo.
 
-| Código                          | HTTP | Caso                                         |
-| ------------------------------- | ---- | -------------------------------------------- |
-| `SHARED_SPACE_REQUIRED`         | 400  | Operación en un espacio PERSONAL             |
-| `SPLIT_PERCENT_SUM_INVALID`     | 400  | Los porcentajes no suman 100                 |
-| `SPLIT_AMOUNT_SUM_INVALID`      | 400  | Los importes no suman el total               |
-| `AMOUNT_PRECISION_INVALID`      | 400  | Más decimales de los que admite la moneda    |
-| `CURRENCY_NOT_SUPPORTED`        | 400  | Moneda que no es ISO 4217                    |
-| `SPLIT_SHARE_ZERO`              | 400  | El reparto deja a un participante con 0      |
-| `INSUFFICIENT_PARTICIPANTS`     | 400  | No se cumple el mínimo (P-15)                |
-| `DUPLICATE_PARTICIPANT`         | 400  | Usuario repetido                             |
-| `PARTICIPANT_NOT_MEMBER`        | 400  | Participante sin membresía en `occurredAt`   |
-| `PAYER_NOT_ALLOWED`             | 403  | El rol no permite indicar ese pagador (P-09) |
-| `SHARED_EXPENSE_NOT_FOUND`      | 404  | Anti-IDOR                                    |
-| `SHARED_EXPENSE_EDIT_FORBIDDEN` | 403  | Sin permiso para editar o anular (P-09)      |
-| `ALREADY_VOIDED`                | 409  | Anular algo ya anulado o editar algo anulado |
-| `SETTLEMENT_SAME_USER`          | 400  | `from = to`                                  |
-| `SETTLEMENT_USER_NOT_MEMBER`    | 400  | Usuario sin membresía válida (B-07, P-19)    |
-| `SETTLEMENT_FORBIDDEN`          | 403  | Sin permiso para registrar o anular (P-10)   |
-| `VERSION_CONFLICT`              | 409  | `expectedVersion` desactualizada             |
+| Código                          | HTTP | Caso                                           |
+| ------------------------------- | ---- | ---------------------------------------------- |
+| `SHARED_SPACE_REQUIRED`         | 400  | Operación en un espacio PERSONAL               |
+| `SPLIT_PERCENT_SUM_INVALID`     | 400  | Los porcentajes no suman 100                   |
+| `SPLIT_AMOUNT_SUM_INVALID`      | 400  | Los importes no suman el total                 |
+| `AMOUNT_PRECISION_INVALID`      | 400  | Más decimales de los que admite la moneda      |
+| `CURRENCY_NOT_SUPPORTED`        | 400  | Moneda que no es ISO 4217                      |
+| `SPLIT_SHARE_ZERO`              | 400  | El reparto deja a un participante con 0        |
+| `INSUFFICIENT_PARTICIPANTS`     | 400  | No se cumple el mínimo (P-15)                  |
+| `DUPLICATE_PARTICIPANT`         | 400  | Usuario repetido                               |
+| `PARTICIPANT_NOT_MEMBER`        | 400  | Participante sin membresía en `occurredAt`     |
+| `PAYER_NOT_ALLOWED`             | 403  | El rol no permite indicar ese pagador (P-09)   |
+| `SHARED_EXPENSE_NOT_FOUND`      | 404  | Anti-IDOR                                      |
+| `SHARED_EXPENSE_EDIT_FORBIDDEN` | 403  | Sin permiso para editar o anular (P-09)        |
+| `ALREADY_VOIDED`                | 409  | Anular algo ya anulado o editar algo anulado   |
+| `SETTLEMENT_SAME_USER`          | 400  | `from = to`                                    |
+| `SETTLEMENT_USER_NOT_MEMBER`    | 400  | `from`/`to` sin historial en el espacio (P-19) |
+| `SETTLEMENT_FORBIDDEN`          | 403  | Sin permiso para registrar o anular (P-10)     |
+| `VERSION_CONFLICT`              | 409  | `expectedVersion` desactualizada               |
 
 ## Liquidaciones — validación temporal
 
-`POST .../settlements` con `occurredAt`: la pertenencia de `from` y `to` se valida en ese instante con `[joinedAt, leftAt)`, no en el momento del registro. Auditoría con `recordedByUserId` y `createdAt`. Caso de ex-miembros: P-19.
+`POST .../settlements`: `from`/`to` con historial en el espacio (P-19); `occurred_at` puede ser posterior a `left_at` de un ex-miembro. Quien registra: ACTIVE. Respuesta **201** puede incluir `warnings: ["SETTLEMENT_EXCEEDS_PENDING_DEBT"]` (P-11). Sin `PATCH`; anulación lógica (P-12, P-13).
 
 ## Presupuestos e informes
 

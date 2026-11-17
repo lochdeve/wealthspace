@@ -26,7 +26,7 @@ Criterio de cierre **Fase 4 (MVP):** espacios, invitaciones, leave/remove y espa
 - **Leave:** cualquier ACTIVE salvo el **único OWNER ACTIVE** → **409** `CANNOT_LEAVE_AS_SOLE_OWNER` hasta transferencia (4.1).
 - **Remove:** OWNER expulsa MEMBER y ADMIN; ADMIN solo MEMBER; no auto-expulsión → **409** `USE_LEAVE_INSTEAD`; no expulsar al único OWNER → **409** `CANNOT_REMOVE_SOLE_OWNER`.
 - **LEFT** / **REMOVED** fijan `leftAt`; historial para atribución y liquidaciones en **[joinedAt, leftAt)**.
-- Deudas pendientes al salir: el miembro conserva participaciones, deudas y liquidaciones históricas. Saldar deudas después de la salida sigue **PENDIENTE DE DECISIÓN** (P-19 en [decisions.md](./decisions.md)).
+- Deudas pendientes al salir: el miembro conserva participaciones, deudas y liquidaciones históricas. Saldar deudas **después de salir** está permitido (P-19); la UI avisa si el saldo neto ≠ 0 al leave/remove.
 
 ## Transferencia de ownership (entrega 4.1 — no bloquea Fase 5)
 

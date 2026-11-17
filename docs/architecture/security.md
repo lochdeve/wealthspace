@@ -38,7 +38,7 @@ Fuente: [spaces-membership-mvp.md](../product/spaces-membership-mvp.md).
 | Gasto en PERSONAL                                    | Atribución fijada por el servidor al titular                                  |
 | Editar un movimiento vinculado a un gasto compartido | Prohibido (**409** `TRANSACTION_LINKED_TO_SHARED_EXPENSE`); se edita el gasto |
 
-### Gastos compartidos (aprobado, P-09) y liquidaciones (pendiente, P-10)
+### Gastos compartidos (P-09) y liquidaciones (P-10)
 
 | Acción                               | Quién                                                   |
 | ------------------------------------ | ------------------------------------------------------- |
@@ -50,7 +50,7 @@ Fuente: [spaces-membership-mvp.md](../product/spaces-membership-mvp.md).
 | Anular liquidación                   | Quien la registró, `from`, `to`, OWNER o ADMIN          |
 | Consultar gastos, saldos e historial | Cualquier miembro ACTIVE                                |
 
-Las filas de gastos (P-09) están aprobadas y se implementan en la fase 6. Las de liquidaciones (P-10) siguen siendo una recomendación: el backend no las implementa hasta su aprobación.
+Gastos (fase 6) y liquidaciones (fase 7) según P-09 y P-10.
 
 ## Privacidad
 
@@ -68,8 +68,8 @@ Las filas de gastos (P-09) están aprobadas y se implementan en la fase 6. Las d
 
 ## Liquidaciones
 
-- Validar en el servidor que `from` y `to` pertenecían al espacio en `occurredAt` (misma regla que la BD; excepción de ex-miembros pendiente, P-19).
-- No exigir que sigan ACTIVE si la liquidación es retroactiva.
+- `from` y `to`: histórico en el espacio (P-19); no exigir ACTIVE ni intervalo `[joinedAt, leftAt)` en `occurredAt`. Quien registra: ACTIVE.
+- Sobrepago: permitido (P-11); sin 403/400 por exceder deuda pendiente.
 - Wealthspace no verifica pagos: una liquidación es una anotación; la auditoría registra quién la introdujo.
 
 ## Pendiente (fase de producción)

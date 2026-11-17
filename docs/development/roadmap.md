@@ -76,7 +76,7 @@ Regla general: **la API de cada fase precede a su web**; la web puede maquetar c
 
 ### R1 — 🔧 Cierre de decisiones (coordinación)
 
-Aprobar o modificar en [decisions.md](../product/decisions.md): ✅ P-03, P-04, P-08, P-09, P-13, P-14, P-15 y P-16 (fase 6, aprobadas el 2026-11-15); ⬜ P-10, P-11, P-12 y P-19 (fase 7).
+Aprobar o modificar en [decisions.md](../product/decisions.md): ✅ fase 6 (P-03…P-16) y fase 7 liquidaciones (P-10, P-11, P-12, P-19, 2026-11-15).
 
 **Aceptación:** esas decisiones están en estado APROBADA, con `shared-expenses.md` y `api-design.md` actualizados, y la migración de la fase 6 aprobada.
 
@@ -117,7 +117,7 @@ Aprobar o modificar en [decisions.md](../product/decisions.md): ✅ P-03, P-04, 
 3. Si Ana debe 10 € a Carlos por otro gasto, se muestra el neto: Carlos → Ana 30 €.
 4. Las deudas se separan por moneda.
 5. Liquidar más de lo pendiente sigue la decisión P-11.
-6. Liquidación con un usuario que no era miembro en `occurredAt` → 400 (con la excepción que fije P-19).
+6. Liquidación con `from`/`to` sin historial en el espacio → 400; ex-miembro con historial y `occurred_at` tras `left_at` → **201** (P-19).
 
 ### Fase 8 — ✨ Cuentas personales vinculadas y aportaciones
 
@@ -149,7 +149,7 @@ Según [spaces-membership-mvp.md](../product/spaces-membership-mvp.md). **Acepta
 | Fuga de datos personales al vincular cuentas (fase 8)                      | Tests de no filtración obligatorios; DTOs separados por espacio |
 | Doble conteo en informes (pago adelantado frente a consumo)                | Resolver P-17 antes de la fase 9                                |
 | Ramas largas sin merge (fase 5 web)                                        | R2 al principio; PRs pequeños                                   |
-| Deudas imposibles de saldar con ex-miembros                                | Decidir P-19 antes de la fase 7                                 |
+| Deudas imposibles de saldar con ex-miembros                                | P-19 aprobada; implementar en B-7.0                             |
 
 ## 5. Reglas de ejecución
 

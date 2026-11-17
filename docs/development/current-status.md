@@ -6,22 +6,22 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 ## Repositorio
 
-| Elemento         | Estado                                                                                                                                                            |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `main`           | Fases 0–6 web (F-6 gastos compartidos) + API B-6. Por delante de `origin/main`; **push pendiente de aprobación**.                                                    |
-| Ramas de trabajo | `feat/web-phase-6-shared-expenses` integrada en `main` local. Ramas locales `fix/web-*` pueden borrarse.                                                             |
-| CI               | `quality` (formato, lint, typecheck, tests unitarios, cobertura, build) y `database-integrity`. Sin E2E.                                                          |
+| Elemento         | Estado                                                                                                            |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `main`           | Fases 0–6 web (F-6 gastos compartidos) + API B-6. Por delante de `origin/main`; **push pendiente de aprobación**. |
+| Ramas de trabajo | `feat/web-phase-6-shared-expenses` integrada en `main` local. Ramas locales `fix/web-*` pueden borrarse.          |
+| CI               | `quality` (formato, lint, typecheck, tests unitarios, cobertura, build) y `database-integrity`. Sin E2E.          |
 
 ## Por área
 
-| Área                    | API                   | Web                        |
-| ----------------------- | --------------------- | -------------------------- |
-| Auth                    | ✅                    | ✅                         |
-| Espacios y membresía    | ✅ (sin 4.1/4.2)      | ✅                         |
-| Cuentas y movimientos   | ✅                    | ✅                         |
-| Gastos compartidos      | ✅ API fase 6 (B-6.5) | ✅ UI F-6                  |
-| Deudas y liquidaciones  | ⬜ (solo esquema)     | ⬜                         |
-| Presupuestos e informes | ⬜                    | ⬜                         |
+| Área                    | API                   | Web       |
+| ----------------------- | --------------------- | --------- |
+| Auth                    | ✅                    | ✅        |
+| Espacios y membresía    | ✅ (sin 4.1/4.2)      | ✅        |
+| Cuentas y movimientos   | ✅                    | ✅        |
+| Gastos compartidos      | ✅ API fase 6 (B-6.5) | ✅ UI F-6 |
+| Deudas y liquidaciones  | ⬜ (solo esquema)     | ⬜        |
+| Presupuestos e informes | ⬜                    | ⬜        |
 
 ## Decisiones recientes
 
@@ -31,11 +31,11 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 ## Siguiente tarea por chat
 
-| Chat         | Tarea                                                                                      | Bloqueos                              |
-| ------------ | ------------------------------------------------------------------------------------------ | ------------------------------------- |
-| Coordinación | **R1 (fase 7)**: aprobar P-10, P-11, P-12 y P-19                                           | Respuesta del responsable de producto |
-| Frontend     | **F-R2.4** (y F-R2.5); **F-7** bloqueado por B-7                                           | Ninguno                               |
-| Backend      | **B-7.1** listo (cálculo puro). **B-7.0 / B-7.2–7.4** ⛔ hasta aprobar P-10, P-11, P-12, P-19 | Decisiones fase 7 (coordinación)      |
+| Chat         | Tarea                                                                                       | Bloqueos                                   |
+| ------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| Coordinación | R1 fase 7 liquidaciones cerrado (P-10…P-19). Revisar borrador migración **B-7.0** al llegar | —                                          |
+| Frontend     | **F-R2.4** / **F-R2.5**; **F-7** cuando existan B-7.2–7.4 en catálogo                       | B-7.2+                                     |
+| Backend      | **B-7.0** borrador migración settlements → **B-7.2–7.4** (B-7.1 ✅)                         | Aplicar B-7.0 tras aprobación coordinación |
 
 ## Notas operativas
 
