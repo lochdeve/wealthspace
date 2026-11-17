@@ -67,7 +67,7 @@ describe('computeSpaceBalances', () => {
         toUserId: ANA,
         amount: '15.0000',
         currency: 'EUR',
-        active: true,
+        voidedAt: null,
       },
     ];
 
@@ -148,7 +148,7 @@ describe('computeSpaceBalances', () => {
         toUserId: ANA,
         amount: '15.0000',
         currency: 'EUR',
-        active: false,
+        voidedAt: new Date(),
       },
     ];
 

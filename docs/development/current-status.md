@@ -20,7 +20,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Espacios y membresía    | ✅ (sin 4.1/4.2)      | ✅        |
 | Cuentas y movimientos   | ✅                    | ✅        |
 | Gastos compartidos      | ✅ API fase 6 (B-6.5) | ✅ UI F-6 |
-| Deudas y liquidaciones  | ⬜ (solo esquema)     | ⬜        |
+| Deudas y liquidaciones  | 🟡 B-7 (migración sin deploy) | ⬜ F-7 tras deploy API |
 | Presupuestos e informes | ⬜                    | ⬜        |
 
 ## Decisiones recientes
@@ -33,9 +33,9 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 | Chat         | Tarea                                                                                       | Bloqueos                                   |
 | ------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| Coordinación | R1 fase 7 liquidaciones cerrado (P-10…P-19). Revisar borrador migración **B-7.0** al llegar | —                                          |
-| Frontend     | **F-R2.4** / **F-R2.5**; **F-7** cuando existan B-7.2–7.4 en catálogo                       | B-7.2+                                     |
-| Backend      | **B-7.0** borrador migración settlements → **B-7.2–7.4** (B-7.1 ✅)                         | Aplicar B-7.0 tras aprobación coordinación |
+| Coordinación | Aprobar y autorizar `migrate deploy` de **B-7.0** (`20261117160000`)                         | —                                          |
+| Frontend     | **F-7** saldos/liquidaciones tras migración en el entorno API                                  | Deploy B-7.0                               |
+| Backend      | **B-7** cerrado en código; pendiente `prisma migrate deploy` en dev/CI/prod                  | Aprobación explícita migración             |
 
 ## Notas operativas
 

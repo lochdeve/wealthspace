@@ -274,7 +274,7 @@ describe('PostgreSQL integrity — extended', () => {
               ctx.now,
             ],
           ),
-        ).rejects.toThrow(/member at occurred_at/i);
+        ).rejects.toThrow(/no membership history/i);
       });
     });
 
@@ -304,29 +304,31 @@ describe('PostgreSQL integrity — extended', () => {
       });
     });
 
-    it('rejects occurred_at after left_at', async () => {
+    it('accepts occurred_at after left_at (P-19 ex-member)', async () => {
       await withClient(async (c) => {
         const ctx = await seedMinimalSharedSpace(c);
         const left = new Date('2024-06-01T00:00:00.000Z');
         await c.query(
+          `UPDATE space_memberships SET joined_at = $1 WHERE space_id = $2 AND user_id = $3`,
+          [new Date('2024-01-01T00:00:00.000Z'), ctx.spaceId, ctx.userB],
+        );
+        await c.query(
           `UPDATE space_memberships SET joined_at = $1, left_at = $2, status = 'LEFT' WHERE space_id = $3 AND user_id = $4`,
           [new Date('2024-01-01T00:00:00.000Z'), left, ctx.spaceId, ctx.userA],
         );
-        await expect(
-          c.query(
-            `INSERT INTO settlements
+        await c.query(
+          `INSERT INTO settlements
              (id, space_id, from_user_id, to_user_id, amount, currency, occurred_at, recorded_by_user_id, updated_at)
              VALUES ($1, $2, $3, $4, 10, 'EUR', $5, $3, $6)`,
-            [
-              randomUUID(),
-              ctx.spaceId,
-              ctx.userA,
-              ctx.userB,
-              new Date('2024-07-01T00:00:00.000Z'),
-              ctx.now,
-            ],
-          ),
-        ).rejects.toThrow();
+          [
+            randomUUID(),
+            ctx.spaceId,
+            ctx.userA,
+            ctx.userB,
+            new Date('2024-07-01T00:00:00.000Z'),
+            ctx.now,
+          ],
+        );
       });
     });
 
@@ -354,23 +356,30 @@ describe('PostgreSQL integrity — extended', () => {
       });
     });
 
-    it('rejects occurred_at equal to left_at (half-open interval)', async () => {
+    it('accepts occurred_at equal to left_at (P-19)', async () => {
       await withClient(async (c) => {
         const ctx = await seedMinimalSharedSpace(c);
         const left = new Date('2024-06-01T00:00:00.000Z');
         await c.query(
-          `UPDATE space_memberships SET joined_at = $1, left_at = $2, status = 'LEFT'
-           WHERE space_id = $3 AND user_id = $4`,
-          [new Date('2024-01-01T00:00:00.000Z'), left, ctx.spaceId, ctx.userA],
+          `UPDATE space_memberships SET joined_at = $1 WHERE space_id = $2 AND user_id IN ($3, $4)`,
+          [
+            new Date('2024-01-01T00:00:00.000Z'),
+            ctx.spaceId,
+            ctx.userA,
+            ctx.userB,
+          ],
         );
-        await expect(
-          c.query(
-            `INSERT INTO settlements
+        await c.query(
+          `UPDATE space_memberships SET left_at = $1, status = 'LEFT'
+           WHERE space_id = $2 AND user_id = $3`,
+          [left, ctx.spaceId, ctx.userA],
+        );
+        await c.query(
+          `INSERT INTO settlements
              (id, space_id, from_user_id, to_user_id, amount, currency, occurred_at, recorded_by_user_id, updated_at)
              VALUES ($1, $2, $3, $4, 10, 'EUR', $5, $3, $6)`,
-            [randomUUID(), ctx.spaceId, ctx.userA, ctx.userB, left, ctx.now],
-          ),
-        ).rejects.toThrow(/member at occurred_at/i);
+          [randomUUID(), ctx.spaceId, ctx.userA, ctx.userB, left, ctx.now],
+        );
       });
     });
 

@@ -133,12 +133,25 @@ Body orientativo: `totalAmount`, `currency?`, `occurredAt?`, `categoryId?`, `pay
 
 Códigos: los de reparto/alta más `SHARED_EXPENSE_NOT_FOUND` (404), `SHARED_EXPENSE_EDIT_FORBIDDEN` (403, P-09), `VERSION_CONFLICT` (409), `ALREADY_VOIDED` (409), `PAYMENT_SOURCE_IMMUTABLE` (400). Los movimientos vinculados a un gasto compartido no se editan por PATCH de transacciones (**409** `TRANSACTION_LINKED_TO_SHARED_EXPENSE`).
 
+### Saldos y liquidaciones (fase 7 — B-7)
+
+Requiere migración `20261117160000_phase7_settlements_void` aplicada en el entorno. Membresía **ACTIVE**; espacio **SHARED**.
+
+| Recurso    | Método | Ruta                                    | Notas                                                                 |
+| ---------- | ------ | --------------------------------------- | --------------------------------------------------------------------- |
+| Saldos     | GET    | `/spaces/:spaceId/balances`             | Deudas netas por par y `net` por miembro, por moneda (P-08)           |
+| Listar     | GET    | `/spaces/:spaceId/settlements`            | Query: `userId`, `includeVoided`, `limit`≤100                         |
+| Registrar  | POST   | `/spaces/:spaceId/settlements`          | Body: `fromUserId`, `toUserId`, `amount`, `currency`, `occurredAt?` |
+| Anular     | POST   | `/spaces/:spaceId/settlements/:id/void` | `expectedVersion`, `reason?`                                          |
+
+`POST` liquidación: permisos P-10 (`SETTLEMENT_FORBIDDEN` 403). `from`/`to` con historial en el espacio (P-19); `occurredAt` puede ser posterior a `leftAt`. **201** puede incluir `warnings: ["SETTLEMENT_EXCEEDS_PENDING_DEBT"]` (P-11; sin 400 por sobrepago).
+
+Códigos: `SHARED_SPACE_REQUIRED`, `SETTLEMENT_SAME_USER`, `SETTLEMENT_USER_NOT_MEMBER`, `SETTLEMENT_NOT_FOUND` (404), `SETTLEMENT_FORBIDDEN`, `VERSION_CONFLICT`, `ALREADY_VOIDED`.
+
 ## No implementado todavía
 
 | Área                                                 | Fase | Contrato previsto                                               |
 | ---------------------------------------------------- | ---- | --------------------------------------------------------------- |
-| Saldos netos del espacio (fase 7)                    | 7    | `GET /spaces/:spaceId/balances` (previsto)                      |
-| Saldos y liquidaciones                               | 7    | Ídem                                                            |
 | Cuentas personales vinculadas, aportaciones          | 8    | En análisis ([accounts-model.md](../product/accounts-model.md)) |
 | Presupuestos, informes, dashboard, edición de perfil | 9    | Pendiente (P-17)                                                |
 | Transferencia de ownership                           | 4.1  | [spaces-membership-mvp.md](../product/spaces-membership-mvp.md) |

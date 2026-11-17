@@ -29,6 +29,15 @@ export const PHASE6_MIGRATION_SQL = existsSync(PHASE6_MIGRATION_PATH)
   ? readFileSync(PHASE6_MIGRATION_PATH, 'utf8')
   : '';
 
+const PHASE7_MIGRATION_PATH = join(
+  MIGRATIONS_DIR,
+  '20261117160000_phase7_settlements_void/migration.sql',
+);
+
+export const PHASE7_MIGRATION_SQL = existsSync(PHASE7_MIGRATION_PATH)
+  ? readFileSync(PHASE7_MIGRATION_PATH, 'utf8')
+  : '';
+
 export function firstRow<T>(rows: T[]): T {
   const row = rows[0];
   if (row === undefined) {
@@ -54,6 +63,9 @@ export async function resetSchema(): Promise<void> {
     await c.query(MIGRATION_SQL);
     if (PHASE6_MIGRATION_SQL.length > 0) {
       await c.query(PHASE6_MIGRATION_SQL);
+    }
+    if (PHASE7_MIGRATION_SQL.length > 0) {
+      await c.query(PHASE7_MIGRATION_SQL);
     }
   });
 }

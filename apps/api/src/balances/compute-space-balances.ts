@@ -21,8 +21,7 @@ export type SettlementBalanceInput = {
   toUserId: string;
   amount: string;
   currency: string;
-  /** Until B-7.0: `true` when `status === CONFIRMED`; later use `voidedAt === null`. */
-  active: boolean;
+  voidedAt: Date | null;
 };
 
 export type PairDebtDto = {
@@ -128,7 +127,7 @@ export function computeSpaceBalances(
   }
 
   for (const settlement of settlements) {
-    if (!settlement.active) {
+    if (settlement.voidedAt !== null) {
       continue;
     }
 

@@ -58,10 +58,6 @@ enum TransactionType {
   OPENING_BALANCE
 }
 
-enum SettlementStatus {
-  CONFIRMED
-  CANCELLED
-}
 
 model User {
   id              String   @id @default(uuid()) @db.Uuid
@@ -89,6 +85,7 @@ model User {
   financialRevisions       FinancialRevision[]    @relation("RevisionAuthor")
   voidedTransactions       FinancialTransaction[] @relation("TransactionVoidedBy")
   voidedSharedExpenses     SharedExpense[]        @relation("SharedExpenseVoidedBy")
+  voidedSettlements        Settlement[]           @relation("SettlementVoidedBy")
 
   @@map("users")
 }
@@ -304,28 +301,29 @@ model ExpenseParticipant {
 }
 
 model Settlement {
-  id               String           @id @default(uuid()) @db.Uuid
-  spaceId          String           @map("space_id") @db.Uuid
-  fromUserId       String           @map("from_user_id") @db.Uuid
-  toUserId         String           @map("to_user_id") @db.Uuid
-  amount           Decimal          @db.Decimal(19, 4)
-  currency         String           @db.Char(3)
-  status           SettlementStatus @default(CONFIRMED)
-  occurredAt       DateTime         @map("occurred_at") @db.Timestamptz(6)
-  recordedByUserId String           @map("recorded_by_user_id") @db.Uuid
-  version          Int              @default(1)
-  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt        DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id               String    @id @default(uuid()) @db.Uuid
+  spaceId          String    @map("space_id") @db.Uuid
+  fromUserId       String    @map("from_user_id") @db.Uuid
+  toUserId         String    @map("to_user_id") @db.Uuid
+  amount           Decimal   @db.Decimal(19, 4)
+  currency         String    @db.Char(3)
+  occurredAt       DateTime  @map("occurred_at") @db.Timestamptz(6)
+  recordedByUserId String    @map("recorded_by_user_id") @db.Uuid
+  version          Int       @default(1)
+  voidedAt         DateTime? @map("voided_at") @db.Timestamptz(6)
+  voidedByUserId   String?   @map("voided_by_user_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   space      Space @relation(fields: [spaceId], references: [id], onDelete: Restrict)
   fromUser   User  @relation("SettlementFrom", fields: [fromUserId], references: [id], onDelete: Restrict)
   toUser     User  @relation("SettlementTo", fields: [toUserId], references: [id], onDelete: Restrict)
   recordedBy User  @relation("SettlementRecorder", fields: [recordedByUserId], references: [id], onDelete: Restrict)
+  voidedBy   User? @relation("SettlementVoidedBy", fields: [voidedByUserId], references: [id], onDelete: Restrict)
 
   revisions FinancialRevision[] @relation("SettlementRevisions")
 
   @@index([spaceId, occurredAt])
-  @@index([spaceId, status])
   @@map("settlements")
 }
 

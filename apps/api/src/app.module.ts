@@ -9,6 +9,8 @@ import { InvitationsModule } from './invitations/invitations.module';
 import { SpacesModule } from './spaces/spaces.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { SharedExpensesModule } from './shared-expenses/shared-expenses.module';
+import { BalancesModule } from './balances/balances.module';
+import { SettlementsModule } from './settlements/settlements.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { SharedExpensesModule } from './shared-expenses/shared-expenses.module';
     CategoriesModule,
     TransactionsModule,
     SharedExpensesModule,
+    BalancesModule,
+    SettlementsModule,
   ],
 })
 export class AppModule {}

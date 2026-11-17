@@ -247,7 +247,7 @@ describe('PostgreSQL integrity (disposable DB)', () => {
     });
   });
 
-  it('settlement: rejected when occurred_at = left_at', async () => {
+  it('settlement: allowed when occurred_at = left_at (P-19)', async () => {
     await withClient(async (c) => {
       const { spaceId, userA, userB } = await seedMinimalSharedSpace(c);
       const joined = new Date('2024-01-01T00:00:00.000Z');
@@ -257,14 +257,12 @@ describe('PostgreSQL integrity (disposable DB)', () => {
          WHERE space_id = $3 AND user_id IN ($4, $5)`,
         [joined, left, spaceId, userA, userB],
       );
-      await expect(
-        c.query(
-          `INSERT INTO settlements
+      await c.query(
+        `INSERT INTO settlements
            (id, space_id, from_user_id, to_user_id, amount, currency, occurred_at, recorded_by_user_id, updated_at)
            VALUES ($1, $2, $3, $4, 10, 'EUR', $5, $3, NOW())`,
-          [randomUUID(), spaceId, userA, userB, left],
-        ),
-      ).rejects.toThrow();
+        [randomUUID(), spaceId, userA, userB, left],
+      );
     });
   });
 
