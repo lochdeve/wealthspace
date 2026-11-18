@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
 import { describe, expect, it, jest } from '@jest/globals';
 import { ConflictException, ForbiddenException } from '@nestjs/common';
 import {
@@ -40,13 +39,15 @@ describe('CrossSpaceCashLinksService', () => {
   }): { service: CrossSpaceCashLinksService; tx: TestTx } {
     const tx: TestTx = {
       user: {
-        findUnique: jest.fn(async () => overrides.user ?? null),
+        findUnique: jest.fn(() => Promise.resolve(overrides.user ?? null)),
       },
       account: {
-        findFirst: jest.fn(async () => overrides.account ?? null),
+        findFirst: jest.fn(() => Promise.resolve(overrides.account ?? null)),
       },
       crossSpaceCashLink: {
-        findFirst: jest.fn(async () => overrides.existingLink ?? null),
+        findFirst: jest.fn(() =>
+          Promise.resolve(overrides.existingLink ?? null),
+        ),
         create: jest
           .fn()
           .mockImplementation((args: { data: Record<string, unknown> }) =>
