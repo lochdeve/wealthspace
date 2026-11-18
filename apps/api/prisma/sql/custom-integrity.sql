@@ -67,8 +67,7 @@ ALTER TABLE "financial_transactions" ADD CONSTRAINT "financial_transactions_amou
 ALTER TABLE "financial_transactions" ADD CONSTRAINT "financial_transactions_fields_by_type_check"
   CHECK (
     ("type" = 'INCOME' AND "account_id" IS NOT NULL
-      AND "source_account_id" IS NULL AND "destination_account_id" IS NULL
-      AND "attributed_to_user_id" IS NULL)
+      AND "source_account_id" IS NULL AND "destination_account_id" IS NULL)
     OR ("type" = 'EXPENSE'
       AND "source_account_id" IS NULL AND "destination_account_id" IS NULL)
     OR ("type" = 'TRANSFER' AND "account_id" IS NULL
@@ -379,7 +378,9 @@ BEGIN
   IF EXISTS (
     SELECT 1
     FROM financial_transactions ft
+    INNER JOIN spaces s ON s.id = ft.space_id
     WHERE ft.type = 'EXPENSE'::"TransactionType"
+      AND s.type = 'SHARED'::"SpaceType"
       AND ft.attributed_to_user_id IS NULL
       AND ft.voided_at IS NULL
       AND NOT EXISTS (
@@ -595,3 +596,186 @@ CREATE CONSTRAINT TRIGGER ctrg_validate_shared_expense_participants_shared_expen
   AFTER INSERT OR UPDATE OF total_amount OR DELETE ON shared_expenses
   DEFERRABLE INITIALLY DEFERRED
   FOR EACH ROW EXECUTE FUNCTION wealthspace_validate_shared_expense_participants();
+
+-- ---------------------------------------------------------------------------
+-- Phase 8 (B-8.0): cross_space_cash_links + SHARED INCOME contributor (P-05)
+-- Table/enum DDL: Prisma migrate phase 8; settlements (space_id,id) unique in schema.
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION wealthspace_trg_cross_space_link_before_row()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v_personal_space uuid;
+  v_tx_space uuid;
+  v_space_type "SpaceType";
+BEGIN
+  SELECT u.personal_space_id INTO v_personal_space
+  FROM users u
+  WHERE u.id = NEW.owner_user_id;
+
+  IF v_personal_space IS NULL THEN
+    RAISE EXCEPTION 'owner_user_id must exist';
+  END IF;
+
+  SELECT ft.space_id INTO v_tx_space
+  FROM financial_transactions ft
+  WHERE ft.id = NEW.personal_transaction_id;
+
+  IF v_tx_space IS DISTINCT FROM v_personal_space THEN
+    RAISE EXCEPTION 'personal_transaction_id must belong to owner personal space';
+  END IF;
+
+  SELECT type INTO v_space_type FROM spaces WHERE id = NEW.shared_space_id;
+  IF v_space_type IS DISTINCT FROM 'SHARED'::"SpaceType" THEN
+    RAISE EXCEPTION 'shared_space_id must be SHARED';
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER trg_cross_space_link_before_row
+  BEFORE INSERT OR UPDATE ON cross_space_cash_links
+  FOR EACH ROW EXECUTE FUNCTION wealthspace_trg_cross_space_link_before_row();
+
+CREATE OR REPLACE FUNCTION wealthspace_validate_cross_space_cash_links()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  rec RECORD;
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM financial_transactions ft
+    INNER JOIN spaces s ON s.id = ft.space_id
+    WHERE ft.type = 'INCOME'::"TransactionType"
+      AND ft.attributed_to_user_id IS NOT NULL
+      AND ft.voided_at IS NULL
+      AND s.type = 'PERSONAL'::"SpaceType"
+  ) THEN
+    RAISE EXCEPTION 'INCOME with attributed_to_user_id is not allowed in PERSONAL space';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM financial_transactions sh_inc
+    INNER JOIN spaces s ON s.id = sh_inc.space_id
+    WHERE s.type = 'SHARED'::"SpaceType"
+      AND sh_inc.type = 'INCOME'::"TransactionType"
+      AND sh_inc.attributed_to_user_id IS NOT NULL
+      AND sh_inc.voided_at IS NULL
+      AND NOT EXISTS (
+        SELECT 1
+        FROM cross_space_cash_links c
+        INNER JOIN financial_transactions p ON p.id = c.personal_transaction_id
+        WHERE c.kind = 'CONTRIBUTION_PAIR'::"CrossSpaceCashLinkKind"
+          AND c.shared_space_id = sh_inc.space_id
+          AND c.owner_user_id = sh_inc.attributed_to_user_id
+          AND p.amount = sh_inc.amount
+          AND p.currency = sh_inc.currency
+      )
+  ) THEN
+    RAISE EXCEPTION 'SHARED INCOME with contributor requires CONTRIBUTION_PAIR link';
+  END IF;
+
+  FOR rec IN
+    SELECT c.*, ft.type AS tx_type, ft.amount, ft.currency, ft.voided_at AS tx_voided
+    FROM cross_space_cash_links c
+    INNER JOIN financial_transactions ft ON ft.id = c.personal_transaction_id
+  LOOP
+    IF rec.kind = 'SHARED_EXPENSE_MEMBER_PAYMENT' THEN
+      IF rec.tx_type <> 'EXPENSE'::"TransactionType" THEN
+        RAISE EXCEPTION 'SHARED_EXPENSE_MEMBER_PAYMENT requires personal EXPENSE';
+      END IF;
+      IF NOT EXISTS (
+        SELECT 1
+        FROM shared_expenses se
+        WHERE se.id = rec.shared_expense_id
+          AND se.space_id = rec.shared_space_id
+          AND se.payment_source = 'MEMBER'::"PaymentSource"
+          AND se.paid_by_user_id = rec.owner_user_id
+          AND se.voided_at IS NULL
+          AND se.total_amount = rec.amount
+          AND se.currency = rec.currency
+      ) THEN
+        RAISE EXCEPTION 'shared expense member payment link does not match expense';
+      END IF;
+    ELSIF rec.kind IN (
+      'SETTLEMENT_FROM_OUT'::"CrossSpaceCashLinkKind",
+      'SETTLEMENT_TO_IN'::"CrossSpaceCashLinkKind"
+    ) THEN
+      IF rec.kind = 'SETTLEMENT_FROM_OUT' AND rec.tx_type <> 'EXPENSE'::"TransactionType" THEN
+        RAISE EXCEPTION 'SETTLEMENT_FROM_OUT requires personal EXPENSE';
+      END IF;
+      IF rec.kind = 'SETTLEMENT_TO_IN' AND rec.tx_type <> 'INCOME'::"TransactionType" THEN
+        RAISE EXCEPTION 'SETTLEMENT_TO_IN requires personal INCOME';
+      END IF;
+      IF NOT EXISTS (
+        SELECT 1
+        FROM settlements st
+        WHERE st.id = rec.settlement_id
+          AND st.space_id = rec.shared_space_id
+          AND st.voided_at IS NULL
+          AND st.amount = rec.amount
+          AND st.currency = rec.currency
+          AND (
+            (rec.kind = 'SETTLEMENT_FROM_OUT' AND st.from_user_id = rec.owner_user_id)
+            OR (rec.kind = 'SETTLEMENT_TO_IN' AND st.to_user_id = rec.owner_user_id)
+          )
+      ) THEN
+        RAISE EXCEPTION 'settlement cash link does not match settlement';
+      END IF;
+    ELSIF rec.kind = 'CONTRIBUTION_PAIR' THEN
+      IF rec.tx_type <> 'EXPENSE'::"TransactionType" THEN
+        RAISE EXCEPTION 'CONTRIBUTION_PAIR personal leg must be EXPENSE';
+      END IF;
+      IF NOT EXISTS (
+        SELECT 1
+        FROM financial_transactions sh_inc
+        INNER JOIN spaces s ON s.id = sh_inc.space_id
+        WHERE s.type = 'SHARED'::"SpaceType"
+          AND sh_inc.space_id = rec.shared_space_id
+          AND sh_inc.type = 'INCOME'::"TransactionType"
+          AND sh_inc.attributed_to_user_id = rec.owner_user_id
+          AND sh_inc.voided_at IS NULL
+          AND sh_inc.amount = rec.amount
+          AND sh_inc.currency = rec.currency
+      ) THEN
+        RAISE EXCEPTION 'CONTRIBUTION_PAIR requires matching SHARED INCOME with contributor';
+      END IF;
+    END IF;
+
+    IF rec.tx_voided IS NOT NULL AND EXISTS (
+      SELECT 1
+      FROM shared_expenses se
+      WHERE se.id = rec.shared_expense_id AND se.voided_at IS NULL
+    ) THEN
+      RAISE EXCEPTION 'voided personal transaction cannot link to active shared expense';
+    END IF;
+  END LOOP;
+
+  RETURN NULL;
+END;
+$$;
+
+CREATE CONSTRAINT TRIGGER ctrg_validate_cross_space_cash_links
+  AFTER INSERT OR UPDATE OR DELETE ON cross_space_cash_links
+  DEFERRABLE INITIALLY DEFERRED
+  FOR EACH ROW EXECUTE FUNCTION wealthspace_validate_cross_space_cash_links();
+
+CREATE CONSTRAINT TRIGGER ctrg_validate_cross_space_financial_transactions
+  AFTER INSERT OR UPDATE OR DELETE ON financial_transactions
+  DEFERRABLE INITIALLY DEFERRED
+  FOR EACH ROW EXECUTE FUNCTION wealthspace_validate_cross_space_cash_links();
+
+CREATE CONSTRAINT TRIGGER ctrg_validate_cross_space_shared_expenses
+  AFTER INSERT OR UPDATE OR DELETE ON shared_expenses
+  DEFERRABLE INITIALLY DEFERRED
+  FOR EACH ROW EXECUTE FUNCTION wealthspace_validate_cross_space_cash_links();
+
+CREATE CONSTRAINT TRIGGER ctrg_validate_cross_space_settlements
+  AFTER INSERT OR UPDATE OR DELETE ON settlements
+  DEFERRABLE INITIALLY DEFERRED
+  FOR EACH ROW EXECUTE FUNCTION wealthspace_validate_cross_space_cash_links();

@@ -38,6 +38,15 @@ export const PHASE7_MIGRATION_SQL = existsSync(PHASE7_MIGRATION_PATH)
   ? readFileSync(PHASE7_MIGRATION_PATH, 'utf8')
   : '';
 
+const PHASE8_MIGRATION_PATH = join(
+  MIGRATIONS_DIR,
+  '20261201120000_phase8_cross_space_cash_links/migration.sql',
+);
+
+export const PHASE8_MIGRATION_SQL = existsSync(PHASE8_MIGRATION_PATH)
+  ? readFileSync(PHASE8_MIGRATION_PATH, 'utf8')
+  : '';
+
 export function firstRow<T>(rows: T[]): T {
   const row = rows[0];
   if (row === undefined) {
@@ -67,6 +76,9 @@ export async function resetSchema(): Promise<void> {
     if (PHASE7_MIGRATION_SQL.length > 0) {
       await c.query(PHASE7_MIGRATION_SQL);
     }
+    if (PHASE8_MIGRATION_SQL.length > 0) {
+      await c.query(PHASE8_MIGRATION_SQL);
+    }
   });
 }
 
@@ -74,6 +86,7 @@ export async function truncateFinancialData(c: Client): Promise<void> {
   await c.query(`
     TRUNCATE TABLE
       financial_revisions,
+      cross_space_cash_links,
       expense_participants,
       shared_expenses,
       settlements,

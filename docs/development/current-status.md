@@ -1,6 +1,6 @@
 # Estado actual del desarrollo
 
-**Última actualización:** 2026-11-18 — plan fase 8 **APROBADO** ([phase-8-technical-plan.md](./phase-8-technical-plan.md) §10); gate abierto a **B-8.0**.
+**Última actualización:** 2026-11-18 — **B-8.0** borrador migración (revisión coordinación antes de aplicar en dev).
 
 Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/decisions.md) · Contratos: [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 
@@ -20,7 +20,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Espacios                          | ✅ 4.1; **4.2 C-05** pendiente UI | ✅ F-4.1                        |
 | Finanzas base                     | ✅                                | ✅ F-R2                         |
 | Gastos / saldos / liquidaciones   | ✅ B-6, B-7                       | ✅ F-6, F-7                     |
-| Cuentas vinculadas (fase 8)       | ⬜                                | ⬜                              |
+| Cuentas vinculadas (fase 8)       | 🟡 B-8.0 schema/SQL (sin deploy) | ⬜ F-8 tras B-8.10              |
 | Presupuestos / dashboard (fase 9) | ⬜                                | ⬜                              |
 
 ## Decisiones
@@ -33,8 +33,8 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 | Chat             | Tarea                                                             | Bloqueos |
 | ---------------- | ----------------------------------------------------------------- | -------- |
-| **Coordinación** | Revisar PR borrador migración B-8.0                               | —        |
-| **Backend**      | **B-8.0** borrador migración + integridad; seguir B-8.1…          | —        |
+| **Coordinación** | **Revisar SQL** `20261201120000_phase8_cross_space_cash_links`     | —        |
+| **Backend**      | Tras aprobación B-8.0: **B-8.1** dominio vínculos → B-8.2 (P-02) | —        |
 | **Frontend**     | **C-05** leave último ACTIVE (paralelo); **F-8** tras **B-8.10**  | B-8.10   |
 | **Release**      | `migrate deploy` 6+7 en cada entorno                              | —        |
 

@@ -58,6 +58,13 @@ enum TransactionType {
   OPENING_BALANCE
 }
 
+enum CrossSpaceCashLinkKind {
+  SHARED_EXPENSE_MEMBER_PAYMENT
+  SETTLEMENT_FROM_OUT
+  SETTLEMENT_TO_IN
+  CONTRIBUTION_PAIR
+}
+
 
 model User {
   id              String   @id @default(uuid()) @db.Uuid
@@ -86,6 +93,7 @@ model User {
   voidedTransactions       FinancialTransaction[] @relation("TransactionVoidedBy")
   voidedSharedExpenses     SharedExpense[]        @relation("SharedExpenseVoidedBy")
   voidedSettlements        Settlement[]           @relation("SettlementVoidedBy")
+  crossSpaceCashLinks      CrossSpaceCashLink[]
 
   @@map("users")
 }
@@ -108,6 +116,7 @@ model Space {
   financialTransactions FinancialTransaction[]
   sharedExpenses        SharedExpense[]
   settlements           Settlement[]
+  crossSpaceCashLinks   CrossSpaceCashLink[]
 
   @@map("spaces")
 }
@@ -242,6 +251,7 @@ model FinancialTransaction {
 
   sharedExpensePayment SharedExpense?      @relation("SharedExpensePayment")
   revisions            FinancialRevision[] @relation("TransactionRevisions")
+  crossSpaceCashLink   CrossSpaceCashLink?
 
   @@index([spaceId, occurredAt])
   @@index([spaceId, type, occurredAt])
@@ -276,9 +286,11 @@ model SharedExpense {
   financialTransaction FinancialTransaction? @relation("SharedExpensePayment", fields: [financialTransactionId], references: [id], onDelete: Restrict)
   category             Category?             @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 
-  participants ExpenseParticipant[]
-  revisions    FinancialRevision[]  @relation("SharedExpenseRevisions")
+  participants         ExpenseParticipant[]
+  revisions            FinancialRevision[]  @relation("SharedExpenseRevisions")
+  crossSpaceCashLinks  CrossSpaceCashLink[]
 
+  @@unique([spaceId, id])
   @@index([spaceId, occurredAt])
   @@index([spaceId, paymentSource])
   @@map("shared_expenses")
@@ -321,10 +333,37 @@ model Settlement {
   recordedBy User  @relation("SettlementRecorder", fields: [recordedByUserId], references: [id], onDelete: Restrict)
   voidedBy   User? @relation("SettlementVoidedBy", fields: [voidedByUserId], references: [id], onDelete: Restrict)
 
-  revisions FinancialRevision[] @relation("SettlementRevisions")
+  revisions             FinancialRevision[]  @relation("SettlementRevisions")
+  crossSpaceCashLinks   CrossSpaceCashLink[]
 
+  @@unique([spaceId, id])
   @@index([spaceId, occurredAt])
   @@map("settlements")
+}
+
+model CrossSpaceCashLink {
+  id                    String                 @id @default(uuid()) @db.Uuid
+  kind                  CrossSpaceCashLinkKind
+  ownerUserId           String                 @map("owner_user_id") @db.Uuid
+  personalTransactionId String                 @unique @map("personal_transaction_id") @db.Uuid
+  sharedSpaceId         String                 @map("shared_space_id") @db.Uuid
+  sharedExpenseId       String?                @map("shared_expense_id") @db.Uuid
+  settlementId          String?                @map("settlement_id") @db.Uuid
+  contributionGroupId   String?                @map("contribution_group_id") @db.Uuid
+  createdAt             DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  ownerUser           User                 @relation(fields: [ownerUserId], references: [id], onDelete: Restrict)
+  personalTransaction FinancialTransaction @relation(fields: [personalTransactionId], references: [id], onDelete: Restrict)
+  sharedSpace         Space                @relation(fields: [sharedSpaceId], references: [id], onDelete: Restrict)
+  sharedExpense       SharedExpense?       @relation(fields: [sharedSpaceId, sharedExpenseId], references: [spaceId, id], onDelete: Restrict)
+  settlement          Settlement?          @relation(fields: [sharedSpaceId, settlementId], references: [spaceId, id], onDelete: Restrict)
+
+  @@index([sharedExpenseId])
+  @@index([settlementId])
+  @@index([ownerUserId])
+  @@index([contributionGroupId])
+  @@index([sharedSpaceId])
+  @@map("cross_space_cash_links")
 }
 
 model FinancialRevision {

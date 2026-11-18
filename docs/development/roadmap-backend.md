@@ -63,13 +63,13 @@ Orden recomendado: **B-6.1** → **B-R1** → **B-6.0** (aplicar, aprobada) → 
 | B-7.3    | `POST/GET /settlements`, `POST …/void`             | ✅ P-19 + P-11 warnings                                                     |
 | B-7.4    | OpenAPI + catálogo                                 | ✅                                                                          |
 
-## B-8 — ✨ Cuentas personales vinculadas y aportaciones ⛔ (revisión plan)
+## B-8 — ✨ Cuentas personales vinculadas y aportaciones
 
-Plan detallado: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (B-8.0…B-8.10). **Gate producto:** ✅ §10. **Siguiente:** B-8.0 borrador → revisión coordinación → aplicar.
+Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (B-8.0…B-8.10). **Gate:** ✅. **Migración B-8.0:** borrador en PR — **no `migrate deploy`** hasta revisión coordinación.
 
 | Entrega | P- | Resumen |
 | ------- | -- | ------- |
-| B-8.0 | — | Migración `cross_space_cash_links` + INCOME aportante |
+| B-8.0 | — | 🟡 `20261201120000_phase8_cross_space_cash_links` + `custom-integrity.sql` + `test:db` (revisión SQL pendiente) |
 | B-8.2–3 | P-02 | Gasto MEMBER + enlace personal |
 | B-8.4–6 | P-07 | Liquidación + `link-personal-cash-flow` |
 | B-8.7 | P-05/06 | `POST …/contributions` |
