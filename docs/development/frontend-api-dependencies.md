@@ -170,6 +170,52 @@ Códigos: `SHARED_SPACE_REQUIRED`, `CROSS_SPACE_CURRENCY_MISMATCH`, `PERSONAL_AC
 
 `crossSpaceSummary` (B-8.8): `{ kind, sharedSpaceId, sharedSpaceName, sharedExpenseId?, settlementId?, contributionGroupId? }` — solo en GET de transacciones en el **PERSONAL** del titular del vínculo; nunca en rutas SHARED.
 
+## Fase 8 — catálogo consolidado (B-8.10)
+
+**Plan:** [phase-8-technical-plan.md](./phase-8-technical-plan.md). **OpenAPI:** `GET /api/v1/docs` (Swagger UI). Requiere migración **`20261201120000_phase8_cross_space_cash_links`** en el entorno (revisión coordinación antes de `migrate deploy` en dev compartido).
+
+### Endpoints nuevos (implementados)
+
+| Decisión | Método | Ruta |
+| -------- | ------ | ---- |
+| P-02 | POST | `/spaces/:spaceId/shared-expenses/:id/link-personal-payment` |
+| P-07 | POST | `/spaces/:spaceId/settlements` (ext. `personalCashFlow`) |
+| P-07 | POST | `/spaces/:spaceId/settlements/:id/link-personal-cash-flow` |
+| P-05/06 | POST | `/spaces/:spaceId/contributions` |
+| P-02 | — | `POST/PATCH shared-expenses` (`payment.personalAccountId?` en alta) |
+| B-8.8 | GET | `/spaces/:spaceId/transactions` (+ detalle) en **PERSONAL** con `crossSpaceSummary?` |
+
+**No implementado (MVP):** `GET …/settlements/link-hints` (B-8.9) — la web puede recordar la última cuenta usada en local.
+
+### Privacidad (respuestas SHARED)
+
+- No incluir `personalAccountId`, ids de transacciones PERSONAL ajenas ni saldos personales de otros.
+- Metadatos solo para la sesión: `myPersonalCashLink` (gastos y liquidaciones), `crossSpaceSummary` (solo rutas del espacio PERSONAL del usuario).
+
+### Campos de respuesta (sesión)
+
+| Recurso | Campo | Forma |
+| ------- | ----- | ----- |
+| Shared expense | `myPersonalCashLink?` | `{ linked, canLink }` — solo si `payment` es `MEMBER` y el viewer es el pagador |
+| Settlement | `myPersonalCashLink?` | `{ linked, canLink, side: "from" \| "to" }` — solo si el viewer es parte del par |
+| Contribution (201) | — | `personalLegLinked`, `contributionGroupId?`, `sharedIncomeTransactionId`; sin wallet ajeno |
+| Transaction (GET, PERSONAL) | `crossSpaceSummary?` | Ver sección Aportaciones arriba |
+
+### Códigos de error fase 8
+
+| code | HTTP | Uso |
+| ---- | ---- | --- |
+| `NOT_PAYER` | 403 | Vincular pago personal sin ser pagador |
+| `PERSONAL_LINK_NOT_ALLOWED` | 403 / 400 | Regla de negocio (rol, PATCH con `personalAccountId`, liquidación) |
+| `PERSONAL_LINK_ALREADY_EXISTS` | 409 | Segundo vínculo en el mismo lado |
+| `PERSONAL_ACCOUNT_NOT_OWNED` | 403 | Cuenta no pertenece al PERSONAL del actor (`ACCOUNT_NOT_FOUND` si id inválido) |
+| `CROSS_SPACE_CURRENCY_MISMATCH` | 400 | Moneda distinta de la cuenta destino |
+| `PERSONAL_LINK_NOT_FOUND` | 404 | Dominio interno (no expuesto en rutas nuevas) |
+| `PERSONAL_ACCOUNT_REQUIRED` | — | **Reservado** (plan); no emitido — `personalAccountId` es opcional en aportaciones |
+| `CONTRIBUTION_NOT_ALLOWED` | — | **Reservado** (plan); no emitido en B-8.7 |
+
+Los códigos de concurrencia y espacio (`VERSION_CONFLICT`, `SHARED_SPACE_REQUIRED`, etc.) se reutilizan de fases anteriores.
+
 ## No implementado todavía
 
 | Área                                                 | Fase | Contrato previsto          |

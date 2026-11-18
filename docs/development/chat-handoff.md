@@ -14,7 +14,7 @@ Usar este archivo al abrir o reiniciar un chat. Hay tres roles:
 2. [current-status.md](./current-status.md) — siguiente tarea de cada chat.
 3. El roadmap de tu área: [roadmap-backend.md](./roadmap-backend.md) o [roadmap-frontend.md](./roadmap-frontend.md).
 4. La especificación del dominio que vas a tocar: [spaces-membership-mvp.md](../product/spaces-membership-mvp.md), [shared-expenses.md](../product/shared-expenses.md), [accounts-model.md](../product/accounts-model.md) (fase 8; decisiones aprobadas, plan técnico pendiente), [domain-model.md](../product/domain-model.md).
-5. Contratos: [api-design.md](../architecture/api-design.md) (convenciones y previstos) y [frontend-api-dependencies.md](./frontend-api-dependencies.md) (implementados).
+5. Contratos: [api-design.md](../architecture/api-design.md) (convenciones y previstos) y [frontend-api-dependencies.md](./frontend-api-dependencies.md) (implementados; **§ Fase 8 — catálogo consolidado** tras B-8.10).
 6. [security.md](../architecture/security.md) y tu regla `.cursor/rules/backend.mdc` o `frontend.mdc`.
 
 ## Protocolo
