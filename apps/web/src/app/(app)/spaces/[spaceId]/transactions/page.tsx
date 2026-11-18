@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { getSessionCookieHeader, requireUser } from '@/lib/auth/session.server';
 import { rethrowUnlessSpaceFound } from '@/lib/api/page-errors.server';
 import type { TransactionType } from '@/lib/api/finance-types';
+import { listAccountsWithCookie } from '@/lib/api/accounts';
+import { listSpaceMembersWithCookie } from '@/lib/api/memberships';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { listTransactionsWithCookie } from '@/lib/api/transactions';
 import { individualExpenseHref, sharedExpenseHref } from '@/lib/finance/routes';
@@ -37,10 +39,16 @@ export default async function SpaceTransactionsPage({ params, searchParams }: Pa
       ? (typeParam as TransactionType)
       : undefined;
 
-  const transactions = await listTransactionsWithCookie(spaceId, cookieHeader, {
-    type,
-    limit: 100,
-  });
+  const [transactions, accounts, members] = await Promise.all([
+    listTransactionsWithCookie(spaceId, cookieHeader, {
+      type,
+      limit: 100,
+    }),
+    listAccountsWithCookie(spaceId, cookieHeader),
+    space.type === 'SHARED'
+      ? listSpaceMembersWithCookie(spaceId, cookieHeader)
+      : Promise.resolve([]),
+  ]);
 
   return (
     <section aria-labelledby="transactions-page-title">
@@ -63,7 +71,13 @@ export default async function SpaceTransactionsPage({ params, searchParams }: Pa
           <Link href={`/spaces/${spaceId}`}>← Espacio</Link>
         </nav>
       </header>
-      <SpaceTransactionsPanel spaceId={spaceId} transactions={transactions} activeType={type} />
+      <SpaceTransactionsPanel
+        spaceId={spaceId}
+        transactions={transactions}
+        activeType={type}
+        accounts={accounts}
+        members={members}
+      />
     </section>
   );
 }

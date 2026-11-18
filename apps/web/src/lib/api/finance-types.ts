@@ -96,6 +96,7 @@ export type UpdateTransactionInput = {
   description?: string | null;
   occurredAt?: string;
   amount?: string;
+  categoryId?: string | null;
   reason?: string;
 };
 

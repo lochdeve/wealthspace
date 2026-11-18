@@ -5,6 +5,7 @@ import { getAccountWithCookie } from '@/lib/api/accounts';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { listCategoriesWithCookie } from '@/lib/api/categories';
 import { listAccountsWithCookie } from '@/lib/api/accounts';
+import { listSpaceMembersWithCookie } from '@/lib/api/memberships';
 import { listTransactionsWithCookie } from '@/lib/api/transactions';
 import { AccountTransactionsList } from '@/components/finance/account-transactions-list';
 import { OpeningBalanceForm } from '@/components/finance/opening-balance-form';
@@ -43,13 +44,22 @@ export default async function AccountDetailPage({ params }: PageProps) {
     rethrowUnlessSpaceFound(error);
   }
 
-  const [transactions, allAccounts, incomeCategories, expenseCategories] = await Promise.all([
-    listTransactionsWithCookie(spaceId, cookieHeader, { accountId, limit: 30 }),
-    listAccountsWithCookie(spaceId, cookieHeader),
-    listCategoriesWithCookie(spaceId, cookieHeader, 'INCOME'),
-    listCategoriesWithCookie(spaceId, cookieHeader, 'EXPENSE'),
-  ]);
-  const hasOpeningBalance = transactions.some((tx) => tx.type === 'OPENING_BALANCE');
+  const [transactions, openingBalanceRows, allAccounts, incomeCategories, expenseCategories, members] =
+    await Promise.all([
+      listTransactionsWithCookie(spaceId, cookieHeader, { accountId, limit: 30 }),
+      listTransactionsWithCookie(spaceId, cookieHeader, {
+        accountId,
+        type: 'OPENING_BALANCE',
+        limit: 1,
+      }),
+      listAccountsWithCookie(spaceId, cookieHeader),
+      listCategoriesWithCookie(spaceId, cookieHeader, 'INCOME'),
+      listCategoriesWithCookie(spaceId, cookieHeader, 'EXPENSE'),
+      space.type === 'SHARED'
+        ? listSpaceMembersWithCookie(spaceId, cookieHeader)
+        : Promise.resolve([]),
+    ]);
+  const hasOpeningBalance = openingBalanceRows.length > 0;
   const transferTargets = allAccounts.filter(
     (row) => row.id !== accountId && !row.archivedAt && row.currency === account.currency,
   );
@@ -127,7 +137,12 @@ export default async function AccountDetailPage({ params }: PageProps) {
 
       <div className={styles.section}>
         <h2 className={styles.sectionHeading}>Movimientos recientes</h2>
-        <AccountTransactionsList spaceId={spaceId} transactions={transactions} />
+        <AccountTransactionsList
+          spaceId={spaceId}
+          transactions={transactions}
+          accounts={allAccounts}
+          members={members}
+        />
       </div>
 
       {!account.archivedAt ? (

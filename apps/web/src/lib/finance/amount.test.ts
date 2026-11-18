@@ -5,6 +5,11 @@ describe('amount helpers', () => {
     expect(normalizeAmountInput('  10.5  ')).toBe('10.5');
   });
 
+  it('accepts comma as decimal separator', () => {
+    expect(normalizeAmountInput('12,5')).toBe('12.5');
+    expect(isPositiveAmount(normalizeAmountInput('12,5'))).toBe(true);
+  });
+
   it('validates positive cashflow amounts', () => {
     expect(isPositiveAmount('100')).toBe(true);
     expect(isPositiveAmount('0.1234')).toBe(true);

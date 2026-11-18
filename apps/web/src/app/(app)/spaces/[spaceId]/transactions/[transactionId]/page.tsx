@@ -37,17 +37,18 @@ export default async function TransactionDetailPage({ params }: PageProps) {
     rethrowUnlessSpaceFound(error);
   }
 
-  const categories =
-    transaction.categoryId !== undefined && transaction.categoryId !== null
-      ? await listCategoriesWithCookie(spaceId, cookieHeader)
-      : [];
+  const categoryType =
+    transaction.type === 'INCOME' ? 'INCOME' : transaction.type === 'EXPENSE' ? 'EXPENSE' : null;
+  const categories = categoryType
+    ? await listCategoriesWithCookie(spaceId, cookieHeader, categoryType)
+    : [];
   const categoryLabel =
     transaction.categoryId !== undefined && transaction.categoryId !== null
       ? categoryOptionLabel(
           categories.find((row) => row.id === transaction.categoryId) ?? {
             id: transaction.categoryId,
-            type: 'EXPENSE',
-            name: transaction.categoryId,
+            type: categoryType ?? 'EXPENSE',
+            name: 'Categoría',
             createdAt: '',
             updatedAt: '',
           },
@@ -82,7 +83,7 @@ export default async function TransactionDetailPage({ params }: PageProps) {
         </div>
         <Link href={backHref}>← Cuenta</Link>
       </header>
-      <EditTransactionForm spaceId={spaceId} transaction={transaction} />
+      <EditTransactionForm spaceId={spaceId} transaction={transaction} categories={categories} />
     </article>
   );
 }

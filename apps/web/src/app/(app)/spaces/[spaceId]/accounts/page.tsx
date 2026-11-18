@@ -77,7 +77,7 @@ export default async function SpaceAccountsPage({ params, searchParams }: PagePr
                 <span>{formatMoneyAmount(account.balance, account.currency)}</span>
               </div>
               <p className={financeStyles.meta}>
-                {account.currency}
+                Alta: {new Date(account.createdAt).toLocaleDateString('es')}
                 {account.archivedAt ? ' · Archivada' : ''}
               </p>
             </li>

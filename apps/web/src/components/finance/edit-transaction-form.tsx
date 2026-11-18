@@ -2,10 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
-import type { FinancialTransaction } from '@/lib/api/finance-types';
+import type { Category, CategoryType, FinancialTransaction } from '@/lib/api/finance-types';
 import { updateTransaction } from '@/lib/api/transactions';
+import { ApiError } from '@/lib/api/errors';
 import { financeActionErrorMessage } from '@/lib/finance/finance-messages';
 import { isPositiveAmount, isSignedAmount, normalizeAmountInput } from '@/lib/finance/amount';
+import { CategorySelectField } from '@/components/finance/category-select-field';
 import { Button } from '@/components/ui/button';
 import { Field, TextInput } from '@/components/ui/field';
 import styles from './finance-forms.module.css';
@@ -14,6 +16,7 @@ import ui from '@/components/ui/ui.module.css';
 type EditTransactionFormProps = {
   spaceId: string;
   transaction: FinancialTransaction;
+  categories: Category[];
 };
 
 function toDatetimeLocalValue(iso: string): string {
@@ -22,21 +25,35 @@ function toDatetimeLocalValue(iso: string): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-export function EditTransactionForm({ spaceId, transaction }: EditTransactionFormProps) {
+function categoryTypeForTransaction(type: FinancialTransaction['type']): CategoryType | null {
+  if (type === 'INCOME') {
+    return 'INCOME';
+  }
+  if (type === 'EXPENSE') {
+    return 'EXPENSE';
+  }
+  return null;
+}
+
+export function EditTransactionForm({ spaceId, transaction, categories }: EditTransactionFormProps) {
   const router = useRouter();
   const [amount, setAmount] = useState(transaction.amount);
   const [description, setDescription] = useState(transaction.description ?? '');
   const [occurredAt, setOccurredAt] = useState(toDatetimeLocalValue(transaction.occurredAt));
+  const [categoryId, setCategoryId] = useState(transaction.categoryId ?? '');
   const [reason, setReason] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
+  const [savedNotice, setSavedNotice] = useState(false);
   const [pending, setPending] = useState(false);
 
   const allowSigned = transaction.type === 'OPENING_BALANCE';
+  const categoryType = categoryTypeForTransaction(transaction.type);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormError(null);
+    setSavedNotice(false);
     const normalized = normalizeAmountInput(amount);
     const errors: Record<string, string> = {};
     const validAmount = allowSigned ? isSignedAmount(normalized) : isPositiveAmount(normalized);
@@ -57,10 +74,15 @@ export function EditTransactionForm({ spaceId, transaction }: EditTransactionFor
         amount: normalized,
         description: description.trim() || null,
         occurredAt: new Date(occurredAt).toISOString(),
+        categoryId: categoryType ? categoryId || null : undefined,
         reason: reason.trim() || undefined,
       });
+      setSavedNotice(true);
       router.refresh();
     } catch (error) {
+      if (error instanceof ApiError && error.code === 'VERSION_CONFLICT') {
+        router.refresh();
+      }
       setFormError(financeActionErrorMessage(error));
     } finally {
       setPending(false);
@@ -70,13 +92,22 @@ export function EditTransactionForm({ spaceId, transaction }: EditTransactionFor
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       <h2 className={styles.sectionTitle}>Editar movimiento</h2>
-      <p className={styles.meta}>Versión actual: {transaction.version}</p>
+      {savedNotice ? (
+        <p className={ui.alertSuccess} role="status">
+          Cambios guardados.
+        </p>
+      ) : null}
       {formError ? (
         <p className={ui.alert} role="alert">
           {formError}
         </p>
       ) : null}
-      <Field id="tx-amount" label="Importe" error={fieldErrors.amount}>
+      <Field
+        id="tx-amount"
+        label="Importe"
+        error={fieldErrors.amount}
+        hint="Puedes usar coma o punto para los decimales."
+      >
         <TextInput
           id="tx-amount"
           inputMode="decimal"
@@ -105,6 +136,17 @@ export function EditTransactionForm({ spaceId, transaction }: EditTransactionFor
           required
         />
       </Field>
+      {categoryType ? (
+        <CategorySelectField
+          id="tx-category"
+          spaceId={spaceId}
+          categories={categories}
+          categoryType={categoryType}
+          value={categoryId}
+          onChange={setCategoryId}
+          disabled={pending}
+        />
+      ) : null}
       <Field id="tx-reason" label="Motivo del cambio (opcional)">
         <TextInput
           id="tx-reason"

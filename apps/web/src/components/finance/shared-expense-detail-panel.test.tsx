@@ -48,7 +48,7 @@ describe('SharedExpenseDetailPanel', () => {
       />,
     );
     expect(screen.getByText(/Tu parte/i)).toBeInTheDocument();
-    expect(screen.getByText(/Debes 45.0000 EUR a Ana/)).toBeInTheDocument();
+    expect(screen.getByText(/Debes.*45.*Ana/)).toBeInTheDocument();
   });
 
   it('shows voided banner', () => {

@@ -42,6 +42,7 @@ export function SpaceSwitcher({ activeSpaceId }: SpaceSwitcherProps) {
         return;
       }
       await setActiveSpaceId(nextId);
+      router.push(`/spaces/${nextId}`);
       router.refresh();
     },
     [router],
