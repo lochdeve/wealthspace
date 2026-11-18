@@ -156,9 +156,21 @@ Requiere migración `20261117160000_phase7_settlements_void` aplicada en el ento
 
 Códigos: `SHARED_SPACE_REQUIRED`, `SETTLEMENT_SAME_USER`, `SETTLEMENT_USER_NOT_MEMBER`, `SETTLEMENT_NOT_FOUND` (404), `SETTLEMENT_FORBIDDEN`, `VERSION_CONFLICT`, `ALREADY_VOIDED`, `PERSONAL_LINK_NOT_ALLOWED`, `PERSONAL_LINK_ALREADY_EXISTS`.
 
+### Aportaciones (fase 8 — B-8.7, P-05/P-06)
+
+Espacio **SHARED**; el actor aporta en su propio nombre.
+
+| Recurso | Método | Ruta | Notas |
+| ------- | ------ | ---- | ----- |
+| Aportar | POST | `/spaces/:spaceId/contributions` | Body: `sharedAccountId`, `amount`, `currency`, `occurredAt?`, `personalAccountId?`, `note?` |
+
+Con `personalAccountId`: `INCOME` en cuenta SHARED con `attributedToUserId` = actor + `EXPENSE` en PERSONAL + `CONTRIBUTION_PAIR` (`contributionGroupId` en respuesta). Sin `personalAccountId`: solo `INCOME` en cuenta compartida (sin aportante en atributos). Respuesta sin id de cuenta personal ajena.
+
+Códigos: `SHARED_SPACE_REQUIRED`, `CROSS_SPACE_CURRENCY_MISMATCH`, `PERSONAL_ACCOUNT_NOT_OWNED` (403), `PARTICIPANT_NOT_MEMBER`.
+
 ## No implementado todavía
 
-| Área                                                 | Fase | Contrato previsto                                               |
-| ---------------------------------------------------- | ---- | --------------------------------------------------------------- |
-| Cuentas personales vinculadas, aportaciones          | 8    | En análisis ([accounts-model.md](../product/accounts-model.md)) |
-| Presupuestos, informes, dashboard, edición de perfil | 9    | Pendiente (P-17)                                                |
+| Área                                                 | Fase | Contrato previsto          |
+| ---------------------------------------------------- | ---- | -------------------------- |
+| `crossSpaceSummary` en lecturas PERSONAL (B-8.8)     | 8    | Detalle/listado transacciones |
+| Presupuestos, informes, dashboard, edición de perfil | 9    | Pendiente (P-17)           |

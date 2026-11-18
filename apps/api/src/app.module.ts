@@ -11,6 +11,7 @@ import { TransactionsModule } from './transactions/transactions.module';
 import { SharedExpensesModule } from './shared-expenses/shared-expenses.module';
 import { BalancesModule } from './balances/balances.module';
 import { SettlementsModule } from './settlements/settlements.module';
+import { ContributionsModule } from './contributions/contributions.module';
 import { CrossSpaceCashLinksModule } from './cross-space-cash-links/cross-space-cash-links.module';
 
 @Module({
@@ -27,6 +28,7 @@ import { CrossSpaceCashLinksModule } from './cross-space-cash-links/cross-space-
     SharedExpensesModule,
     BalancesModule,
     SettlementsModule,
+    ContributionsModule,
     CrossSpaceCashLinksModule,
   ],
 })
