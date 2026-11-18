@@ -34,7 +34,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Chat             | Tarea                                                             | Bloqueos |
 | ---------------- | ----------------------------------------------------------------- | -------- |
 | **Coordinación** | — (fase 8 código cerrado salvo bugs)                              | —        |
-| **Backend**      | Deuda menor API; soporte F-8; **no** fase 9 hasta acuerdo           | —        |
+| **Backend**      | Fase 8 **cerrada** (código + tests); deuda menor API; **no** fase 9 sin acuerdo | —        |
 | **Frontend**     | **F-9** ⛔ o mantenimiento; E2E local fase 8 | P-17 / B-9 |
 | **Release**      | Incluir **migrate deploy** fase 8 en entornos compartidos / CI      | —        |
 

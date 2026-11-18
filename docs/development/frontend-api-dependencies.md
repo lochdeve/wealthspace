@@ -172,7 +172,7 @@ Códigos: `SHARED_SPACE_REQUIRED`, `CROSS_SPACE_CURRENCY_MISMATCH`, `PERSONAL_AC
 
 ## Fase 8 — catálogo consolidado (B-8.10)
 
-**Plan:** [phase-8-technical-plan.md](./phase-8-technical-plan.md). **OpenAPI:** `GET /api/v1/docs` (Swagger UI). Requiere migración **`20261201120000_phase8_cross_space_cash_links`** en el entorno (revisión coordinación antes de `migrate deploy` en dev compartido).
+**Plan:** [phase-8-technical-plan.md](./phase-8-technical-plan.md). **OpenAPI:** `GET /api/v1/docs` (Swagger UI). Requiere migración **`20261201120000_phase8_cross_space_cash_links`** aplicada en el entorno (`pnpm --filter @wealthspace/api exec prisma migrate deploy`).
 
 ### Endpoints nuevos (implementados)
 

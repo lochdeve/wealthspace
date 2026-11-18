@@ -65,11 +65,11 @@ Orden recomendado: **B-6.1** → **B-R1** → **B-6.0** (aplicar, aprobada) → 
 
 ## B-8 — ✨ Cuentas personales vinculadas y aportaciones
 
-Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (B-8.0…B-8.10). **Gate:** ✅. **Migración B-8.0:** borrador en PR — **no `migrate deploy`** hasta revisión coordinación.
+Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (B-8.0…B-8.10). **Gate:** ✅. **Migración B-8.0:** ✅ aprobada — `migrate deploy` en cada entorno (ver README migración).
 
 | Entrega | P- | Resumen |
 | ------- | -- | ------- |
-| B-8.0 | — | 🟡 `20261201120000_phase8_cross_space_cash_links` (revisión SQL pendiente) |
+| B-8.0 | — | ✅ `20261201120000_phase8_cross_space_cash_links` |
 | B-8.1 | — | ✅ dominio `CrossSpaceCashLinksService` + titularidad personal |
 | B-8.2 | P-02 | Gasto MEMBER + `link-personal-payment` ✅ |
 | B-8.3 | P-02 | Propagación void/PATCH vínculo personal ✅ |

@@ -21,7 +21,7 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 | 6    | Gastos compartidos con reparto                                 | ✅  | ✅  | Migraciones `20261115183000`.                             |
 | 7    | Saldos y liquidaciones                                         | ✅  | ✅  | Migración `20261117160000`; E2E SHARED local.             |
 | 4.1  | Transferencia de ownership                                     | ✅  | ✅  | B-4.1 + F-4.1.                                            |
-| 8    | Cuentas personales vinculadas y aportaciones                   | 🟡 | ⬜  | API B-8 ✅; migración 8 aprobada; **F-8** en curso. |
+| 8    | Cuentas personales vinculadas y aportaciones                   | ✅ | ✅  | B-8.0…B-8.10 + F-8; `migrate deploy` local por máquina. |
 | 9    | Presupuestos, informes y dashboard                             | ⬜  | ⬜  | P-17 aprobado; falta perfil/`Budget`.                     |
 | 10   | Preparación para producción                                    | ⬜  | ⬜  | E2E en CI, hardening, despliegue.                         |
 
