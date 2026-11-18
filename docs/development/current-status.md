@@ -1,6 +1,6 @@
 # Estado actual del desarrollo
 
-**Última actualización:** 2026-11-18 — decisiones fase 8 aprobadas (cuestionario); gate plan técnico.
+**Última actualización:** 2026-11-18 — plan técnico fase 8 en [phase-8-technical-plan.md](./phase-8-technical-plan.md) (**revisión pendiente**).
 
 Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/decisions.md) · Contratos: [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 
@@ -27,15 +27,15 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 **Aprobadas hoy:** P-01…P-07, P-17, C-05 (4.2). Detalle: [decisions.md §2e](../product/decisions.md#2e-decisiones-aprobadas--fase-8-cuentas-vinculadas-2026-11-18).
 
-**Gate fase 8:** revisión del plan técnico B-8/F-8 en coordinación antes de codificar.
+**Gate fase 8:** tu **OK** al [plan técnico](./phase-8-technical-plan.md) (§10) antes de B-8.0 / código.
 
 ## Siguiente tarea por chat
 
 | Chat             | Tarea                                                             | Bloqueos |
 | ---------------- | ----------------------------------------------------------------- | -------- |
-| **Coordinación** | Redactar plan técnico fase 8 (entregas, migración, privacidad)    | Tu OK    |
-| **Backend**      | B-8 tras plan; deuda menor API                                    | Plan     |
-| **Frontend**     | F-8 tras catálogo; **C-05** confirmación leave último ACTIVE; E2E | Plan     |
+| **Coordinación** | Cerrar revisión del plan (§10) y marcar APROBADO                    | Tu OK    |
+| **Backend**      | **B-8.0** borrador migración tras OK; deuda menor API             | Plan OK  |
+| **Frontend**     | **C-05** confirmación leave último ACTIVE (paralelo); F-8 tras B-8.10 | Plan OK  |
 | **Release**      | `migrate deploy` 6+7 en cada entorno                              | —        |
 
 ## Notas operativas

@@ -1,6 +1,6 @@
 # Roadmap frontend (`apps/web`)
 
-Entregas del chat de frontend. Las fases, sus dependencias y los criterios globales están en [roadmap.md](./roadmap.md); aquí solo el detalle de la web. Estado verificado el 2026-11-15.
+Entregas del chat de frontend. Las fases, sus dependencias y los criterios globales están en [roadmap.md](./roadmap.md); aquí solo el detalle de la web. Estado verificado el 2026-11-18.
 
 Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · ✨ nueva · ⛔ bloqueada (por la API o por una decisión).
 
@@ -8,12 +8,12 @@ Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · 
 
 ## Hecho (fases 3–5)
 
-| Área     | Implementado                                                                                                                                                                               | Rama   |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| Auth     | `/login`, `/register`, layout protegido `(app)`, logout                                                                                                                                    | `main` |
-| Espacios | `/spaces`, `/spaces/new`, `/spaces/[id]` (miembros, invitaciones, leave/remove), `/invitations`, selector de espacio activo                                                                | `main` |
-| Finanzas | `/accounts`, `/spaces/[id]/accounts` (+ `new`, `[accountId]`), categorías, `/spaces/[id]/transactions` (+ detalle con edición), transferencias, saldo inicial, `/spaces/[id]/expenses/new` | `main` |
-| Tests    | Vitest para helpers (`lib/api`, `lib/spaces`, `lib/finance`); Playwright `e2e/auth.spec.ts`, `e2e/home.spec.ts` (fuera de la CI)                                                           | —      |
+| Área     | Implementado                                                                                                                            | Rama   |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Auth     | `/login`, `/register`, layout protegido `(app)`, logout                                                                                 | `main` |
+| Espacios | `/spaces`, `/spaces/new`, `/spaces/[id]` (miembros, invitaciones, leave/remove), `/invitations`, selector de espacio activo             | `main` |
+| Finanzas | Cuentas, categorías, movimientos; gasto compartido `/expenses/new`; gasto individual `/expenses/individual/new`; saldos y liquidaciones | `main` |
+| Tests    | Vitest para helpers (`lib/api`, `lib/spaces`, `lib/finance`); Playwright `e2e/auth.spec.ts`, `e2e/home.spec.ts` (fuera de la CI)        | —      |
 
 `/dashboard` redirige a `/spaces`; no hay dashboard financiero.
 
@@ -41,8 +41,8 @@ Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · 
 
 ## F-7 — ✨ Saldos y liquidaciones (tras B-7.2+ en API)
 
-| Entrega | Contenido                                                                                                      | Aceptación                                                         |
-| ------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Entrega  | Contenido                                                                                                      | Aceptación                                                         |
+| -------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | F-7.1 ✅ | Vista «Saldos»: quién debe a quién (neto) y saldo por miembro, por moneda; destacar lo que me afecta           | Ejemplo de referencia: «Carlos debe 25 € a Ana» tras liquidar 15 € |
 | F-7.2 ✅ | «Registrar pago» desde una deuda (importe sugerido = pendiente, editable; aviso si supera la deuda según P-11) | Liquidación parcial y completa                                     |
 | F-7.3 ✅ | Listado de liquidaciones y anulación                                                                           | Anular restaura la deuda en la vista                               |
@@ -51,7 +51,13 @@ Copy: «Registrar pago» o «Liquidar», nunca «Confirmar». Mensaje fijo: «We
 
 ## F-8 — ✨ Cuentas personales vinculadas y aportaciones ⛔ (B-8)
 
-Opción «pagado desde mi cuenta…» (solo mis cuentas personales), aportaciones a la cuenta común, movimientos personal ↔ compartida. Se detallará al aprobar [accounts-model.md](../product/accounts-model.md).
+Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (F-8.1…F-8.7). Tras B-8.10.
+
+| Entrega | Resumen |
+| ------- | ------- |
+| F-8.1–2 | P-02 selector cuenta pagador + CTA vincular después |
+| F-8.3–4 | P-07 liquidación + aviso acreedor «anotar cobro» |
+| F-8.5–6 | Aportaciones + badge movimientos PERSONAL |
 
 ## F-9 — ✨ Presupuestos, informes, dashboard y perfil ⛔ (B-9)
 

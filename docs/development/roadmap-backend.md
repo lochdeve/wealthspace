@@ -1,6 +1,6 @@
 # Roadmap backend (`apps/api`)
 
-Entregas del chat de backend. Las fases, sus dependencias y los criterios globales están en [roadmap.md](./roadmap.md); aquí solo el detalle del API. Estado verificado el 2026-11-15.
+Entregas del chat de backend. Las fases, sus dependencias y los criterios globales están en [roadmap.md](./roadmap.md); aquí solo el detalle del API. Estado verificado el 2026-11-18.
 
 Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · ✨ nueva · ⛔ bloqueada por una decisión.
 
@@ -47,25 +47,33 @@ Orden recomendado: **B-6.1** → **B-R1** → **B-6.0** (aplicar, aprobada) → 
 
 ## B-R1 — 🔧 Peticiones de la auditoría web (después de B-6.1, antes de B-6.2)
 
-| Entrega | Contenido                                                                                        | Aceptación                                                                                |
-| ------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| B-R1.1  | `categoryId` en `PATCH /spaces/:spaceId/transactions/:txId` (C-02)                               | ✅ tests integración (set/clear, 404 foreign cat, tipo incompatible, 409 versión)       |
-| B-R1.2  | `code: "VALIDATION_ERROR"` (+ campo afectado si es viable) en los 400 de `ValidationPipe` (C-03) | ✅ auth + PATCH tx; OpenAPI auth/invitations/transactions                               |
-| B-R1.3  | `INVITATION_NOT_FOUND` (404 aceptar/rechazar) en catálogo                                        | ✅ catálogo + tests integración + OpenAPI                                                |
+| Entrega | Contenido                                                                                        | Aceptación                                                                        |
+| ------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| B-R1.1  | `categoryId` en `PATCH /spaces/:spaceId/transactions/:txId` (C-02)                               | ✅ tests integración (set/clear, 404 foreign cat, tipo incompatible, 409 versión) |
+| B-R1.2  | `code: "VALIDATION_ERROR"` (+ campo afectado si es viable) en los 400 de `ValidationPipe` (C-03) | ✅ auth + PATCH tx; OpenAPI auth/invitations/transactions                         |
+| B-R1.3  | `INVITATION_NOT_FOUND` (404 aceptar/rechazar) en catálogo                                        | ✅ catálogo + tests integración + OpenAPI                                         |
 
 ## B-7 — ✨ Saldos y liquidaciones (P-10…P-19 aprobados 2026-11-15)
 
-| Entrega  | Contenido                                                                         | Aceptación                                                          |
-| -------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| B-7.0 🔧 | Migración `20261117160000_phase7_settlements_void`                              | ✅ `test:db`; **`migrate deploy` en dev local**; coordinación en release/CI |
-| B-7.1    | `computeSpaceBalances`                                                            | ✅                                                                  |
-| B-7.2    | `GET /balances`                                                                   | ✅                                                                  |
-| B-7.3    | `POST/GET /settlements`, `POST …/void`                                            | ✅ P-19 + P-11 warnings                                             |
-| B-7.4    | OpenAPI + catálogo                                                                | ✅                                                                  |
+| Entrega  | Contenido                                          | Aceptación                                                                  |
+| -------- | -------------------------------------------------- | --------------------------------------------------------------------------- |
+| B-7.0 🔧 | Migración `20261117160000_phase7_settlements_void` | ✅ `test:db`; **`migrate deploy` en dev local**; coordinación en release/CI |
+| B-7.1    | `computeSpaceBalances`                             | ✅                                                                          |
+| B-7.2    | `GET /balances`                                    | ✅                                                                          |
+| B-7.3    | `POST/GET /settlements`, `POST …/void`             | ✅ P-19 + P-11 warnings                                                     |
+| B-7.4    | OpenAPI + catálogo                                 | ✅                                                                          |
 
-## B-8 — ✨ Cuentas personales vinculadas y aportaciones ⛔ (accounts-model)
+## B-8 — ✨ Cuentas personales vinculadas y aportaciones ⛔ (revisión plan)
 
-Diseño de referencia: [accounts-model.md](../product/accounts-model.md). Se detallará en entregas al aprobarse. Requisitos no negociables: transacción única para ambos lados del vínculo, verificación de titularidad y tests de no filtración de datos personales en las respuestas del espacio SHARED.
+Plan detallado: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (B-8.0…B-8.10). **Gate:** OK producto en §10 del plan antes de migración.
+
+| Entrega | P- | Resumen |
+| ------- | -- | ------- |
+| B-8.0 | — | Migración `cross_space_cash_links` + INCOME aportante |
+| B-8.2–3 | P-02 | Gasto MEMBER + enlace personal |
+| B-8.4–6 | P-07 | Liquidación + `link-personal-cash-flow` |
+| B-8.7 | P-05/06 | `POST …/contributions` |
+| B-8.10 | — | OpenAPI + catálogo |
 
 ## B-9 — ✨ Presupuestos, informes y perfil ⛔ (P-17)
 

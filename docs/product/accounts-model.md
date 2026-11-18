@@ -1,6 +1,6 @@
 # Modelo de cuentas — análisis y recomendación
 
-**Estado: DECISIONES APROBADAS (2026-11-18).** P-01…P-07 y P-17 en [decisions.md §2e](./decisions.md#2e-decisiones-aprobadas--fase-8-cuentas-vinculadas-2026-11-18). **No implementar** código hasta revisión del plan técnico B-8/F-8 en coordinación.
+**Estado: DECISIONES APROBADAS (2026-11-18).** P-01…P-07 y P-17 en [decisions.md §2e](./decisions.md#2e-decisiones-aprobadas--fase-8-cuentas-vinculadas-2026-11-18). Plan técnico: [phase-8-technical-plan.md](../development/phase-8-technical-plan.md) (**revisión pendiente**). No implementar código hasta OK del plan.
 
 ---
 
@@ -57,7 +57,7 @@ Carlos hace un Bizum de 15 € a Ana.
 
 - Se registra una **liquidación** Carlos → Ana de 15 € en el espacio SHARED. La deuda pasa de 40 € a 25 €.
 - Cuentas: en MVP, ninguna (P-07). Opcionalmente, Carlos y Ana registran cada uno el movimiento en su espacio personal.
-- Ampliación futura (P-07): quien registra la liquidación puede vincular un movimiento en **su propia** cuenta personal (Carlos: salida; Ana, si la registra ella: entrada). Nadie puede escribir en el espacio personal de otro.
+- Fase 8 (P-07): Carlos puede vincular **−15 €** al registrar; Ana debe poder **+15 €** en su PERSONAL si confirma el cobro (mismo alta si ella registra, o CTA/aviso si registra Carlos). La web **facilita** esa entrada al pagar «tu parte» al acreedor del adelanto; sin confirmación de Ana, su cuenta no sube sola.
 - Presupuestos: la liquidación no es consumo; no debe contar como gasto en el presupuesto de Carlos (su consumo de 40 € ya se reconoció con su participación).
 
 ### E5. Varios miembros aportan dinero a una cuenta compartida
@@ -86,7 +86,7 @@ María pasa 100 € de su «Nómina» a «Bote», o se le devuelven 50 € desde
 | ¿Cómo usa un espacio una cuenta personal sin ver su saldo e historial?                          | No la usa directamente: el **pagador** vincula su cuenta y la API crea el movimiento en el espacio personal. El espacio compartido solo ve el hecho «pagado por Ana». (P-02)                                                                     |
 | ¿Cómo se registran los movimientos de una cuenta personal que financia un gasto compartido?     | Movimiento de salida en el espacio PERSONAL, vinculado al gasto, gestionado por el ciclo de vida del gasto (editar o anular lo propaga).                                                                                                         |
 | ¿Cómo funcionan las cuentas comunes, sus aportaciones, saldos e historial?                      | Cuenta del espacio SHARED; saldo on-read; aportaciones con aportante identificado (P-05); gastos pagados con ella sin deudas (P-04).                                                                                                             |
-| ¿Cómo se representan las liquidaciones y transferencias entre cuentas personales y compartidas? | Liquidación: entidad propia del espacio SHARED, sin movimientos en MVP (P-07). Personal ↔ compartida: dos movimientos vinculados, no `TRANSFER` (P-06).                                                                                         |
+| ¿Cómo se representan las liquidaciones y transferencias entre cuentas personales y compartidas? | Liquidación: entidad SHARED; fase 7 sin movimientos; fase 8 P-07 opcional por lado (entrada acreedor con su confirmación). Personal ↔ compartida: dos movimientos vinculados, no `TRANSFER` (P-06).                                                                                         |
 
 ## 4. Consecuencias de la recomendación
 
@@ -107,4 +107,4 @@ María pasa 100 € de su «Nómina» a «Bote», o se le devuelven 50 € desde
 2. **Fase 8**: vínculos personales (P-02, P-06, P-07) y aportaciones (P-05), después de aprobar este documento.
 3. **Fase 9**: presupuestos e informes con P-17 resuelto.
 
-P-03 y P-04, las únicas necesarias para la fase 6, están **aprobadas** (2026-11-15). El resto de este documento sigue en análisis.
+P-03 y P-04 para la fase 6 están **aprobadas** (2026-11-15). P-01…P-07 para la fase 8 cerradas en §2e; detalle de entrega en el plan técnico.

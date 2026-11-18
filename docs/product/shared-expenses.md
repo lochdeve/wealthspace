@@ -2,7 +2,7 @@
 
 Especificación funcional para espacios **SHARED**. Decisiones referenciadas por ID en [decisions.md](./decisions.md). Contrato API previsto: [api-design.md](../architecture/api-design.md#gastos-compartidos-deudas-y-liquidaciones-previsto).
 
-**Estado de implementación (2026-11-15):** nada de este documento está implementado en API ni en web. Las tablas `shared_expenses`, `expense_participants` y `settlements` existen en el esquema y en la migración inicial, con triggers de integridad probados, pero ningún endpoint ni pantalla las usa todavía.
+**Estado de implementación (2026-11-18):** fases **6 y 7** implementadas en API y web (gastos compartidos, `GET /balances`, liquidaciones, anulaciones). Contratos en [frontend-api-dependencies.md](../development/frontend-api-dependencies.md). E2E local en `apps/web/e2e/shared-expenses-balances-settlements.spec.ts`.
 
 ---
 
@@ -104,7 +104,7 @@ Las deudas cambian automáticamente cuando se edita o anula un gasto o una liqui
 - Liquidar más de lo pendiente: **permitido** (P-11); la API no rechaza por sobrepago; puede devolver aviso `SETTLEMENT_EXCEEDS_PENDING_DEBT`; el saldo neto puede cambiar de sentido.
 - Fecha `occurredAt` declarada del pago; liquidaciones con **ex-miembros** permitidas (P-19).
 - Permisos: P-10 (registrar/anular).
-- No crean movimientos en cuentas en MVP (P-07).
+- No crean movimientos en cuentas en MVP (fase 7). En fase 8 (P-07), vínculo opcional de caja personal por lado; la web debe **facilitar** al **acreedor** anotar la **entrada** cuando un deudor paga su parte, si el acreedor confirma que lo recibió.
 
 ## 8. Ejemplo de referencia (criterio de aceptación de las fases 6 y 7)
 
@@ -126,7 +126,7 @@ Carlos registra una liquidación de 15 € a Ana:
 
 Si después se anula esa liquidación, la deuda de Carlos vuelve a 40 €. Si se edita el gasto a 90 €, las participaciones pasan a 30 € y, con la liquidación de 15 € vigente, Carlos debe 15 € y María 30 €.
 
-La cuenta personal de Ana tampoco cambia salvo que registre el pago (hoy, como gasto propio en su espacio personal; en el futuro, con el vínculo de P-02).
+En fase 7, la cuenta personal de Ana no cambia con la liquidación. En fase 8 (P-07), al cobrar (p. ej. los 15 € de Carlos), la UI le facilita **+15 €** en su cuenta personal si confirma el cobro (espejo del **−120 €** del adelanto con P-02).
 
 ## 9. Edición, anulación e historial (A-05)
 

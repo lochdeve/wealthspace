@@ -13,7 +13,7 @@ Usar este archivo al abrir o reiniciar un chat. Hay tres roles:
 1. [decisions.md](../product/decisions.md) — qué está aprobado y qué no.
 2. [current-status.md](./current-status.md) — siguiente tarea de cada chat.
 3. El roadmap de tu área: [roadmap-backend.md](./roadmap-backend.md) o [roadmap-frontend.md](./roadmap-frontend.md).
-4. La especificación del dominio que vas a tocar: [spaces-membership-mvp.md](../product/spaces-membership-mvp.md), [shared-expenses.md](../product/shared-expenses.md), [accounts-model.md](../product/accounts-model.md) (en análisis), [domain-model.md](../product/domain-model.md).
+4. La especificación del dominio que vas a tocar: [spaces-membership-mvp.md](../product/spaces-membership-mvp.md), [shared-expenses.md](../product/shared-expenses.md), [accounts-model.md](../product/accounts-model.md) (fase 8; decisiones aprobadas, plan técnico pendiente), [domain-model.md](../product/domain-model.md).
 5. Contratos: [api-design.md](../architecture/api-design.md) (convenciones y previstos) y [frontend-api-dependencies.md](./frontend-api-dependencies.md) (implementados).
 6. [security.md](../architecture/security.md) y tu regla `.cursor/rules/backend.mdc` o `frontend.mdc`.
 

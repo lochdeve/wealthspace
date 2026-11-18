@@ -14,7 +14,7 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 | 1    | Fundación backend                                              | ✅  | —   |                                                           |
 | 2    | Autenticación API                                              | ✅  | —   | Sin `PATCH` perfil/zona horaria.                          |
 | 3    | Autenticación web                                              | —   | ✅  | E2E auth local.                                           |
-| 4    | Espacios, invitaciones, membresía                              | ✅  | ✅  | **4.2** (último ACTIVE) sin decisión ni implementación.   |
+| 4    | Espacios, invitaciones, membresía                              | ✅  | 🟡  | **4.2 C-05** aprobado; UI confirmación fuerte pendiente.  |
 | 5    | Cuentas, categorías, movimientos                               | ✅  | ✅  | Gasto individual + compartido en rutas distintas.         |
 | R1   | Cierre decisiones producto fases 6–7                           | ✅  | ✅  | P-03…P-16 y P-10…P-19 aprobados.                          |
 | R2   | Alineación fase 5 (F-R2, C-01…C-04)                            | ✅  | ✅  |                                                           |
@@ -82,9 +82,9 @@ Criterios de aceptación: ver [shared-expenses.md](../product/shared-expenses.md
 
 ### Fase 8 — ✨ Cuentas personales vinculadas
 
-**Gate:** aprobar P-01, P-02, P-05, P-06 (mínimo); P-07 opcional en MVP. Ver [accounts-model.md](../product/accounts-model.md).
+**Gate:** [phase-8-technical-plan.md](./phase-8-technical-plan.md) aprobado por producto (decisiones P-01…P-07 ya en [decisions.md §2e](../product/decisions.md#2e-decisiones-aprobadas--fase-8-cuentas-vinculadas-2026-11-18)). Referencia: [accounts-model.md](../product/accounts-model.md).
 
-**Aceptación (provisional):** pago de gasto compartido desde cuenta personal con movimiento vinculado; sin filtración de datos de cuenta personal en respuestas SHARED.
+**Aceptación (provisional):** P-02 (salida del pagador al adelantar); P-05/P-06 (aportaciones y personal↔común); P-07 (vínculos de liquidación por lado + UX que facilite entrada al acreedor); tests de no filtración en respuestas SHARED.
 
 ### Fase 9 — ✨ Presupuestos, informes y dashboard
 
@@ -96,13 +96,13 @@ E2E en CI, rate limiting, revisión de seguridad, backups, políticas.
 
 ### 4.2 — Último miembro ACTIVE
 
-**Gate:** decisión de producto (propuesta `LAST_ACTIVE_MEMBER`). No implementado.
+**C-05 aprobado:** leave permitido con confirmación fuerte (no 409 `LAST_ACTIVE_MEMBER`). Pendiente implementación en web.
 
 ## 4. Riesgos activos
 
 | Riesgo                                           | Mitigación                                          |
 | ------------------------------------------------ | --------------------------------------------------- |
-| Fase 8 sin decisiones → implementación inventada | Aprobar P-01…P-06 en coordinación antes de B-8/F-8  |
+| Fase 8 sin plan → contratos improvisados         | Plan técnico B-8/F-8 revisado antes de codificar    |
 | Fuga de datos al vincular cuentas personales     | Tests de no filtración obligatorios en B-8          |
 | Informes sin P-17                                | No iniciar presupuestos/dashboard                   |
 | Drift de migraciones                             | `test:db` en CI; borrador → aprobación coordinación |
