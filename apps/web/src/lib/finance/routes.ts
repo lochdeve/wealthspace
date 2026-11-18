@@ -1,4 +1,15 @@
+import type { TransactionType } from '@/lib/api/finance-types';
 import { toQueryString } from '@/lib/api/query';
+
+export function spaceTransactionsHref(
+  spaceId: string,
+  query?: { accountId?: string; type?: TransactionType },
+): string {
+  return `/spaces/${spaceId}/transactions${toQueryString({
+    accountId: query?.accountId,
+    type: query?.type,
+  })}`;
+}
 
 export function individualExpenseHref(spaceId: string, accountId?: string): string {
   return `/spaces/${spaceId}/expenses/individual/new${toQueryString({ accountId })}`;

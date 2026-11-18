@@ -6,6 +6,7 @@ import {
   sharedExpenseHref,
   sharedExpensesHref,
   spaceBalancesHref,
+  spaceTransactionsHref,
 } from './routes';
 
 describe('individualExpenseHref', () => {
@@ -41,6 +42,14 @@ describe('sharedExpensesHref', () => {
 describe('sharedExpenseDetailHref', () => {
   it('points to expense detail', () => {
     expect(sharedExpenseDetailHref('space-1', 'exp-9')).toBe('/spaces/space-1/expenses/exp-9');
+  });
+});
+
+describe('spaceTransactionsHref', () => {
+  it('filters by account', () => {
+    expect(spaceTransactionsHref('space-1', { accountId: 'acc-9' })).toBe(
+      '/spaces/space-1/transactions?accountId=acc-9',
+    );
   });
 });
 

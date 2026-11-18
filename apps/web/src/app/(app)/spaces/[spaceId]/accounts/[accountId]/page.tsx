@@ -1,19 +1,15 @@
 import Link from 'next/link';
 import { getSessionCookieHeader, requireUser } from '@/lib/auth/session.server';
 import { rethrowUnlessSpaceFound } from '@/lib/api/page-errors.server';
-import { getAccountWithCookie } from '@/lib/api/accounts';
+import { getAccountWithCookie, listAccountsWithCookie } from '@/lib/api/accounts';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { listCategoriesWithCookie } from '@/lib/api/categories';
-import { listAccountsWithCookie } from '@/lib/api/accounts';
 import { listSpaceMembersWithCookie } from '@/lib/api/memberships';
 import { listTransactionsWithCookie } from '@/lib/api/transactions';
+import { AccountDetailOperations } from '@/components/finance/account-detail-operations';
 import { AccountTransactionsList } from '@/components/finance/account-transactions-list';
-import { OpeningBalanceForm } from '@/components/finance/opening-balance-form';
-import { RecordCashflowForm } from '@/components/finance/record-cashflow-form';
-import { ArchiveAccountButton } from '@/components/finance/archive-account-button';
-import { RecordTransferForm } from '@/components/finance/record-transfer-form';
 import { formatMoneyAmount } from '@/lib/finance/format-money';
-import { individualExpenseHref } from '@/lib/finance/routes';
+import { spaceTransactionsHref } from '@/lib/finance/routes';
 import { SyncActiveSpace } from '@/components/spaces/sync-active-space';
 import styles from '@/app/(app)/app-pages.module.css';
 import financeStyles from '@/components/finance/finance-forms.module.css';
@@ -76,78 +72,43 @@ export default async function AccountDetailPage({ params }: PageProps) {
           <p className={financeStyles.balanceDisplay}>
             Saldo: {formatMoneyAmount(account.balance, account.currency)}
           </p>
-          {account.archivedAt ? (
-            <p className={styles.lead} role="status">
-              Cuenta archivada — no admite nuevos movimientos.
-            </p>
-          ) : null}
+          <p className={styles.lead}>
+            Alta: {new Date(account.createdAt).toLocaleDateString('es')}
+            {account.archivedAt ? ' · Archivada' : ''}
+          </p>
         </div>
         <nav className={styles.pageHeaderActions} aria-label="Acciones">
+          <Link href={spaceTransactionsHref(spaceId, { accountId })}>Historial de la cuenta</Link>
+          <Link href={spaceTransactionsHref(spaceId)}>Movimientos del espacio</Link>
+          <Link href={`/spaces/${spaceId}/categories`}>Categorías</Link>
           <Link href={`/spaces/${spaceId}/accounts`}>← Cuentas</Link>
         </nav>
       </header>
 
-      {!account.archivedAt ? (
-        <div className={styles.stack}>
-          {!hasOpeningBalance ? (
-            <OpeningBalanceForm
-              spaceId={spaceId}
-              accountId={accountId}
-              currency={account.currency}
-            />
-          ) : (
-            <p className={styles.lead}>Saldo inicial ya registrado.</p>
-          )}
-          <RecordCashflowForm
-            spaceId={spaceId}
-            accountId={accountId}
-            kind="INCOME"
-            categories={incomeCategories}
-          />
-          {space.type === 'SHARED' ? (
-            <section className={financeStyles.form} aria-labelledby="account-expense-title">
-              <h3 id="account-expense-title" className={financeStyles.sectionTitle}>
-                Registrar gasto
-              </h3>
-              <p className={financeStyles.meta}>
-                En un espacio compartido, el gasto se imputa a una persona como «Gasto individual» y
-                descuenta el saldo de esta cuenta.
-              </p>
-              <p>
-                <Link href={individualExpenseHref(spaceId, accountId)}>
-                  Registrar gasto individual con esta cuenta
-                </Link>
-              </p>
-            </section>
-          ) : (
-            <RecordCashflowForm
-              spaceId={spaceId}
-              accountId={accountId}
-              kind="EXPENSE"
-              categories={expenseCategories}
-            />
-          )}
-          <RecordTransferForm
-            spaceId={spaceId}
-            sourceAccount={account}
-            destinationAccounts={transferTargets}
-          />
-        </div>
-      ) : null}
+      <AccountDetailOperations
+        spaceId={spaceId}
+        spaceType={space.type}
+        account={account}
+        hasOpeningBalance={hasOpeningBalance}
+        incomeCategories={incomeCategories}
+        expenseCategories={expenseCategories}
+        transferTargets={transferTargets}
+      />
 
-      <div className={styles.section}>
-        <h2 className={styles.sectionHeading}>Movimientos recientes</h2>
+      <section className={styles.section} aria-labelledby="account-tx-title">
+        <h2 id="account-tx-title" className={styles.sectionHeading}>
+          Movimientos recientes
+        </h2>
         <AccountTransactionsList
           spaceId={spaceId}
           transactions={transactions}
           accounts={allAccounts}
           members={members}
         />
-      </div>
-
-      {!account.archivedAt ? (
-        <ArchiveAccountButton spaceId={spaceId} accountId={accountId} accountName={account.name} />
-      ) : null}
+        <p className={financeStyles.meta}>
+          <Link href={spaceTransactionsHref(spaceId, { accountId })}>Ver historial completo</Link>
+        </p>
+      </section>
     </article>
   );
 }

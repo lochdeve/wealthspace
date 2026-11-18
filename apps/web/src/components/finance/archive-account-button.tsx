@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { archiveAccount } from '@/lib/api/accounts';
 import { financeActionErrorMessage } from '@/lib/finance/finance-messages';
 import ui from '@/components/ui/ui.module.css';
-import styles from './finance-forms.module.css';
 
 type ArchiveAccountButtonProps = {
   spaceId: string;
@@ -41,7 +40,7 @@ export function ArchiveAccountButton({
   }
 
   return (
-    <aside className={styles.metaBox} aria-label="Archivar cuenta">
+    <div aria-label="Archivar cuenta">
       {error ? (
         <p className={ui.alert} role="alert">
           {error}
@@ -55,6 +54,6 @@ export function ArchiveAccountButton({
       >
         {pending ? 'Archivando…' : 'Archivar cuenta'}
       </button>
-    </aside>
+    </div>
   );
 }
