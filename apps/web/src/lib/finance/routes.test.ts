@@ -1,4 +1,5 @@
 import {
+  consumptionReportHref,
   individualExpenseHref,
   registerSettlementHref,
   settlementsHref,
@@ -6,6 +7,7 @@ import {
   sharedExpenseHref,
   sharedExpensesHref,
   spaceBalancesHref,
+  spaceBudgetsHref,
   spaceTransactionsHref,
 } from './routes';
 
@@ -62,6 +64,20 @@ describe('spaceBalancesHref', () => {
 describe('settlementsHref', () => {
   it('lists settlements', () => {
     expect(settlementsHref('space-1')).toBe('/spaces/space-1/settlements');
+  });
+});
+
+describe('spaceBudgetsHref', () => {
+  it('points to budgets page', () => {
+    expect(spaceBudgetsHref('space-1')).toBe('/spaces/space-1/budgets');
+  });
+});
+
+describe('consumptionReportHref', () => {
+  it('accepts year and month query', () => {
+    expect(consumptionReportHref('space-1', { year: 2026, month: 11 })).toBe(
+      '/spaces/space-1/reports/consumption?year=2026&month=11',
+    );
   });
 });
 

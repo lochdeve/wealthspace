@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import type { SpaceType } from '@/lib/api/space-types';
 import {
+  consumptionReportHref,
   individualExpenseHref,
   sharedExpenseHref,
   sharedExpensesHref,
   settlementsHref,
   spaceBalancesHref,
+  spaceBudgetsHref,
 } from '@/lib/finance/routes';
 import styles from '@/app/(app)/app-pages.module.css';
 
@@ -20,6 +22,8 @@ export function SpaceFinanceNav({ spaceId, spaceType }: SpaceFinanceNavProps) {
       <Link href={`/spaces/${spaceId}/accounts`}>Cuentas</Link>
       <Link href={`/spaces/${spaceId}/transactions`}>Movimientos</Link>
       <Link href={`/spaces/${spaceId}/categories`}>Categorías</Link>
+      <Link href={spaceBudgetsHref(spaceId)}>Presupuestos</Link>
+      <Link href={consumptionReportHref(spaceId)}>Consumo</Link>
       {spaceType === 'SHARED' ? (
         <>
           <Link href={sharedExpensesHref(spaceId)}>Gastos compartidos</Link>

@@ -165,7 +165,10 @@ El backend los fija al implementar y actualiza el catálogo.
 
 ## Presupuestos e informes
 
-Consumo en la moneda del presupuesto; sin conversión. Contrato pendiente de P-17.
+Consumo en la moneda del presupuesto; sin conversión (**P-17**). Mes calendario en `User.timezone`; filtro por `occurredAt` (UTC).
+
+- Presupuestos: CRUD bajo `/spaces/:spaceId/budgets`.
+- Informe: `GET /spaces/:spaceId/reports/consumption?year=&month=` — consumo del actor en PERSONAL (gastos sin vínculo cross-space) o en SHARED (participaciones + gastos individuales atribuidos, sin el movimiento de pago del gasto compartido).
 
 ## Documentación relacionada
 

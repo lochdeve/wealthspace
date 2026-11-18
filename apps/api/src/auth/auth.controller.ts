@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  Patch,
   HttpStatus,
   Inject,
   Post,
@@ -32,6 +33,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { RegisterResponseDto } from './dto/register-response.dto';
 import { UserProfileDto } from './dto/user-profile.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('auth')
@@ -137,5 +139,27 @@ export class AuthController {
   })
   async me(@CurrentUser() user: RequestUser): Promise<UserProfileDto> {
     return this.authService.getProfileById(user.userId);
+  }
+
+  @Patch('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Update current user profile',
+    description: 'Updates displayName and/or IANA timezone (B-10).',
+  })
+  @ApiOkResponse({ type: UserProfileDto })
+  @ApiUnauthorizedResponse({
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Unauthorized',
+      },
+    },
+  })
+  async updateMe(
+    @CurrentUser() user: RequestUser,
+    @Body() dto: UpdateProfileDto,
+  ): Promise<UserProfileDto> {
+    return this.authService.updateProfile(user.userId, dto);
   }
 }

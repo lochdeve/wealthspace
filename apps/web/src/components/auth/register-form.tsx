@@ -7,16 +7,9 @@ import { register } from '@/lib/api/auth';
 import { AUTH_ERROR_CODES, userErrorMessage } from '@/lib/api/errors';
 import { Button } from '@/components/ui/button';
 import { Field, TextInput } from '@/components/ui/field';
+import { detectBrowserTimezone } from '@/lib/timezone/detect-timezone';
 import styles from './auth-forms.module.css';
 import ui from '@/components/ui/ui.module.css';
-
-function detectTimezone(): string {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-  } catch {
-    return 'UTC';
-  }
-}
 
 export function RegisterForm() {
   const router = useRouter();
@@ -146,7 +139,7 @@ export function RegisterForm() {
             type="button"
             variant="secondary"
             disabled={pending}
-            onClick={() => setTimezone(detectTimezone())}
+            onClick={() => setTimezone(detectBrowserTimezone())}
           >
             Detectar
           </Button>

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -11,6 +12,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import type { LoginDto } from './dto/login.dto';
 import type { RegisterDto } from './dto/register.dto';
 import type { UserProfileDto } from './dto/user-profile.dto';
+import type { UpdateProfileDto } from './dto/update-profile.dto';
+import { assertValidIanaTimezone } from '../common/iana-timezone';
 
 @Injectable()
 export class AuthService {
@@ -93,6 +96,31 @@ export class AuthService {
 
   signAccessToken(userId: string): string {
     return this.jwtService.sign({ sub: userId });
+  }
+
+  async updateProfile(
+    userId: string,
+    dto: UpdateProfileDto,
+  ): Promise<UserProfileDto> {
+    if (dto.displayName === undefined && dto.timezone === undefined) {
+      throw new BadRequestException({
+        statusCode: 400,
+        code: 'NO_CHANGES',
+        message: 'At least one field must be provided',
+      });
+    }
+    if (dto.timezone !== undefined) {
+      assertValidIanaTimezone(dto.timezone);
+    }
+
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(dto.displayName !== undefined ? { displayName: dto.displayName } : {}),
+        ...(dto.timezone !== undefined ? { timezone: dto.timezone } : {}),
+      },
+    });
+    return this.toProfile(user);
   }
 
   async getProfileById(userId: string): Promise<UserProfileDto> {

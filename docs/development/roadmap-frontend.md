@@ -64,9 +64,16 @@ Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (F-8.1…F-8.7, *
 | F-8.7 ✅ | E2E opcional `phase8-personal-cash-flow.spec.ts` (P-02 + P-07) |
 | C-05 ✅ | Leave último ACTIVE: aviso + doble confirmación |
 
-## F-9 — ✨ Presupuestos, informes, dashboard y perfil ⛔ (B-9)
+## F-9 — ✨ Presupuestos, informes, dashboard y perfil ✅ (B-9)
 
-Edición de perfil y zona horaria, presupuestos, informes mensuales, dashboard global (sustituye la redirección de `/dashboard`).
+| ID | Entrega | Estado |
+| --- | --- | --- |
+| F-9.1 | `/settings` — `PATCH /auth/me` | ✅ |
+| F-9.2 | `/spaces/:id/budgets` — CRUD presupuestos (alta + listado + borrar) | ✅ |
+| F-9.3 | `/spaces/:id/reports/consumption` — informe mensual | ✅ |
+| F-9.4 | `/dashboard` — panel (consumo personal + enlaces por espacio) | ✅ |
+
+Pendiente opcional: edición inline de presupuestos (`PATCH`), comparativa presupuesto vs consumo en UI, E2E fase 9.
 
 ## F-4.1 — ✨ Transferencia de ownership (paralela) ✅ (B-4.1)
 

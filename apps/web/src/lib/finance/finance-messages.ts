@@ -20,6 +20,10 @@ const FINANCE_ERROR_MESSAGES: Record<string, string> = {
   ATTRIBUTION_NOT_ALLOWED: 'No puedes atribuir el gasto a esa persona.',
   ATTRIBUTEE_NOT_ACTIVE_MEMBER: 'Esa persona ya no está activa en el espacio.',
   CURRENCY_REQUIRED: 'Indica la moneda si no usas cuenta o falta moneda del espacio.',
+  BUDGET_NOT_FOUND: 'Presupuesto no encontrado.',
+  INVALID_BUDGET_PERIOD: 'La fecha de inicio no puede ser posterior a la de fin.',
+  INVALID_PERIOD_RANGE: 'Rango de fechas no válido.',
+  INVALID_REPORT_PERIOD: 'Mes o año no válido para el informe.',
 };
 
 export function financeActionErrorMessage(error: unknown): string {

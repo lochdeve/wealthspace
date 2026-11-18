@@ -22,9 +22,11 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           </span>
         </div>
         <nav className={styles.appNav} aria-label="Aplicación">
+          <Link href="/dashboard">Panel</Link>
           <Link href="/spaces">Espacios</Link>
           <Link href="/accounts">Cuentas</Link>
           <Link href="/invitations">Invitaciones</Link>
+          <Link href="/settings">Ajustes</Link>
           <SpaceSwitcher activeSpaceId={activeSpaceId} />
         </nav>
         <LogoutButton />

@@ -13,6 +13,8 @@ import { BalancesModule } from './balances/balances.module';
 import { SettlementsModule } from './settlements/settlements.module';
 import { ContributionsModule } from './contributions/contributions.module';
 import { CrossSpaceCashLinksModule } from './cross-space-cash-links/cross-space-cash-links.module';
+import { BudgetsModule } from './budgets/budgets.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { CrossSpaceCashLinksModule } from './cross-space-cash-links/cross-space-
     SettlementsModule,
     ContributionsModule,
     CrossSpaceCashLinksModule,
+    BudgetsModule,
+    ReportsModule,
   ],
 })
 export class AppModule {}

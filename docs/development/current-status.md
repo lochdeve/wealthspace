@@ -1,6 +1,6 @@
 # Estado actual del desarrollo
 
-**Última actualización:** 2026-11-19 — **Fase 8 web cerrada** (F-8.1–8.7 + C-05).
+**Última actualización:** 2026-11-19 — **F-9 web** (perfil, presupuestos, informe, panel). **B-9 API** en rama local pendiente de commit conjunto.
 
 Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/decisions.md) · Contratos: [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 
@@ -16,12 +16,12 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 | Área                              | API                               | Web                             |
 | --------------------------------- | --------------------------------- | ------------------------------- |
-| Auth                              | ✅                                | ✅ (sin editar perfil/timezone) |
+| Auth                              | ✅ B-9.1                          | ✅ F-9.1 ajustes                  |
 | Espacios                          | ✅ 4.1; **4.2 C-05** UI | ✅ F-4.1                        |
 | Finanzas base                     | ✅                                | ✅ F-R2                         |
 | Gastos / saldos / liquidaciones   | ✅ B-6, B-7                       | ✅ F-6, F-7                     |
 | Cuentas vinculadas (fase 8)       | ✅ B-8.1–B-8.10; **B-8.0** SQL (deploy local por máquina) | ✅ F-8.1–8.7 + C-05            |
-| Presupuestos / dashboard (fase 9) | ⬜                                | ⬜                              |
+| Presupuestos / dashboard (fase 9) | 🟡 B-9.1–9.3 API (sin commit)     | ✅ F-9.1–9.4                    |
 
 ## Decisiones
 
@@ -34,8 +34,8 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Chat             | Tarea                                                             | Bloqueos |
 | ---------------- | ----------------------------------------------------------------- | -------- |
 | **Coordinación** | — (fase 8 código cerrado salvo bugs)                              | —        |
-| **Backend**      | Fase 8 **cerrada** (código + tests); deuda menor API; **no** fase 9 sin acuerdo | —        |
-| **Frontend**     | **F-9** ⛔ o mantenimiento; E2E local fase 8 | P-17 / B-9 |
+| **Backend**      | Commit B-9 junto con F-9; endpoint dashboard agregado opcional   | —        |
+| **Frontend**     | Commit F-9; E2E opcional fase 9                                  | —        |
 | **Release**      | Incluir **migrate deploy** fase 8 en entornos compartidos / CI      | —        |
 
 ## Notas operativas

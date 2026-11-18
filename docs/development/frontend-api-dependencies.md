@@ -23,11 +23,14 @@ Espacio activo (solo UI): cookie `wealthspace_active_space`, establecida con Ser
 | Login    | POST   | `/auth/login`    | `/login`                     | Implementado   |
 | Logout   | POST   | `/auth/logout`   | Botón en layout `(app)`      | Implementado   |
 | Perfil   | GET    | `/auth/me`       | Layout `(app)`, `/dashboard` | Implementado   |
+| Perfil   | PATCH  | `/auth/me`       | Ajustes usuario (fase 9)     | Implementado   |
 
 ### Códigos de error usados en UX (auth)
 
 - `EMAIL_ALREADY_REGISTERED` (409) — registro
 - `INVALID_CREDENTIALS` (401) — login
+- `INVALID_TIMEZONE` (400) — PATCH perfil
+- `NO_CHANGES` (400) — PATCH perfil sin campos
 - `401` sin sesión — redirección a `/login` en rutas `(app)`
 
 ## Espacios e invitaciones (Fase 4)
@@ -216,8 +219,27 @@ Códigos: `SHARED_SPACE_REQUIRED`, `CROSS_SPACE_CURRENCY_MISMATCH`, `PERSONAL_AC
 
 Los códigos de concurrencia y espacio (`VERSION_CONFLICT`, `SHARED_SPACE_REQUIRED`, etc.) se reutilizan de fases anteriores.
 
+## Presupuestos e informes (Fase 9 — slice inicial)
+
+Membresía **ACTIVE** en el espacio. Informes mensuales usan el `timezone` IANA del usuario autenticado (B-10). Consumo según **P-17** (participaciones + gastos individuales atribuidos; excluye vínculos cross-space personales, aportaciones y liquidaciones).
+
+| Recurso            | Método | Ruta                                      | Notas |
+| ------------------ | ------ | ----------------------------------------- | ----- |
+| Listar presupuestos | GET    | `/spaces/:spaceId/budgets`                | Query opcional `periodFrom`, `periodTo` (YYYY-MM-DD, solape) |
+| Crear presupuesto  | POST   | `/spaces/:spaceId/budgets`                | `name`, `amount`, `currency`, `periodStart`, `periodEnd`, `categoryId?` |
+| Actualizar         | PATCH  | `/spaces/:spaceId/budgets/:budgetId`      | Parcial; `categoryId: null` quita categoría |
+| Eliminar           | DELETE | `/spaces/:spaceId/budgets/:budgetId`      | **204** |
+| Informe consumo    | GET    | `/spaces/:spaceId/reports/consumption`    | Query `year`, `month` (1–12); respuesta `totalsByCurrency`, `byCategory` |
+
+### Códigos de error (fase 9)
+
+- `BUDGET_NOT_FOUND` (404), `INVALID_BUDGET_PERIOD` (400), `INVALID_PERIOD_RANGE` (400), `INVALID_AMOUNT` (400)
+- `INVALID_REPORT_PERIOD` (400) — año/mes fuera de rango
+- `CATEGORY_NOT_FOUND` (404), `INVALID_CATEGORY_TYPE` (400) — categoría debe ser EXPENSE
+
 ## No implementado todavía
 
-| Área                                                 | Fase | Contrato previsto          |
-| ---------------------------------------------------- | ---- | -------------------------- |
-| Presupuestos, informes, dashboard, edición de perfil | 9    | Pendiente (P-17)           |
+| Área                              | Fase | Contrato previsto                    |
+| --------------------------------- | ---- | ------------------------------------ |
+| Dashboard agregado multi-espacio  | 9    | Pendiente acuerdo MVP                |
+| Comparativa presupuesto vs consumo en un solo GET | 9+ | Opcional UI |

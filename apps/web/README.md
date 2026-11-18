@@ -36,7 +36,7 @@ Desde la raíz: `pnpm --filter @wealthspace/web dev`.
 ## Rutas
 
 - Auth: `/login`, `/register`.
-- Área `(app)` protegida: `/spaces`, `/spaces/new`, `/spaces/[id]`, `/invitations`, `/accounts` y, por espacio, `accounts`, `categories`, `transactions` y `expenses/new` (gasto individual; ver P-14). `/dashboard` redirige a `/spaces`.
+- Área `(app)` protegida: `/dashboard`, `/settings`, `/spaces`, `/invitations`, `/accounts` y, por espacio, finanzas, `budgets`, `reports/consumption` (F-9). Rutas de gastos compartidos según fases 6–8.
 
 Endpoints consumidos: [frontend-api-dependencies.md](../../docs/development/frontend-api-dependencies.md). Roadmap: [roadmap-frontend.md](../../docs/development/roadmap-frontend.md).
 

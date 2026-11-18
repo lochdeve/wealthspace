@@ -78,10 +78,15 @@ Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (B-8.0…B-8.10).
 | B-8.8 | — | `crossSpaceSummary` en GET txs PERSONAL ✅ |
 | B-8.10 | — | OpenAPI + catálogo ✅ |
 
-## B-9 — ✨ Presupuestos, informes y perfil ⛔ (P-17)
+## B-9 — ✨ Presupuestos, informes y perfil (P-17)
 
-- `PATCH /auth/me` (o equivalente) para `displayName` y `timezone` — puede adelantarse si coordinación lo asigna.
-- Presupuestos e informes mensuales en `User.timezone`.
+| ID   | Entrega | Estado |
+| ---- | ------- | ------ |
+| B-9.1 | `PATCH /auth/me` (`displayName`, `timezone` IANA) | ✅ |
+| B-9.2 | CRUD presupuestos por espacio | ✅ |
+| B-9.3 | `GET …/reports/consumption` (mes local del usuario, P-17) | ✅ |
+
+Pendiente producto/UI: dashboard agregado, vista presupuesto vs real en un endpoint compuesto.
 
 ## B-4.1 — ✅ Transferencia de ownership (paralela, no bloqueante)
 

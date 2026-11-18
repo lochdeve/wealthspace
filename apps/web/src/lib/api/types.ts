@@ -17,3 +17,8 @@ export type LoginInput = {
   email: string;
   password: string;
 };
+
+export type UpdateProfileInput = {
+  displayName?: string;
+  timezone?: string;
+};

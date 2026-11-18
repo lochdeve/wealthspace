@@ -18,6 +18,8 @@ describe('SpaceFinanceNav', () => {
       ['Cuentas', '/spaces/space-1/accounts'],
       ['Movimientos', '/spaces/space-1/transactions'],
       ['Categorías', '/spaces/space-1/categories'],
+      ['Presupuestos', '/spaces/space-1/budgets'],
+      ['Consumo', '/spaces/space-1/reports/consumption'],
     ]);
   });
 
@@ -28,6 +30,8 @@ describe('SpaceFinanceNav', () => {
       '/spaces/space-1/accounts',
       '/spaces/space-1/transactions',
       '/spaces/space-1/categories',
+      '/spaces/space-1/budgets',
+      '/spaces/space-1/reports/consumption',
       '/spaces/space-1/expenses',
       '/spaces/space-1/expenses/new',
       '/spaces/space-1/balances',

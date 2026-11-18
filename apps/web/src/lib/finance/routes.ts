@@ -69,3 +69,17 @@ export function registerSettlementHref(
 export function contributeToAccountHref(spaceId: string, accountId: string): string {
   return `/spaces/${spaceId}/accounts/${accountId}/contribute`;
 }
+
+export function spaceBudgetsHref(spaceId: string): string {
+  return `/spaces/${spaceId}/budgets`;
+}
+
+export function consumptionReportHref(
+  spaceId: string,
+  query?: { year?: number; month?: number },
+): string {
+  return `/spaces/${spaceId}/reports/consumption${toQueryString({
+    year: query?.year !== undefined ? String(query.year) : undefined,
+    month: query?.month !== undefined ? String(query.month) : undefined,
+  })}`;
+}

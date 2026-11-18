@@ -45,7 +45,7 @@ export function LoginForm() {
         password,
       });
       const next = searchParams.get('next');
-      const destination = next && next.startsWith('/') && !next.startsWith('//') ? next : '/spaces';
+      const destination = next && next.startsWith('/') && !next.startsWith('//') ? next : '/dashboard';
       router.replace(destination);
       router.refresh();
     } catch (error) {

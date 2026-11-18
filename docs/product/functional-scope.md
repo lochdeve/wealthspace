@@ -67,13 +67,11 @@ Fuente: [accounts-model.md](./accounts-model.md) — **en análisis**. Sin requi
 
 ## 6. Presupuestos, informes y dashboard
 
-⬜. Requisitos previos aprobados:
+🟡 API inicial (B-9.1–9.3): edición de perfil/timezone, CRUD presupuestos, informe mensual de consumo (**P-17**). Pendiente UI y dashboard agregado.
 
 - Periodo mensual en `User.timezone` del consultante; datos filtrados por `occurredAt` (UTC); solo espacios con membresía ACTIVE.
 - Presupuestos en una sola moneda, sin conversión.
-- Qué se considera consumo y qué flujo de caja: **P-17** (bloquea esta área).
-
-Las métricas `totalExpense` / `attributedExpense` / `advancedAmount` del diseño inicial quedan como histórico hasta resolver P-17.
+- Consumo vs flujo de caja: **P-17** (implementado en informe de consumo; sin conversión FX).
 
 ## 7. Historial y concurrencia
 
