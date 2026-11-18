@@ -20,12 +20,13 @@ Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · 
 | Movimientos   | Saldo inicial, ingreso, gasto (PERSONAL y SHARED atribuido), transferencia, listado, detalle, PATCH optimista con revisión | Integración                        |
 | Integridad BD | FK compuestas, CHECK, triggers inmediatos y diferidos                                                                      | `test/database/integrity*.spec.ts` |
 
-Deuda técnica detectada en la verificación de backend (2026-11-15), a resolver cuando se toque el código afectado:
+Deuda técnica residual (2026-11-18):
 
-- Dos ediciones simultáneas pueden chocar en el índice único `revisionNumber` y devolver 500 en lugar de 409 → mapear a `VERSION_CONFLICT` al reutilizar el patrón en B-6.4 (y aplicarlo también a movimientos).
-- Errores de Prisma o de triggers no capturados llegan como 500 sin `code` → validar las reglas en la aplicación antes del COMMIT (B-6.2); valorar un filtro de excepciones solo si se repite el problema.
-- El comentario de cabecera de `schema.prisma` («sin migraciones aplicadas») es falso → corregir en B-6.0.
-- El 409 `TRANSACTION_LINKED_TO_SHARED_EXPENSE` no tiene test → cubrirlo en B-6.2.
+- ✅ P2002 en `revisionNumber` → `VERSION_CONFLICT` (transacciones, gastos compartidos, liquidaciones; B-4.1).
+- ✅ Cabecera `schema.prisma` alineada con migraciones aplicadas.
+- ✅ Test de integración para `TRANSACTION_LINKED_TO_SHARED_EXPENSE`.
+- Pendiente: errores de Prisma/triggers no capturados → 500 sin `code`; priorizar validación en app antes del COMMIT; filtro global solo si persiste.
+- Pendiente menor: unificar `ValidationPipe` global en tests de integración que aún montan pipe manual.
 
 Huecos conocidos que **no** se priorizan salvo petición: renombrar cuenta o categoría, paginación con cursor, cobertura unitaria de servicios (la lógica se cubre con tests de integración).
 
@@ -56,7 +57,7 @@ Orden recomendado: **B-6.1** → **B-R1** → **B-6.0** (aplicar, aprobada) → 
 
 | Entrega  | Contenido                                                                         | Aceptación                                                          |
 | -------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| B-7.0 🔧 | Migración `20261117160000_phase7_settlements_void` (borrador; **sin `deploy`**)    | ✅ `test:db`; revisar y aprobar antes de `migrate deploy`           |
+| B-7.0 🔧 | Migración `20261117160000_phase7_settlements_void`                              | ✅ `test:db`; **`migrate deploy` en dev local**; coordinación en release/CI |
 | B-7.1    | `computeSpaceBalances`                                                            | ✅                                                                  |
 | B-7.2    | `GET /balances`                                                                   | ✅                                                                  |
 | B-7.3    | `POST/GET /settlements`, `POST …/void`                                            | ✅ P-19 + P-11 warnings                                             |

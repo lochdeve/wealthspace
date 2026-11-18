@@ -8,7 +8,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 | Elemento         | Estado                                                                                                            |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `main`           | Fases 0–6 web (F-6 gastos compartidos) + API B-6. Por delante de `origin/main`; **push pendiente de aprobación**. |
+| `main`           | MVP fases 0–7 (gastos, saldos, liquidaciones) + B-4.1; E2E SHARED local en web. Sincronizado con `origin/main` salvo trabajo en curso. |
 | Ramas de trabajo | `feat/web-phase-6-shared-expenses` integrada en `main` local. Ramas locales `fix/web-*` pueden borrarse.          |
 | CI               | `quality` (formato, lint, typecheck, tests unitarios, cobertura, build) y `database-integrity`. Sin E2E.          |
 
@@ -35,10 +35,11 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | ------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
 | Coordinación | CI/prod: aplicar `20261117160000` cuando toque el release                                     | —                                          |
 | Frontend     | E2E SHARED + P-19 ✅; **no iniciar F-8** hasta P-01…P-07 / accounts-model                     | accounts-model                             |
-| Backend      | **B-4.1** transfer ownership + mapeo P2002→`VERSION_CONFLICT` en revisiones                   | B-8 ⛔ modelo cuentas                      |
+| Backend      | **B-4.1 ✅**; sin entrega grande hasta **B-8/B-9** o deuda menor del roadmap; validar E2E SHARED contra API local | B-8 ⛔ accounts-model; B-9 ⛔ P-17        |
 
 ## Notas operativas
 
 - API: `pnpm --filter @wealthspace/api test:db` (requiere PostgreSQL; base desechable `wealthspace_migration_test`).
 - Web: `pnpm --filter @wealthspace/web test` / `test:cov`; E2E con `test:e2e` (local).
 - Migración inicial: `prisma migrate deploy` con PostgreSQL en marcha. Nuevas migraciones: solo con aprobación.
+- E2E SHARED: API `:3001` + web `:3000` + `pnpm exec playwright install chromium` en `apps/web`; CI aún sin E2E. Backend: escenario 120/15/void cubierto en `settlements.integration.spec.ts`.
