@@ -11,6 +11,7 @@ import { TransactionsModule } from './transactions/transactions.module';
 import { SharedExpensesModule } from './shared-expenses/shared-expenses.module';
 import { BalancesModule } from './balances/balances.module';
 import { SettlementsModule } from './settlements/settlements.module';
+import { CrossSpaceCashLinksModule } from './cross-space-cash-links/cross-space-cash-links.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { SettlementsModule } from './settlements/settlements.module';
     SharedExpensesModule,
     BalancesModule,
     SettlementsModule,
+    CrossSpaceCashLinksModule,
   ],
 })
 export class AppModule {}

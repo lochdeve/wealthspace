@@ -69,7 +69,8 @@ Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (B-8.0…B-8.10).
 
 | Entrega | P- | Resumen |
 | ------- | -- | ------- |
-| B-8.0 | — | 🟡 `20261201120000_phase8_cross_space_cash_links` + `custom-integrity.sql` + `test:db` (revisión SQL pendiente) |
+| B-8.0 | — | 🟡 `20261201120000_phase8_cross_space_cash_links` (revisión SQL pendiente) |
+| B-8.1 | — | ✅ dominio `CrossSpaceCashLinksService` + titularidad personal |
 | B-8.2–3 | P-02 | Gasto MEMBER + enlace personal |
 | B-8.4–6 | P-07 | Liquidación + `link-personal-cash-flow` |
 | B-8.7 | P-05/06 | `POST …/contributions` |
