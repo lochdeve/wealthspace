@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { notFound, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { getSessionCookieHeader, getCurrentUser, requireUser } from '@/lib/auth/session.server';
-import { ApiError } from '@/lib/api/errors';
+import { rethrowUnlessSpaceFound } from '@/lib/api/page-errors.server';
 import { listAccountsWithCookie } from '@/lib/api/accounts';
 import { listCategoriesWithCookie } from '@/lib/api/categories';
 import { listSpaceMembersWithCookie } from '@/lib/api/memberships';
@@ -36,10 +36,7 @@ export default async function SharedExpenseDetailPage({ params }: PageProps) {
   try {
     space = await getSpaceWithCookie(spaceId, cookieHeader);
   } catch (error) {
-    if (error instanceof ApiError && error.statusCode === 404) {
-      notFound();
-    }
-    throw error;
+    rethrowUnlessSpaceFound(error);
   }
 
   if (space.type !== 'SHARED') {
@@ -50,10 +47,7 @@ export default async function SharedExpenseDetailPage({ params }: PageProps) {
   try {
     expense = await getSharedExpenseWithCookie(spaceId, expenseId, cookieHeader);
   } catch (error) {
-    if (error instanceof ApiError && error.statusCode === 404) {
-      notFound();
-    }
-    throw error;
+    rethrowUnlessSpaceFound(error);
   }
 
   const [members, accounts, categories, revisions] = await Promise.all([

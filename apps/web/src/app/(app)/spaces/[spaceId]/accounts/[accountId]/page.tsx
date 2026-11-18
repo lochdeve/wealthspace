@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { getSessionCookieHeader, requireUser } from '@/lib/auth/session.server';
-import { ApiError } from '@/lib/api/errors';
+import { rethrowUnlessSpaceFound } from '@/lib/api/page-errors.server';
 import { getAccountWithCookie } from '@/lib/api/accounts';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { listCategoriesWithCookie } from '@/lib/api/categories';
@@ -34,20 +33,14 @@ export default async function AccountDetailPage({ params }: PageProps) {
   try {
     space = await getSpaceWithCookie(spaceId, cookieHeader);
   } catch (error) {
-    if (error instanceof ApiError && error.statusCode === 404) {
-      notFound();
-    }
-    throw error;
+    rethrowUnlessSpaceFound(error);
   }
 
   let account;
   try {
     account = await getAccountWithCookie(spaceId, accountId, cookieHeader);
   } catch (error) {
-    if (error instanceof ApiError && error.statusCode === 404) {
-      notFound();
-    }
-    throw error;
+    rethrowUnlessSpaceFound(error);
   }
 
   const [transactions, allAccounts, incomeCategories, expenseCategories] = await Promise.all([

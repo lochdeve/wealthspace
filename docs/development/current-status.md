@@ -1,6 +1,6 @@
 # Estado actual del desarrollo
 
-**Última actualización:** 2026-11-17 — F-7 saldos y liquidaciones en web.
+**Última actualización:** 2026-11-17 — F-R2.5 en curso (estados de ruta y sesión caducada).
 
 Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/decisions.md) · Contratos implementados: [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 
@@ -34,7 +34,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Chat         | Tarea                                                                                       | Bloqueos                                   |
 | ------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
 | Coordinación | CI/prod: aplicar `20261117160000` cuando toque el release                                     | —                                          |
-| Frontend     | **F-R2.4** / **F-R2.5** (pulido)                                                             | Ninguno                                    |
+| Frontend     | **F-R2.5** (restante: detalle cuenta, tests RTL); luego **F-R2.4**                           | Ninguno                                    |
 | Backend      | **B-7** cerrado; migración aplicada en dev local                                              | —                                          |
 
 ## Notas operativas

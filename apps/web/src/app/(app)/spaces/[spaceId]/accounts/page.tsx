@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { getSessionCookieHeader, requireUser } from '@/lib/auth/session.server';
-import { ApiError } from '@/lib/api/errors';
+import { rethrowUnlessSpaceFound } from '@/lib/api/page-errors.server';
 import { listAccountsWithCookie } from '@/lib/api/accounts';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { spaceTypeLabel } from '@/lib/spaces/labels';
@@ -29,10 +28,7 @@ export default async function SpaceAccountsPage({ params, searchParams }: PagePr
   try {
     space = await getSpaceWithCookie(spaceId, cookieHeader);
   } catch (error) {
-    if (error instanceof ApiError && error.statusCode === 404) {
-      notFound();
-    }
-    throw error;
+    rethrowUnlessSpaceFound(error);
   }
 
   const accounts = await listAccountsWithCookie(spaceId, cookieHeader, { includeArchived });

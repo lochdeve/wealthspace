@@ -3,8 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 import { createAccount } from '@/lib/api/accounts';
-import { ApiError } from '@/lib/api/errors';
 import { financeActionErrorMessage } from '@/lib/finance/finance-messages';
+import { isSessionUnauthorizedApiError, redirectBrowserToLogin } from '@/lib/auth/login-redirect';
 import { Button } from '@/components/ui/button';
 import { Field, TextInput } from '@/components/ui/field';
 import styles from './finance-forms.module.css';
@@ -50,10 +50,11 @@ export function CreateAccountForm({ spaceId, defaultCurrency = 'EUR' }: CreateAc
       router.push(`/spaces/${spaceId}/accounts/${account.id}`);
       router.refresh();
     } catch (error) {
-      setFormError(financeActionErrorMessage(error));
-      if (error instanceof ApiError && error.statusCode === 401) {
-        setFormError('Sesión caducada. Vuelve a iniciar sesión.');
+      if (isSessionUnauthorizedApiError(error)) {
+        redirectBrowserToLogin();
+        return;
       }
+      setFormError(financeActionErrorMessage(error));
     } finally {
       setPending(false);
     }

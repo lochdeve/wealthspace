@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { notFound, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { getSessionCookieHeader, requireUser } from '@/lib/auth/session.server';
-import { ApiError } from '@/lib/api/errors';
+import { rethrowUnlessSpaceFound } from '@/lib/api/page-errors.server';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { listSharedExpensesWithCookie } from '@/lib/api/shared-expenses';
 import { SharedExpensesListPanel } from '@/components/finance/shared-expenses-list-panel';
@@ -29,10 +29,7 @@ export default async function SharedExpensesPage({ params, searchParams }: PageP
   try {
     space = await getSpaceWithCookie(spaceId, cookieHeader);
   } catch (error) {
-    if (error instanceof ApiError && error.statusCode === 404) {
-      notFound();
-    }
-    throw error;
+    rethrowUnlessSpaceFound(error);
   }
 
   if (space.type !== 'SHARED') {

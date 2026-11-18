@@ -1,5 +1,6 @@
 import { getPublicApiBaseUrl } from '@/lib/env';
-import { parseErrorResponse } from '@/lib/api/errors';
+import { AUTH_ERROR_CODES, parseErrorResponse } from '@/lib/api/errors';
+import { redirectBrowserToLogin } from '@/lib/auth/login-redirect';
 
 export type ApiRequestOptions = Omit<RequestInit, 'body'> & {
   body?: BodyInit | object | null;
@@ -50,7 +51,15 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
   }
 
   if (!response.ok) {
-    throw await parseErrorResponse(response);
+    const apiError = await parseErrorResponse(response);
+    if (
+      typeof window !== 'undefined' &&
+      apiError.statusCode === 401 &&
+      apiError.code === AUTH_ERROR_CODES.UNAUTHENTICATED
+    ) {
+      redirectBrowserToLogin();
+    }
+    throw apiError;
   }
 
   const text = await response.text();

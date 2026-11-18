@@ -1,11 +1,10 @@
-import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { InviteMemberForm } from '@/components/spaces/invite-member-form';
 import { LeaveSpaceButton } from '@/components/spaces/leave-space-button';
 import { SpaceInvitationsPanel } from '@/components/spaces/space-invitations-panel';
 import { SpaceMembersPanel } from '@/components/spaces/space-members-panel';
 import { getSessionCookieHeader, getCurrentUser, requireUser } from '@/lib/auth/session.server';
-import { ApiError } from '@/lib/api/errors';
+import { rethrowUnlessSpaceFound } from '@/lib/api/page-errors.server';
 import { listSpaceMembersWithCookie } from '@/lib/api/memberships';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { listSpaceInvitationsWithCookie } from '@/lib/api/invitations';
@@ -31,10 +30,7 @@ export default async function SpaceDetailPage({ params }: PageProps) {
   try {
     space = await getSpaceWithCookie(spaceId, cookieHeader);
   } catch (error) {
-    if (error instanceof ApiError && error.statusCode === 404) {
-      notFound();
-    }
-    throw error;
+    rethrowUnlessSpaceFound(error);
   }
 
   const isShared = space.type === 'SHARED';
