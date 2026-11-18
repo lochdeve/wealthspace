@@ -22,6 +22,7 @@ import type {
   CreateTransferDto,
 } from './dto/create-cashflow.dto';
 import type { UpdateTransactionDto } from './dto/update-transaction.dto';
+import type { CrossSpaceSummaryDto } from './dto/cross-space-summary.dto';
 import type { FinancialTransactionDto } from './dto/transaction-response.dto';
 import { assertSharedExpenseAttribution } from './expense-attribution';
 import {
@@ -260,6 +261,7 @@ export class TransactionsService {
   }
 
   async listForSpace(
+    actorUserId: string,
     spaceId: string,
     options: {
       accountId?: string;
@@ -267,6 +269,10 @@ export class TransactionsService {
       limit?: number;
     },
   ): Promise<FinancialTransactionDto[]> {
+    const membership = await this.spacesService.requireActiveMembership(
+      actorUserId,
+      spaceId,
+    );
     const take = Math.min(options.limit ?? DEFAULT_LIST_LIMIT, MAX_LIST_LIMIT);
 
     const rows = await this.prisma.financialTransaction.findMany({
@@ -288,14 +294,26 @@ export class TransactionsService {
       take,
     });
 
+    if (membership.space.type === SpaceType.PERSONAL) {
+      return this.enrichPersonalSpaceDtos(actorUserId, rows);
+    }
     return rows.map((row) => this.toDto(row));
   }
 
   async getInSpace(
+    actorUserId: string,
     spaceId: string,
     transactionId: string,
   ): Promise<FinancialTransactionDto> {
+    const membership = await this.spacesService.requireActiveMembership(
+      actorUserId,
+      spaceId,
+    );
     const tx = await this.findTransactionInSpace(spaceId, transactionId);
+    if (membership.space.type === SpaceType.PERSONAL) {
+      const [dto] = await this.enrichPersonalSpaceDtos(actorUserId, [tx]);
+      return dto;
+    }
     return this.toDto(tx);
   }
 
@@ -502,6 +520,61 @@ export class TransactionsService {
         attributedToUserId: params.attributedToUserId,
       },
     });
+  }
+
+  private async enrichPersonalSpaceDtos(
+    viewerUserId: string,
+    rows: FinancialTransaction[],
+  ): Promise<FinancialTransactionDto[]> {
+    const dtos = rows.map((row) => this.toDto(row));
+    if (rows.length === 0) {
+      return dtos;
+    }
+
+    const links = await this.prisma.crossSpaceCashLink.findMany({
+      where: {
+        ownerUserId: viewerUserId,
+        personalTransactionId: { in: rows.map((row) => row.id) },
+      },
+      include: {
+        sharedSpace: { select: { id: true, name: true } },
+      },
+    });
+
+    const linkByPersonalTxId = new Map(
+      links.map((link) => [link.personalTransactionId, link]),
+    );
+
+    for (let index = 0; index < rows.length; index++) {
+      const link = linkByPersonalTxId.get(rows[index]!.id);
+      if (link !== undefined) {
+        dtos[index]!.crossSpaceSummary = this.mapCrossSpaceSummary(link);
+      }
+    }
+
+    return dtos;
+  }
+
+  private mapCrossSpaceSummary(link: {
+    kind: CrossSpaceSummaryDto['kind'];
+    sharedSpaceId: string;
+    sharedExpenseId: string | null;
+    settlementId: string | null;
+    contributionGroupId: string | null;
+    sharedSpace: { name: string };
+  }): CrossSpaceSummaryDto {
+    return {
+      kind: link.kind,
+      sharedSpaceId: link.sharedSpaceId,
+      sharedSpaceName: link.sharedSpace.name,
+      ...(link.sharedExpenseId !== null
+        ? { sharedExpenseId: link.sharedExpenseId }
+        : {}),
+      ...(link.settlementId !== null ? { settlementId: link.settlementId } : {}),
+      ...(link.contributionGroupId !== null
+        ? { contributionGroupId: link.contributionGroupId }
+        : {}),
+    };
   }
 
   private toDto(tx: FinancialTransaction): FinancialTransactionDto {

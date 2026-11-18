@@ -229,6 +229,66 @@ describe('Contributions (integration)', () => {
     expect((sharedAccount.body as { balance: string }).balance).toBe('25.0000');
   });
 
+  it('B-8.8: personal transaction list includes crossSpaceSummary', async () => {
+    const owner = await registerAndLogin('ana');
+    const carlos = await registerAndLogin('carlos');
+    const space = await createSharedSpace(owner.cookies);
+    await acceptInvite(owner.cookies, carlos, space.id);
+
+    const sharedAccountRes = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${space.id}/accounts`)
+      .set('Cookie', owner.cookies)
+      .send({ name: 'Piso común', currency: 'EUR' })
+      .expect(201);
+
+    const walletId = await createPersonalWallet(
+      carlos.cookies,
+      carlos.profile.personalSpaceId,
+    );
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${space.id}/contributions`)
+      .set('Cookie', carlos.cookies)
+      .send({
+        sharedAccountId: (sharedAccountRes.body as { id: string }).id,
+        amount: '40.00',
+        currency: 'EUR',
+        personalAccountId: walletId,
+      })
+      .expect(201);
+
+    const personalList = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${carlos.profile.personalSpaceId}/transactions`)
+      .set('Cookie', carlos.cookies)
+      .expect(200);
+
+    const expense = (
+      personalList.body as {
+        type: string;
+        crossSpaceSummary?: {
+          kind: string;
+          sharedSpaceName: string;
+          contributionGroupId: string;
+        };
+      }[]
+    ).find((tx) => tx.type === 'EXPENSE');
+
+    expect(expense?.crossSpaceSummary).toMatchObject({
+      kind: 'CONTRIBUTION_PAIR',
+      sharedSpaceName: 'Piso',
+    });
+    expect(expense?.crossSpaceSummary?.contributionGroupId).toBeDefined();
+
+    const sharedList = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${space.id}/transactions`)
+      .set('Cookie', owner.cookies)
+      .expect(200);
+
+    for (const tx of sharedList.body as { crossSpaceSummary?: unknown }[]) {
+      expect(tx.crossSpaceSummary).toBeUndefined();
+    }
+  });
+
   it('rejects foreign personal account', async () => {
     const owner = await registerAndLogin('ana');
     const carlos = await registerAndLogin('carlos');

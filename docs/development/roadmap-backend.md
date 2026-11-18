@@ -75,6 +75,7 @@ Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (B-8.0…B-8.10).
 | B-8.3 | P-02 | Propagación void/PATCH vínculo personal ✅ |
 | B-8.4–6 | P-07 | Liquidación + `link-personal-cash-flow` + void propagado ✅ |
 | B-8.7 | P-05/06 | `POST …/contributions` ✅ |
+| B-8.8 | — | `crossSpaceSummary` en GET txs PERSONAL ✅ |
 | B-8.10 | — | OpenAPI + catálogo |
 
 ## B-9 — ✨ Presupuestos, informes y perfil ⛔ (P-17)

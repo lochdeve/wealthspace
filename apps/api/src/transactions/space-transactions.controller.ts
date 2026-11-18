@@ -60,6 +60,7 @@ export class SpaceTransactionsController {
   })
   @ApiOkResponse({ type: FinancialTransactionDto, isArray: true })
   async list(
+    @CurrentUser() user: RequestUser,
     @Param('spaceId', ParseUUIDPipe) spaceId: string,
     @Query('accountId', new ParseUUIDPipe({ optional: true }))
     accountId?: string,
@@ -67,7 +68,7 @@ export class SpaceTransactionsController {
     type?: TransactionType,
     @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit?: number,
   ): Promise<FinancialTransactionDto[]> {
-    return this.transactionsService.listForSpace(spaceId, {
+    return this.transactionsService.listForSpace(user.userId, spaceId, {
       accountId,
       type,
       limit,
@@ -78,10 +79,15 @@ export class SpaceTransactionsController {
   @ApiOperation({ summary: 'Get transaction' })
   @ApiOkResponse({ type: FinancialTransactionDto })
   async getOne(
+    @CurrentUser() user: RequestUser,
     @Param('spaceId', ParseUUIDPipe) spaceId: string,
     @Param('transactionId', ParseUUIDPipe) transactionId: string,
   ): Promise<FinancialTransactionDto> {
-    return this.transactionsService.getInSpace(spaceId, transactionId);
+    return this.transactionsService.getInSpace(
+      user.userId,
+      spaceId,
+      transactionId,
+    );
   }
 
   @Patch(':transactionId')

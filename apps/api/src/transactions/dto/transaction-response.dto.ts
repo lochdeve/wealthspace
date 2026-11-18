@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CrossSpaceSummaryDto } from './cross-space-summary.dto';
 
 export class FinancialTransactionDto {
   @ApiProperty({ format: 'uuid' })
@@ -47,4 +48,10 @@ export class FinancialTransactionDto {
 
   @ApiProperty({ format: 'date-time' })
   updatedAt!: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Present only on GET in the viewer PERSONAL space when this tx is linked to SHARED (B-8.8)',
+  })
+  crossSpaceSummary?: CrossSpaceSummaryDto;
 }

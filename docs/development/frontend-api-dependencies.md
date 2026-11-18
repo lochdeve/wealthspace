@@ -101,8 +101,8 @@ Disponible en `main` (Fase 5 API). Membresía **ACTIVE** en el espacio (mismo gu
 | Ingreso       | POST   | `/spaces/:spaceId/transactions/income`                 | `accountId` obligatorio (PERSONAL y SHARED)                                                        |
 | Gasto         | POST   | `/spaces/:spaceId/transactions/expense`                | PERSONAL: `accountId`; SHARED: `attributedToUserId`                                                |
 | Transferencia | POST   | `/spaces/:spaceId/transactions/transfer`               | Misma moneda; cuentas distintas                                                                    |
-| Listar txs    | GET    | `/spaces/:spaceId/transactions`                        | `accountId`, `type`, `limit` (≤100)                                                                |
-| Detalle tx    | GET    | `/spaces/:spaceId/transactions/:transactionId`         | Incluye `version`                                                                                  |
+| Listar txs    | GET    | `/spaces/:spaceId/transactions`                        | `accountId`, `type`, `limit` (≤100); en espacio **PERSONAL** del usuario, `crossSpaceSummary?` en txs vinculadas (B-8.8) |
+| Detalle tx    | GET    | `/spaces/:spaceId/transactions/:transactionId`         | Incluye `version`; mismo `crossSpaceSummary?` solo en PERSONAL                                     |
 | Editar tx     | PATCH  | `/spaces/:spaceId/transactions/:transactionId`         | `expectedVersion` + `description`, `occurredAt`, `amount`, `categoryId` (nullable); revisión en BD |
 
 **UI (slice 2 PERSONAL):** transferencia en detalle de cuenta; categorías ver arriba.
@@ -168,9 +168,10 @@ Con `personalAccountId`: `INCOME` en cuenta SHARED con `attributedToUserId` = ac
 
 Códigos: `SHARED_SPACE_REQUIRED`, `CROSS_SPACE_CURRENCY_MISMATCH`, `PERSONAL_ACCOUNT_NOT_OWNED` (403), `PARTICIPANT_NOT_MEMBER`.
 
+`crossSpaceSummary` (B-8.8): `{ kind, sharedSpaceId, sharedSpaceName, sharedExpenseId?, settlementId?, contributionGroupId? }` — solo en GET de transacciones en el **PERSONAL** del titular del vínculo; nunca en rutas SHARED.
+
 ## No implementado todavía
 
 | Área                                                 | Fase | Contrato previsto          |
 | ---------------------------------------------------- | ---- | -------------------------- |
-| `crossSpaceSummary` en lecturas PERSONAL (B-8.8)     | 8    | Detalle/listado transacciones |
 | Presupuestos, informes, dashboard, edición de perfil | 9    | Pendiente (P-17)           |
