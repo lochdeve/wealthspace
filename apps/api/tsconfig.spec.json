@@ -6,7 +6,8 @@
     "resolvePackageJsonExports": false,
     "declaration": false,
     "noEmit": true,
-    "incremental": false
+    "incremental": false,
+    "types": ["jest", "node"]
   },
   "include": ["test/**/*.ts", "src/**/*.spec.ts"]
 }

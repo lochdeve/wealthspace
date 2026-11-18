@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
-import { jest } from '@jest/globals';
+import { describe, expect, it, jest } from '@jest/globals';
 import { ConflictException, ForbiddenException } from '@nestjs/common';
 import {
   CrossSpaceCashLinkKind,
@@ -16,6 +16,18 @@ describe('CrossSpaceCashLinksService', () => {
   const sharedSpaceId = '00000000-0000-4000-8000-000000000040';
   const sharedExpenseId = '00000000-0000-4000-8000-000000000050';
 
+  type TestTx = {
+    user: { findUnique: jest.Mock };
+    account: { findFirst: jest.Mock };
+    crossSpaceCashLink: {
+      findFirst: jest.Mock;
+      create: jest.Mock;
+    };
+    financialTransaction: {
+      create: jest.Mock;
+    };
+  };
+
   function buildService(overrides: {
     user?: { personalSpaceId: string } | null;
     account?: {
@@ -25,27 +37,27 @@ describe('CrossSpaceCashLinksService', () => {
       archivedAt: Date | null;
     } | null;
     existingLink?: unknown;
-  }): CrossSpaceCashLinksService {
-    const tx = {
+  }): { service: CrossSpaceCashLinksService; tx: TestTx } {
+    const tx: TestTx = {
       user: {
-        findUnique: jest.fn().mockResolvedValue(overrides.user ?? null),
+        findUnique: jest.fn(async () => overrides.user ?? null),
       },
       account: {
-        findFirst: jest.fn().mockResolvedValue(overrides.account ?? null),
+        findFirst: jest.fn(async () => overrides.account ?? null),
       },
       crossSpaceCashLink: {
-        findFirst: jest.fn().mockResolvedValue(overrides.existingLink ?? null),
+        findFirst: jest.fn(async () => overrides.existingLink ?? null),
         create: jest
           .fn()
-          .mockImplementation(({ data }) =>
-            Promise.resolve({ id: 'link-1', ...data }),
+          .mockImplementation((args: { data: Record<string, unknown> }) =>
+            Promise.resolve({ id: 'link-1', ...args.data }),
           ),
       },
       financialTransaction: {
         create: jest
           .fn()
-          .mockImplementation(({ data }) =>
-            Promise.resolve({ id: 'tx-personal-1', ...data }),
+          .mockImplementation((args: { data: Record<string, unknown> }) =>
+            Promise.resolve({ id: 'tx-personal-1', ...args.data }),
           ),
       },
     };
