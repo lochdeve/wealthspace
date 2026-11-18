@@ -40,3 +40,4 @@ Wealthspace gestiona finanzas personales y gastos compartidos mediante **Spaces*
 
 - TypeScript strict; Conventional Commits con mensajes en inglés; nunca push sin aprobación explícita.
 - Documentación en español en `docs/`; código e identificadores en inglés salvo el copy de la UI.
+- **Git:** nunca añadir `Co-authored-by: Cursor` ni otros trailers de atribución del agente. Mensaje = título + cuerpo acordado, sin líneas extra. Si el entorno inyecta el trailer en `git commit`, reescribir el objeto con `git commit-tree` + `update-ref` o pedir al usuario que haga el commit en local.
