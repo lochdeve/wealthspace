@@ -2,16 +2,18 @@ import { ApiError, GENERIC_ERROR_MESSAGE } from '@/lib/api/errors';
 import { membershipActionErrorMessage } from '@/lib/spaces/membership-messages';
 
 describe('membershipActionErrorMessage', () => {
-  it('does not promise ownership transfer to a sole owner', () => {
+  it('hints transfer for sole owner leave', () => {
     const error = new ApiError(409, {
       code: 'CANNOT_LEAVE_AS_SOLE_OWNER',
       message: 'raw',
     });
     const message = membershipActionErrorMessage(error);
-    expect(message).toBe(
-      'Eres el único propietario de este espacio, así que por ahora no puedes salir de él.',
-    );
-    expect(message).not.toMatch(/transfer|invita/i);
+    expect(message).toMatch(/Transfiere el ownership/i);
+  });
+
+  it('maps transfer conflict codes', () => {
+    const error = new ApiError(409, { code: 'TRANSFER_TO_SELF', message: 'raw' });
+    expect(membershipActionErrorMessage(error)).toMatch(/ti mismo/i);
   });
 
   it('does not show the API message when the code is unknown', () => {

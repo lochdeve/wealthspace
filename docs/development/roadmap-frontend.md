@@ -57,7 +57,7 @@ Opción «pagado desde mi cuenta…» (solo mis cuentas personales), aportacione
 
 Edición de perfil y zona horaria, presupuestos, informes mensuales, dashboard global (sustituye la redirección de `/dashboard`).
 
-## F-4.1 — ✨ Transferencia de ownership (paralela) ⛔ (B-4.1)
+## F-4.1 — ✨ Transferencia de ownership (paralela) ✅ (B-4.1)
 
 UI en el detalle del espacio para el OWNER; actualizar los mensajes de `CANNOT_LEAVE_AS_SOLE_OWNER`.
 

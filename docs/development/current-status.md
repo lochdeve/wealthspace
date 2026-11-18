@@ -17,7 +17,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Área                    | API                   | Web       |
 | ----------------------- | --------------------- | --------- |
 | Auth                    | ✅                    | ✅        |
-| Espacios y membresía    | ✅ 4.1 API; 4.2 ⬜    | ✅ (F-4.1 UI pendiente) |
+| Espacios y membresía    | ✅ 4.1 API; 4.2 ⬜    | ✅ F-4.1 transfer ownership |
 | Cuentas y movimientos   | ✅                    | ✅        |
 | Gastos compartidos      | ✅ API fase 6 (B-6.5) | ✅ UI F-6 |
 | Deudas y liquidaciones  | ✅ B-7 (migración aplicada en dev local) | ✅ UI F-7 |
@@ -34,7 +34,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Chat         | Tarea                                                                                       | Bloqueos                                   |
 | ------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
 | Coordinación | CI/prod: aplicar `20261117160000` cuando toque el release                                     | —                                          |
-| Frontend     | F-R2 ✅; siguiente fase producto o pulido según roadmap                                       | Ninguno                                    |
+| Frontend     | F-4.1 ✅; siguiente producto (F-8 ⛔) o E2E transversal                                       | accounts-model                             |
 | Backend      | **B-4.1** transfer ownership + mapeo P2002→`VERSION_CONFLICT` en revisiones                   | B-8 ⛔ modelo cuentas                      |
 
 ## Notas operativas

@@ -22,3 +22,10 @@ export function leaveSpace(spaceId: string): Promise<void> {
 export function removeMember(spaceId: string, userId: string): Promise<void> {
   return apiRequest<void>(`/spaces/${spaceId}/members/${userId}/remove`, { method: 'POST' });
 }
+
+export function transferOwnership(spaceId: string, newOwnerUserId: string): Promise<void> {
+  return apiRequest<void>(`/spaces/${spaceId}/ownership/transfer`, {
+    method: 'POST',
+    body: { newOwnerUserId },
+  });
+}

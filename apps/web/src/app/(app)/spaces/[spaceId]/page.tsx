@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { InviteMemberForm } from '@/components/spaces/invite-member-form';
 import { LeaveSpaceButton } from '@/components/spaces/leave-space-button';
+import { TransferOwnershipForm } from '@/components/spaces/transfer-ownership-form';
 import { SpaceInvitationsPanel } from '@/components/spaces/space-invitations-panel';
 import { SpaceMembersPanel } from '@/components/spaces/space-members-panel';
 import { getSessionCookieHeader, getCurrentUser, requireUser } from '@/lib/auth/session.server';
@@ -98,6 +99,15 @@ export default async function SpaceDetailPage({ params }: PageProps) {
                 <SpaceInvitationsPanel spaceId={spaceId} invitations={invitations} />
               </div>
             </div>
+          ) : null}
+
+          {space.role === 'OWNER' && user ? (
+            <TransferOwnershipForm
+              spaceId={spaceId}
+              spaceName={space.name}
+              currentUserId={user.id}
+              members={members}
+            />
           ) : null}
 
           <LeaveSpaceButton spaceId={spaceId} spaceName={space.name} />
