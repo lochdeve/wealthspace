@@ -77,12 +77,34 @@ async function apiJson<T>(
   return { data, cookie: nextCookie };
 }
 
+const PHASE7_PROBE_SPACE_ID = '00000000-0000-4000-8000-000000000001';
+
 export async function assertE2EApiReady(): Promise<void> {
-  const response = await fetch(`${getE2EApiBaseUrl()}/api/v1/health`);
+  const base = getE2EApiBaseUrl();
+  const response = await fetch(`${base}/api/v1/health`);
   if (!response.ok) {
     throw new Error(
-      `API not reachable at ${getE2EApiBaseUrl()} (GET /api/v1/health → ${response.status})`,
+      `API not reachable at ${base} (GET /api/v1/health → ${response.status})`,
     );
+  }
+
+  const balancesProbe = await fetch(
+    `${base}/api/v1/spaces/${PHASE7_PROBE_SPACE_ID}/balances`,
+  );
+  if (balancesProbe.status === 404) {
+    let detail = balancesProbe.statusText;
+    try {
+      const body = (await balancesProbe.json()) as { message?: string };
+      detail = body.message ?? detail;
+    } catch {
+      /* ignore */
+    }
+    if (detail.includes('Cannot GET')) {
+      throw new Error(
+        `API at ${base} is missing GET /spaces/:spaceId/balances (phase 7). ` +
+          'Restart `pnpm --filter @wealthspace/api dev` on current main.',
+      );
+    }
   }
 }
 
