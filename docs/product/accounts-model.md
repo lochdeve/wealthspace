@@ -1,6 +1,6 @@
 # Modelo de cuentas — análisis y recomendación
 
-**Estado: EN ANÁLISIS.** Nada de este documento es una decisión aprobada salvo lo marcado como «implementado hoy» y P-03/P-04 (aprobadas el 2026-11-15). Las decisiones pendientes están en [decisions.md §3.2](./decisions.md#32-modelo-de-cuentas) (P-01 a P-07, P-17). **No implementar** ningún cambio de cuentas hasta su aprobación.
+**Estado: DECISIONES APROBADAS (2026-11-18).** P-01…P-07 y P-17 en [decisions.md §2e](./decisions.md#2e-decisiones-aprobadas--fase-8-cuentas-vinculadas-2026-11-18). **No implementar** código hasta revisión del plan técnico B-8/F-8 en coordinación.
 
 ---
 

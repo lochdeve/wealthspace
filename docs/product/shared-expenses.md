@@ -2,7 +2,7 @@
 
 Especificación funcional para espacios **SHARED**. Decisiones referenciadas por ID en [decisions.md](./decisions.md). Contrato API previsto: [api-design.md](../architecture/api-design.md#gastos-compartidos-deudas-y-liquidaciones-previsto).
 
-**Estado de implementación (2026-11-18):** fases **6 y 7** implementadas en API y web (gastos compartidos, `GET /balances`, liquidaciones, anulaciones). Contratos en [frontend-api-dependencies.md](../development/frontend-api-dependencies.md). E2E local en `apps/web/e2e/shared-expenses-balances-settlements.spec.ts`.
+**Estado de implementación (2026-11-15):** nada de este documento está implementado en API ni en web. Las tablas `shared_expenses`, `expense_participants` y `settlements` existen en el esquema y en la migración inicial, con triggers de integridad probados, pero ningún endpoint ni pantalla las usa todavía.
 
 ---
 

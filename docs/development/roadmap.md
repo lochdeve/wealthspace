@@ -8,22 +8,22 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 
 ## 1. Resumen de estado
 
-| Fase | Contenido                                                      | API | Web | Notas                                                                                     |
-| ---- | -------------------------------------------------------------- | --- | --- | ----------------------------------------------------------------------------------------- |
-| 0    | Monorepo, CI, esquema y migración inicial, tests de integridad | ✅  | ✅  | E2E Playwright **no** en CI (fase 10).                                                    |
-| 1    | Fundación backend                                              | ✅  | —   |                                                                                           |
-| 2    | Autenticación API                                              | ✅  | —   | Sin `PATCH` perfil/zona horaria.                                                          |
-| 3    | Autenticación web                                              | —   | ✅  | E2E auth local.                                                                           |
-| 4    | Espacios, invitaciones, membresía                              | ✅  | ✅  | **4.2** (último ACTIVE) sin decisión ni implementación.                                   |
-| 5    | Cuentas, categorías, movimientos                               | ✅  | ✅  | Gasto individual + compartido en rutas distintas.                                         |
-| R1   | Cierre decisiones producto fases 6–7                           | ✅  | ✅  | P-03…P-16 y P-10…P-19 aprobados.                                                          |
-| R2   | Alineación fase 5 (F-R2, C-01…C-04)                            | ✅  | ✅  |                                                                                           |
-| 6    | Gastos compartidos con reparto                                 | ✅  | ✅  | Migraciones `20261115183000`.                                                             |
-| 7    | Saldos y liquidaciones                                         | ✅  | ✅  | Migración `20261117160000`; E2E SHARED local.                                             |
-| 4.1  | Transferencia de ownership                                     | ✅  | ✅  | B-4.1 + F-4.1.                                                                            |
-| 8    | Cuentas personales vinculadas y aportaciones                   | ⬜  | ⬜  | **Bloqueada:** P-01…P-07 sin aprobar ([accounts-model.md](../product/accounts-model.md)). |
-| 9    | Presupuestos, informes y dashboard                             | ⬜  | ⬜  | **Bloqueada:** P-17; tabla `Budget` sin API.                                              |
-| 10   | Preparación para producción                                    | ⬜  | ⬜  | E2E en CI, hardening, despliegue.                                                         |
+| Fase | Contenido                                                      | API | Web | Notas                                                     |
+| ---- | -------------------------------------------------------------- | --- | --- | --------------------------------------------------------- |
+| 0    | Monorepo, CI, esquema y migración inicial, tests de integridad | ✅  | ✅  | E2E Playwright **no** en CI (fase 10).                    |
+| 1    | Fundación backend                                              | ✅  | —   |                                                           |
+| 2    | Autenticación API                                              | ✅  | —   | Sin `PATCH` perfil/zona horaria.                          |
+| 3    | Autenticación web                                              | —   | ✅  | E2E auth local.                                           |
+| 4    | Espacios, invitaciones, membresía                              | ✅  | ✅  | **4.2** (último ACTIVE) sin decisión ni implementación.   |
+| 5    | Cuentas, categorías, movimientos                               | ✅  | ✅  | Gasto individual + compartido en rutas distintas.         |
+| R1   | Cierre decisiones producto fases 6–7                           | ✅  | ✅  | P-03…P-16 y P-10…P-19 aprobados.                          |
+| R2   | Alineación fase 5 (F-R2, C-01…C-04)                            | ✅  | ✅  |                                                           |
+| 6    | Gastos compartidos con reparto                                 | ✅  | ✅  | Migraciones `20261115183000`.                             |
+| 7    | Saldos y liquidaciones                                         | ✅  | ✅  | Migración `20261117160000`; E2E SHARED local.             |
+| 4.1  | Transferencia de ownership                                     | ✅  | ✅  | B-4.1 + F-4.1.                                            |
+| 8    | Cuentas personales vinculadas y aportaciones                   | ⬜  | ⬜  | P-01…P-07 aprobados; **gate:** plan técnico coordinación. |
+| 9    | Presupuestos, informes y dashboard                             | ⬜  | ⬜  | P-17 aprobado; falta perfil/`Budget`.                     |
+| 10   | Preparación para producción                                    | ⬜  | ⬜  | E2E en CI, hardening, despliegue.                         |
 
 ### Lo que el MVP financiero compartido ya cubre
 

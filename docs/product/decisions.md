@@ -81,6 +81,22 @@ Especificación: [shared-expenses.md §7](./shared-expenses.md#7-liquidaciones-a
 | P-12 | Se elimina `SettlementStatus` / columna `status`. **Vigente** = no anulado (`voided_at` IS NULL). Anulación lógica como P-13: `voided_at`, `voided_by_user_id`, motivo en `FinancialRevision`; lo anulado no cuenta en deudas/saldos.                                                                                                                                                                                                                                                                                                                                   |
 | P-19 | `from` y `to` deben tener **histórico** en el espacio (fila en `space_memberships`, cualquier estado). **No** exigir pertenencia en `occurred_at` dentro de `[joinedAt, leftAt)`; se permite liquidar con **ex-miembros** (p. ej. `occurred_at` posterior a `leftAt`). Reglas: `occurred_at` ≥ `joined_at` de la primera membresía de cada parte en ese espacio; quien registra debe estar **ACTIVE**; `from ≠ to`. Al leave/remove, si el saldo neto del usuario ≠ 0, **aviso informativo** en UI (no bloquea). Migración B-7.0 actualiza el trigger de liquidaciones. |
 
+## 2e. Decisiones aprobadas — fase 8 cuentas vinculadas (2026-11-18)
+
+Aprobadas por el responsable de producto (cuestionario coordinación). Implementación **en espera** del plan técnico revisado (sin código hasta aprobación del plan).
+
+| ID   | Decisión                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P-01 | Cuentas personales = cuentas del espacio **PERSONAL** del usuario (varias por usuario); cuentas comunes = cuentas del espacio **SHARED**. **No** migrar a `ownerUserId`; se mantiene `Account.spaceId`.                                                                                                                                                                                                    |
+| P-02 | Al registrar un gasto compartido, el pagador puede elegir **opcionalmente** una cuenta personal suya; la API crea gasto + movimiento de salida enlazados en una transacción. El SHARED solo ve «pagado por …». Editar/anular el gasto propaga el movimiento. Confirmado por producto: **un solo paso, automático** (no doble apunte manual del gasto de compra).                                           |
+| P-05 | Aportaciones a la cuenta común: `INCOME` con **aportante** identificado; opcionalmente salida vinculada en la cuenta personal del aportante. Sin deudas entre miembros.                                                                                                                                                                                                                                    |
+| P-06 | Movimiento personal ↔ cuenta común: **dos movimientos vinculados** en espacios distintos, una operación; solo el titular inicia desde su personal.                                                                                                                                                                                                                                                        |
+| P-07 | **Liquidaciones:** en MVP la liquidación sigue reduciendo solo la deuda del espacio. **Opcional en fase 8:** quien **registra** la liquidación puede vincular un movimiento en **su propia** cuenta personal (salida si es `from`, entrada si es `to`). No se crean movimientos automáticos en el espacio personal del **otro** miembro sin que él registre o vincule (evita escribir en finanzas ajenas). |
+| P-17 | Presupuestos e informes: por defecto **consumo** (participación / gasto individual); adelantos, aportaciones y liquidaciones = flujo de caja, excluidos del presupuesto por defecto.                                                                                                                                                                                                                       |
+| C-05 | **4.2:** se **permite** leave siendo el último ACTIVE, con **confirmación fuerte** y aviso claro (el espacio queda sin miembros activos). No se implementa `LAST_ACTIVE_MEMBER` como bloqueo 409.                                                                                                                                                                                                          |
+
+**Alcance de implementación:** coordinación entrega plan técnico B-8/F-8 (migración, endpoints, privacidad) para revisión **antes** de que backend/front codifiquen.
+
 ## 3. Decisiones pendientes
 
 Prioridad: **Alta** = bloquea la siguiente fase de implementación; **Media** = bloquea una fase posterior; **Baja** = mejora.
@@ -89,25 +105,16 @@ Prioridad: **Alta** = bloquea la siguiente fase de implementación; **Media** = 
 
 **Cerrado (2026-11-15):** P-10, P-11, P-12 y P-19 aprobadas en [§2d](#2d-decisiones-aprobadas--fase-7-liquidaciones-2026-11-15).
 
-### 3.2 Modelo de cuentas
+### 3.2 Modelo de cuentas y presupuestos
 
-Análisis completo con los seis escenarios: [accounts-model.md](./accounts-model.md).
-
-| ID   | Pregunta                                                                    | Recomendación                                                                                                                                                                                                                                            | Prioridad |
-| ---- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| P-01 | ¿Las cuentas personales pertenecen a usuarios y las compartidas a espacios? | **Sí, conceptualmente, sin cambiar el esquema**: una cuenta personal es una cuenta del espacio PERSONAL (relación 1:1 con el usuario) y una cuenta compartida es una cuenta de un espacio SHARED. No se migra `Account.spaceId` a `ownerUserId`.         | Media     |
-| P-02 | ¿Cómo se paga un gasto compartido desde una cuenta personal?                | Vínculo opcional: el pagador elige una cuenta **propia** y la API crea de forma atómica el gasto en el espacio SHARED y un movimiento de salida en su espacio PERSONAL, enlazados. El espacio compartido nunca ve ni el nombre ni el saldo de la cuenta. | Media     |
-| P-05 | ¿Cómo se registran las aportaciones a una cuenta compartida?                | Movimiento de entrada en la cuenta compartida con **aportante identificado**; opcionalmente vinculado a una salida de la cuenta personal del aportante. No genera deudas en MVP.                                                                         | Media     |
-| P-06 | ¿Cómo se mueve dinero entre una cuenta personal y una compartida?           | Dos movimientos **vinculados** en espacios distintos (salida en uno, entrada en el otro), creados por una sola operación. No es un `TRANSFER`, que es exclusivo de un mismo espacio.                                                                     | Media     |
-| P-07 | ¿La liquidación mueve saldos de cuentas?                                    | En MVP no. Más adelante, opcionalmente: quien la registra puede vincular un movimiento en **su propia** cuenta personal.                                                                                                                                 | Baja      |
-| P-17 | ¿Qué cuentan presupuestos e informes: consumo o flujo de caja?              | Por defecto el **consumo** (la participación de cada uno). Los pagos adelantados y las liquidaciones son flujo de caja y no consumen presupuesto. Las métricas del dashboard se redefinen tras P-02/P-05.                                                | Media     |
+**Cerrado (2026-11-18):** P-01…P-07 y P-17 en [§2e](#2e-decisiones-aprobadas--fase-8-cuentas-vinculadas-2026-11-18). Referencia: [accounts-model.md](./accounts-model.md).
 
 ### 3.3 Pendientes anteriores que siguen abiertos
 
 | Tema                                         | Estado                                                             | Fuente                                                 |
 | -------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------ |
 | Transferencia de ownership (entrega 4.1)     | ✅ Implementada API + web                                          | [spaces-membership-mvp.md](./spaces-membership-mvp.md) |
-| Último miembro ACTIVE hace leave (4.2)       | Propuesta: 409 `LAST_ACTIVE_MEMBER`                                | [spaces-membership-mvp.md](./spaces-membership-mvp.md) |
+| Último miembro ACTIVE hace leave (4.2)       | ✅ Aprobado **C-05**: permitir con confirmación fuerte (no 409)    | [spaces-membership-mvp.md](./spaces-membership-mvp.md) |
 | Edición de perfil y zona horaria del usuario | Sin endpoint; necesaria antes de los informes mensuales (fase 9)   | [functional-scope.md](./functional-scope.md)           |
 | Tipos compartidos web/api                    | Herramienta pendiente (openapi-typescript o tipos escritos a mano) | [contracts README](../../packages/contracts/README.md) |
 | Rebase frente a merge; aprobaciones de PR    | Pendiente de equipo                                                | [git-workflow.md](../development/git-workflow.md)      |

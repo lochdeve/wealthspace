@@ -38,14 +38,14 @@ Criterio de cierre **Fase 4 (MVP):** espacios, invitaciones, leave/remove y espa
 
 ## Pendientes posteriores (comportamiento seguro hasta entonces)
 
-| Tema                                       | Hasta implementar                   |
-| ------------------------------------------ | ----------------------------------- |
-| Transferencia 4.1                          | Implementada en API (UI F-4.1)      |
-| Último miembro ACTIVE hace leave (4.2)     | Propuesta: 409 `LAST_ACTIVE_MEMBER` |
-| Disolver / archivar espacio                | Fuera MVP                           |
-| Varios OWNERs                              | Fuera MVP                           |
-| TTL configurable / email invitación        | Fuera MVP                           |
-| Confirmación del receptor en transferencia | Post-MVP                            |
+| Tema                                       | Hasta implementar                                      |
+| ------------------------------------------ | ------------------------------------------------------ |
+| Transferencia 4.1                          | Implementada en API (UI F-4.1)                         |
+| Último miembro ACTIVE hace leave (4.2)     | ✅ **C-05:** permitir con confirmación fuerte (no 409) |
+| Disolver / archivar espacio                | Fuera MVP                                              |
+| Varios OWNERs                              | Fuera MVP                                              |
+| TTL configurable / email invitación        | Fuera MVP                                              |
+| Confirmación del receptor en transferencia | Post-MVP                                               |
 
 ## Invariante técnica
 
