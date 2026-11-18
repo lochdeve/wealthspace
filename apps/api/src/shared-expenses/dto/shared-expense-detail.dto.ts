@@ -42,6 +42,14 @@ export class SharedExpenseAccountPaymentResponseDto {
   accountId!: string;
 }
 
+export class MyPersonalCashLinkDto {
+  @ApiProperty()
+  linked!: boolean;
+
+  @ApiProperty()
+  canLink!: boolean;
+}
+
 export class SharedExpenseDetailDto {
   @ApiProperty({ format: 'uuid' })
   id!: string;
@@ -85,4 +93,10 @@ export class SharedExpenseDetailDto {
 
   @ApiProperty()
   version!: number;
+
+  @ApiPropertyOptional({
+    description:
+      'Present only for the session user when they are the member payer (no personal account id exposed)',
+  })
+  myPersonalCashLink?: MyPersonalCashLinkDto;
 }

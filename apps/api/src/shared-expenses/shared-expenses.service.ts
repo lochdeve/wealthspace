@@ -1,11 +1,13 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import {
   CategoryType,
+  CrossSpaceCashLinkKind,
   PaymentSource,
   Prisma,
   SplitMode,
@@ -14,6 +16,7 @@ import {
 } from '@prisma/client';
 import { runWithVersionConflictMapping } from '../common/prisma-version-conflict';
 import { AccountsService } from '../accounts/accounts.service';
+import { CrossSpaceCashLinksService } from '../cross-space-cash-links/cross-space-cash-links.service';
 import { PrismaService } from '../prisma/prisma.service';
 import type { ActiveSpaceMembership } from '../spaces/spaces.service';
 import { SpacesService } from '../spaces/spaces.service';
@@ -24,6 +27,7 @@ import type { CreateSharedExpenseDto } from './dto/create-shared-expense.dto';
 import type { SharedExpenseDetailDto } from './dto/shared-expense-detail.dto';
 import type { SharedExpenseRevisionDto } from './dto/shared-expense-revision.dto';
 import type { UpdateSharedExpenseDto } from './dto/update-shared-expense.dto';
+import type { LinkPersonalPaymentDto } from './dto/link-personal-payment.dto';
 import type { VoidSharedExpenseDto } from './dto/void-shared-expense.dto';
 import { computeGeneratedDebts } from './generated-debts';
 import { assertUserMemberAt, requireUserDisplayName } from './membership-at';
@@ -66,6 +70,11 @@ type PreparedSharedExpense = {
     allocatedAmount: Prisma.Decimal;
     sharePercent: Prisma.Decimal | null;
   }[];
+  personalAccountId?: string;
+};
+
+type PrepareOptions = {
+  rejectPersonalAccountOnPayment?: boolean;
 };
 
 @Injectable()
@@ -74,6 +83,7 @@ export class SharedExpensesService {
     private readonly prisma: PrismaService,
     private readonly spacesService: SpacesService,
     private readonly accountsService: AccountsService,
+    private readonly crossSpaceCashLinksService: CrossSpaceCashLinksService,
   ) {}
 
   async previewInSpace(
@@ -123,7 +133,69 @@ export class SharedExpensesService {
     });
 
     const row = await this.findSharedExpenseRow(spaceId, created.id);
-    return this.toDetailDto(row);
+    const linkSet = await this.loadMemberPaymentLinkSet(actorUserId, [row.id]);
+    return this.toDetailDto(row, actorUserId, linkSet);
+  }
+
+  async linkPersonalPaymentInSpace(
+    actorUserId: string,
+    spaceId: string,
+    sharedExpenseId: string,
+    dto: LinkPersonalPaymentDto,
+  ): Promise<SharedExpenseDetailDto> {
+    const membership = await this.spacesService.requireActiveMembership(
+      actorUserId,
+      spaceId,
+    );
+    this.assertSharedSpace(membership);
+
+    const current = await this.findSharedExpenseRow(spaceId, sharedExpenseId);
+    this.assertNotVoided(current);
+
+    if (current.paymentSource !== PaymentSource.MEMBER) {
+      throw new BadRequestException({
+        statusCode: 400,
+        code: 'PERSONAL_LINK_NOT_ALLOWED',
+        message: 'Personal payment links apply only to member-paid expenses',
+      });
+    }
+
+    if (current.paidByUserId !== actorUserId) {
+      throw new ForbiddenException({
+        statusCode: 403,
+        code: 'NOT_PAYER',
+        message: 'Only the payer can link a personal payment',
+      });
+    }
+
+    if (current.version !== dto.expectedVersion) {
+      throw new ConflictException({
+        statusCode: 409,
+        code: 'VERSION_CONFLICT',
+        message: 'Shared expense was modified by another request',
+      });
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      await this.crossSpaceCashLinksService.createMemberPaymentLinkInTransaction(
+        tx,
+        {
+          ownerUserId: actorUserId,
+          personalAccountId: dto.personalAccountId,
+          sharedSpaceId: spaceId,
+          sharedExpenseId: current.id,
+          amount: current.totalAmount,
+          currency: current.currency,
+          occurredAt: current.occurredAt,
+          recordedByUserId: actorUserId,
+          description: current.description,
+        },
+      );
+    });
+
+    const row = await this.findSharedExpenseRow(spaceId, sharedExpenseId);
+    const linkSet = await this.loadMemberPaymentLinkSet(actorUserId, [row.id]);
+    return this.toDetailDto(row, actorUserId, linkSet);
   }
 
   async listInSpace(
@@ -164,7 +236,19 @@ export class SharedExpensesService {
       take: query.limit,
     });
 
-    return rows.map((row) => this.toDetailDto(row));
+    const payerExpenseIds = rows
+      .filter(
+        (row) =>
+          row.paymentSource === PaymentSource.MEMBER &&
+          row.paidByUserId === actorUserId,
+      )
+      .map((row) => row.id);
+    const linkSet = await this.loadMemberPaymentLinkSet(
+      actorUserId,
+      payerExpenseIds,
+    );
+
+    return rows.map((row) => this.toDetailDto(row, actorUserId, linkSet));
   }
 
   async getInSpace(
@@ -178,7 +262,8 @@ export class SharedExpensesService {
     );
     this.assertSharedSpace(membership);
     const row = await this.findSharedExpenseRow(spaceId, sharedExpenseId);
-    return this.toDetailDto(row);
+    const linkSet = await this.loadMemberPaymentLinkSet(actorUserId, [row.id]);
+    return this.toDetailDto(row, actorUserId, linkSet);
   }
 
   async updateInSpace(
@@ -207,7 +292,9 @@ export class SharedExpensesService {
 
     this.assertPaymentSourceUnchanged(current.paymentSource, dto);
 
-    const prepared = await this.prepare(actorUserId, membership, spaceId, dto);
+    const prepared = await this.prepare(actorUserId, membership, spaceId, dto, {
+      rejectPersonalAccountOnPayment: true,
+    });
 
     if (
       prepared.paymentSource === PaymentSource.MEMBER &&
@@ -303,7 +390,8 @@ export class SharedExpensesService {
     );
 
     const row = await this.findSharedExpenseRow(spaceId, sharedExpenseId);
-    return this.toDetailDto(row);
+    const linkSet = await this.loadMemberPaymentLinkSet(actorUserId, [row.id]);
+    return this.toDetailDto(row, actorUserId, linkSet);
   }
 
   async voidInSpace(
@@ -360,7 +448,8 @@ export class SharedExpensesService {
     );
 
     const row = await this.findSharedExpenseRow(spaceId, sharedExpenseId);
-    return this.toDetailDto(row);
+    const linkSet = await this.loadMemberPaymentLinkSet(actorUserId, [row.id]);
+    return this.toDetailDto(row, actorUserId, linkSet);
   }
 
   async listRevisionsInSpace(
@@ -394,6 +483,7 @@ export class SharedExpensesService {
     membership: ActiveSpaceMembership,
     spaceId: string,
     dto: CreateSharedExpenseDto,
+    options?: PrepareOptions,
   ): Promise<PreparedSharedExpense> {
     this.assertSharedSpace(membership);
 
@@ -481,6 +571,42 @@ export class SharedExpensesService {
       })),
     );
 
+    let personalAccountId: string | undefined;
+    if (dto.payment.source === 'MEMBER') {
+      personalAccountId = dto.payment.personalAccountId;
+    } else if (
+      'personalAccountId' in dto.payment &&
+      dto.payment.personalAccountId !== undefined
+    ) {
+      throw new BadRequestException({
+        statusCode: 400,
+        code: 'PERSONAL_LINK_NOT_ALLOWED',
+        message: 'personalAccountId applies only to member payments',
+      });
+    }
+
+    if (personalAccountId !== undefined) {
+      if (options?.rejectPersonalAccountOnPayment === true) {
+        throw new BadRequestException({
+          statusCode: 400,
+          code: 'PERSONAL_LINK_NOT_ALLOWED',
+          message: 'Use link-personal-payment to attach a personal account',
+        });
+      }
+      if (dto.payment.source === 'MEMBER' && paidByUserId !== actorUserId) {
+        throw new ForbiddenException({
+          statusCode: 403,
+          code: 'PERSONAL_LINK_NOT_ALLOWED',
+          message: 'Only the payer can attach a personal account on create',
+        });
+      }
+      await this.crossSpaceCashLinksService.requirePersonalAccountOwned(
+        actorUserId,
+        personalAccountId,
+        currency,
+      );
+    }
+
     return {
       currency,
       occurredAt,
@@ -489,6 +615,7 @@ export class SharedExpensesService {
       paidByUserId,
       accountId,
       allocations,
+      ...(personalAccountId !== undefined ? { personalAccountId } : {}),
     };
   }
 
@@ -630,6 +757,24 @@ export class SharedExpensesService {
       })),
     });
 
+    if (params.prepared.personalAccountId !== undefined) {
+      const payerId = params.prepared.paidByUserId ?? params.actorUserId;
+      await this.crossSpaceCashLinksService.createMemberPaymentLinkInTransaction(
+        tx,
+        {
+          ownerUserId: payerId,
+          personalAccountId: params.prepared.personalAccountId,
+          sharedSpaceId: params.spaceId,
+          sharedExpenseId: shared.id,
+          amount: totalAmount,
+          currency: params.prepared.currency,
+          occurredAt: params.prepared.occurredAt,
+          recordedByUserId: params.actorUserId,
+          description: params.dto.description ?? null,
+        },
+      );
+    }
+
     return tx.sharedExpense.findFirstOrThrow({
       where: { id: shared.id },
       include: { participants: true },
@@ -746,7 +891,35 @@ export class SharedExpensesService {
     };
   }
 
-  private toDetailDto(row: SharedExpenseRow): SharedExpenseDetailDto {
+  private async loadMemberPaymentLinkSet(
+    viewerUserId: string,
+    sharedExpenseIds: string[],
+  ): Promise<Set<string>> {
+    if (sharedExpenseIds.length === 0) {
+      return new Set();
+    }
+    const links = await this.prisma.crossSpaceCashLink.findMany({
+      where: {
+        kind: CrossSpaceCashLinkKind.SHARED_EXPENSE_MEMBER_PAYMENT,
+        ownerUserId: viewerUserId,
+        sharedExpenseId: { in: sharedExpenseIds },
+      },
+      select: { sharedExpenseId: true },
+    });
+    const linked = new Set<string>();
+    for (const link of links) {
+      if (link.sharedExpenseId !== null) {
+        linked.add(link.sharedExpenseId);
+      }
+    }
+    return linked;
+  }
+
+  private toDetailDto(
+    row: SharedExpenseRow,
+    viewerUserId?: string,
+    memberPaymentLinks?: Set<string>,
+  ): SharedExpenseDetailDto {
     const participants = row.participants.map((p) => ({
       userId: p.userId,
       displayName: p.displayNameSnapshot,
@@ -773,7 +946,7 @@ export class SharedExpensesService {
       participants,
     );
 
-    return {
+    const detail: SharedExpenseDetailDto = {
       id: row.id,
       description: row.description ?? undefined,
       totalAmount: formatTransactionAmount(row.totalAmount),
@@ -787,6 +960,21 @@ export class SharedExpensesService {
       voidedAt: row.voidedAt?.toISOString() ?? null,
       version: row.version,
     };
+
+    if (
+      viewerUserId !== undefined &&
+      memberPaymentLinks !== undefined &&
+      row.paymentSource === PaymentSource.MEMBER &&
+      row.paidByUserId === viewerUserId
+    ) {
+      const linked = memberPaymentLinks.has(row.id);
+      detail.myPersonalCashLink = {
+        linked,
+        canLink: !linked && row.voidedAt === null,
+      };
+    }
+
+    return detail;
   }
 
   private async findSharedExpenseRow(

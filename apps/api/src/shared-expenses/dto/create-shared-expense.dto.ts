@@ -26,6 +26,15 @@ export class SharedExpenseMemberPaymentDto {
   @ApiProperty({ format: 'uuid' })
   @IsUUID()
   paidByUserId!: string;
+
+  @ApiPropertyOptional({
+    format: 'uuid',
+    description:
+      'Optional personal account (PERSONAL space) when the actor is the payer',
+  })
+  @IsOptional()
+  @IsUUID()
+  personalAccountId?: string;
 }
 
 export class SharedExpenseAccountPaymentDto {

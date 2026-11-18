@@ -35,6 +35,7 @@ import { CreateSharedExpenseDto } from './dto/create-shared-expense.dto';
 import { SharedExpenseDetailDto } from './dto/shared-expense-detail.dto';
 import { SharedExpenseRevisionDto } from './dto/shared-expense-revision.dto';
 import { UpdateSharedExpenseDto } from './dto/update-shared-expense.dto';
+import { LinkPersonalPaymentDto } from './dto/link-personal-payment.dto';
 import { VoidSharedExpenseDto } from './dto/void-shared-expense.dto';
 import { SharedExpensesService } from './shared-expenses.service';
 
@@ -124,6 +125,30 @@ export class SharedExpensesController {
       user.userId,
       spaceId,
       sharedExpenseId,
+    );
+  }
+
+  @Post(':sharedExpenseId/link-personal-payment')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Link member payment to a personal account (payer only)',
+  })
+  @ApiOkResponse({ type: SharedExpenseDetailDto })
+  @ApiForbiddenResponse({ description: 'NOT_PAYER or PERSONAL_LINK_NOT_ALLOWED' })
+  @ApiConflictResponse({
+    description: 'VERSION_CONFLICT, ALREADY_VOIDED, or PERSONAL_LINK_ALREADY_EXISTS',
+  })
+  async linkPersonalPayment(
+    @CurrentUser() user: RequestUser,
+    @Param('spaceId', ParseUUIDPipe) spaceId: string,
+    @Param('sharedExpenseId', ParseUUIDPipe) sharedExpenseId: string,
+    @Body() dto: LinkPersonalPaymentDto,
+  ): Promise<SharedExpenseDetailDto> {
+    return this.sharedExpensesService.linkPersonalPaymentInSpace(
+      user.userId,
+      spaceId,
+      sharedExpenseId,
+      dto,
     );
   }
 
