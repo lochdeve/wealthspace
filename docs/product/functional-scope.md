@@ -24,22 +24,23 @@ Fuente: [spaces-membership-mvp.md](./spaces-membership-mvp.md).
 | Listar espacios, crear SHARED, espacio activo en UI          | ✅                         |
 | Invitaciones (crear, revocar, aceptar, rechazar; TTL 7 días) | ✅                         |
 | Leave/remove con único OWNER protegido (409)                 | ✅                         |
-| Transferencia de ownership (4.1)                             | ⬜                         |
+| Transferencia de ownership (4.1)                             | ✅                         |
 | Último miembro ACTIVE (4.2)                                  | ⬜ (pendiente de decisión) |
+| Aviso saldo ≠ 0 al leave/remove (P-19)                       | ✅                         |
 
 ## 3. Cuentas y movimientos
 
 Fuente: [domain-model.md §3.2](./domain-model.md#32-cuentas-y-movimientos-implementado).
 
-| Requisito                                                                  | Estado                    |
-| -------------------------------------------------------------------------- | ------------------------- |
-| Cuentas por espacio (crear, listar, detalle con saldo on-read, archivar)   | ✅                        |
-| Categorías INCOME/EXPENSE                                                  | 🟡 ídem                   |
-| Saldo inicial, ingreso, gasto, transferencia en el mismo espacio           | 🟡 ídem                   |
-| Listado y detalle de movimientos; edición con `expectedVersion` y revisión | 🟡 ídem                   |
-| Gasto individual atribuido en SHARED (B-08)                                | 🟡 ídem; congelado (P-14) |
-| Anulación de movimientos                                                   | ⬜ (P-13)                 |
-| Renombrar cuenta o categoría; paginación real                              | ⬜ (no priorizado)        |
+| Requisito                                                                  | Estado                        |
+| -------------------------------------------------------------------------- | ----------------------------- |
+| Cuentas por espacio (crear, listar, detalle con saldo on-read, archivar)   | ✅                            |
+| Categorías INCOME/EXPENSE                                                  | 🟡 ídem                       |
+| Saldo inicial, ingreso, gasto, transferencia en el mismo espacio           | 🟡 ídem                       |
+| Listado y detalle de movimientos; edición con `expectedVersion` y revisión | 🟡 ídem                       |
+| Gasto individual atribuido en SHARED (B-08)                                | 🟡 ídem; congelado (P-14)     |
+| Anulación de movimientos                                                   | 🟡 API+BD P-13; UI según área |
+| Renombrar cuenta o categoría; paginación real                              | ⬜ (no priorizado)            |
 
 ### Gastos en un espacio compartido
 
@@ -50,7 +51,7 @@ Fuente: [domain-model.md §3.2](./domain-model.md#32-cuentas-y-movimientos-imple
 
 ## 4. Gastos compartidos, deudas y liquidaciones
 
-Fuente única: [shared-expenses.md](./shared-expenses.md). Todo ⬜.
+Fuente única: [shared-expenses.md](./shared-expenses.md). **✅ Implementado** (API + web, 2026-11-18).
 
 - Registrar un gasto con pagador, participantes y reparto EQUAL (defecto), PERCENTAGE o FIXED_AMOUNT.
 - Previsualizar las participaciones calculadas por el servidor antes de guardar.
@@ -78,7 +79,7 @@ Las métricas `totalExpense` / `attributedExpense` / `advancedAmount` del diseñ
 
 - Revisiones con instantánea JSONB versionada (`schemaVersion`) antes de cada edición.
 - `expectedVersion` en ediciones → **409 Conflict**.
-- Implementado para movimientos; pendiente para gastos compartidos y liquidaciones.
+- Implementado para movimientos, gastos compartidos y liquidaciones.
 
 ## 8. Fuera del MVP
 
