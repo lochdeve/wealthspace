@@ -689,6 +689,18 @@ BEGIN
       IF rec.tx_type <> 'EXPENSE'::"TransactionType" THEN
         RAISE EXCEPTION 'SHARED_EXPENSE_MEMBER_PAYMENT requires personal EXPENSE';
       END IF;
+      IF rec.tx_voided IS NOT NULL THEN
+        CONTINUE;
+      END IF;
+      IF EXISTS (
+        SELECT 1
+        FROM shared_expenses se
+        WHERE se.id = rec.shared_expense_id
+          AND se.space_id = rec.shared_space_id
+          AND se.voided_at IS NOT NULL
+      ) THEN
+        CONTINUE;
+      END IF;
       IF NOT EXISTS (
         SELECT 1
         FROM shared_expenses se

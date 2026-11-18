@@ -34,7 +34,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Chat             | Tarea                                                             | Bloqueos |
 | ---------------- | ----------------------------------------------------------------- | -------- |
 | **Coordinación** | **Revisar SQL** `20261201120000_phase8_cross_space_cash_links`     | —        |
-| **Backend**      | **B-8.2** ✅ (local); **B-8.3** (void/PATCH vínculo); migración B-8.0 en revisión | —        |
+| **Backend**      | **B-8.3** ✅ (P-02 propagación); **B-8.4** liquidaciones; migración B-8.0 en revisión | —        |
 | **Frontend**     | **C-05** leave último ACTIVE (paralelo); **F-8** tras **B-8.10**  | B-8.10   |
 | **Release**      | `migrate deploy` 6+7 en cada entorno                              | —        |
 

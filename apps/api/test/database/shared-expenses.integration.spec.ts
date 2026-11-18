@@ -28,6 +28,8 @@ type SharedExpenseBody = {
   generatedDebts: { fromUserId: string; toUserId: string; amount: string }[];
   version: number;
   voidedAt?: string | null;
+  myPersonalCashLink?: { linked: boolean; canLink: boolean };
+  payment?: { source: string; paidByUserId?: string; accountId?: string };
 };
 
 function asCookieSetHeader(setCookie: string | string[] | undefined): string[] {
@@ -444,6 +446,242 @@ describe('Shared expenses (integration)', () => {
     const patched = patchRes.body as SharedExpenseBody;
     expect(patched.totalAmount).toBe('90.0000');
     expect(patched.version).toBe(2);
+  });
+
+  async function createPersonalWallet(
+    cookies: string[],
+    personalSpaceId: string,
+  ): Promise<string> {
+    const res = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${personalSpaceId}/accounts`)
+      .set('Cookie', cookies)
+      .send({ name: 'Wallet', currency: 'EUR' })
+      .expect(201);
+    const accountId = (res.body as { id: string }).id;
+    await request(app.getHttpServer())
+      .post(
+        `/api/v1/spaces/${personalSpaceId}/accounts/${accountId}/opening-balance`,
+      )
+      .set('Cookie', cookies)
+      .send({ amount: '500.0000' })
+      .expect(201);
+    return accountId;
+  }
+
+  it('MEMBER payer can create with personalAccountId and link later', async () => {
+    const { owner, carlos, maria, spaceId } = await trioSharedSpace();
+    const walletId = await createPersonalWallet(
+      owner.cookies,
+      owner.profile.personalSpaceId,
+    );
+    const ids = [owner.profile.id, carlos.profile.id, maria.profile.id];
+
+    const createdRes = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/shared-expenses`)
+      .set('Cookie', owner.cookies)
+      .send({
+        totalAmount: '90.00',
+        currency: 'EUR',
+        payment: {
+          source: 'MEMBER',
+          paidByUserId: owner.profile.id,
+          personalAccountId: walletId,
+        },
+        split: { mode: 'EQUAL', participantUserIds: ids },
+      })
+      .expect(201);
+
+    const created = createdRes.body as SharedExpenseBody;
+    expect(created.myPersonalCashLink).toEqual({ linked: true, canLink: false });
+    expect(JSON.stringify(created)).not.toContain(walletId);
+
+    const mariaView = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${spaceId}/shared-expenses/${created.id}`)
+      .set('Cookie', maria.cookies)
+      .expect(200);
+
+    expect(
+      (mariaView.body as SharedExpenseBody).myPersonalCashLink,
+    ).toBeUndefined();
+    expect(JSON.stringify(mariaView.body)).not.toContain(walletId);
+
+    const payerWallet = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${owner.profile.personalSpaceId}/accounts/${walletId}`)
+      .set('Cookie', owner.cookies)
+      .expect(200);
+
+    expect((payerWallet.body as { balance: string }).balance).toBe('410.0000');
+  });
+
+  it('POST link-personal-payment rejects non-payer', async () => {
+    const { owner, carlos, maria, spaceId } = await trioSharedSpace();
+    const walletId = await createPersonalWallet(
+      owner.cookies,
+      owner.profile.personalSpaceId,
+    );
+    const ids = [owner.profile.id, carlos.profile.id, maria.profile.id];
+
+    const createdRes = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/shared-expenses`)
+      .set('Cookie', owner.cookies)
+      .send({
+        totalAmount: '30.00',
+        currency: 'EUR',
+        payment: { source: 'MEMBER', paidByUserId: owner.profile.id },
+        split: { mode: 'EQUAL', participantUserIds: ids },
+      })
+      .expect(201);
+
+    const created = createdRes.body as SharedExpenseBody;
+    expect(created.myPersonalCashLink).toEqual({ linked: false, canLink: true });
+
+    await request(app.getHttpServer())
+      .post(
+        `/api/v1/spaces/${spaceId}/shared-expenses/${created.id}/link-personal-payment`,
+      )
+      .set('Cookie', carlos.cookies)
+      .send({ personalAccountId: walletId, expectedVersion: created.version })
+      .expect(403)
+      .expect((r) => {
+        expect((r.body as { code?: string }).code).toBe('NOT_PAYER');
+      });
+
+    const linked = await request(app.getHttpServer())
+      .post(
+        `/api/v1/spaces/${spaceId}/shared-expenses/${created.id}/link-personal-payment`,
+      )
+      .set('Cookie', owner.cookies)
+      .send({ personalAccountId: walletId, expectedVersion: created.version })
+      .expect(200);
+
+    expect((linked.body as SharedExpenseBody).myPersonalCashLink).toEqual({
+      linked: true,
+      canLink: false,
+    });
+  });
+
+  it('void shared expense voids linked personal payment (B-8.3)', async () => {
+    const { owner, carlos, maria, spaceId } = await trioSharedSpace();
+    const walletId = await createPersonalWallet(
+      owner.cookies,
+      owner.profile.personalSpaceId,
+    );
+    const ids = [owner.profile.id, carlos.profile.id, maria.profile.id];
+
+    const createdRes = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/shared-expenses`)
+      .set('Cookie', owner.cookies)
+      .send({
+        totalAmount: '60.00',
+        currency: 'EUR',
+        payment: {
+          source: 'MEMBER',
+          paidByUserId: owner.profile.id,
+          personalAccountId: walletId,
+        },
+        split: { mode: 'EQUAL', participantUserIds: ids },
+      })
+      .expect(201);
+
+    const created = createdRes.body as SharedExpenseBody;
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/shared-expenses/${created.id}/void`)
+      .set('Cookie', owner.cookies)
+      .send({ expectedVersion: created.version })
+      .expect(200);
+
+    const afterVoid = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${spaceId}/shared-expenses/${created.id}`)
+      .set('Cookie', owner.cookies)
+      .expect(200);
+
+    expect((afterVoid.body as SharedExpenseBody).myPersonalCashLink).toEqual({
+      linked: false,
+      canLink: false,
+    });
+
+    const payerWallet = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${owner.profile.personalSpaceId}/accounts/${walletId}`)
+      .set('Cookie', owner.cookies)
+      .expect(200);
+
+    expect((payerWallet.body as { balance: string }).balance).toBe('500.0000');
+  });
+
+  it('PATCH amount syncs linked personal payment (B-8.3)', async () => {
+    const { owner, carlos, maria, spaceId } = await trioSharedSpace();
+    const walletId = await createPersonalWallet(
+      owner.cookies,
+      owner.profile.personalSpaceId,
+    );
+    const ids = [owner.profile.id, carlos.profile.id, maria.profile.id];
+
+    const createdRes = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/shared-expenses`)
+      .set('Cookie', owner.cookies)
+      .send({
+        totalAmount: '60.00',
+        currency: 'EUR',
+        payment: {
+          source: 'MEMBER',
+          paidByUserId: owner.profile.id,
+          personalAccountId: walletId,
+        },
+        split: { mode: 'EQUAL', participantUserIds: ids },
+      })
+      .expect(201);
+
+    const created = createdRes.body as SharedExpenseBody;
+
+    await request(app.getHttpServer())
+      .patch(`/api/v1/spaces/${spaceId}/shared-expenses/${created.id}`)
+      .set('Cookie', owner.cookies)
+      .send({
+        expectedVersion: created.version,
+        description: 'Actualizado',
+        totalAmount: '90.00',
+        currency: 'EUR',
+        payment: { source: 'MEMBER', paidByUserId: owner.profile.id },
+        split: { mode: 'EQUAL', participantUserIds: ids },
+      })
+      .expect(200);
+
+    const payerWallet = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${owner.profile.personalSpaceId}/accounts/${walletId}`)
+      .set('Cookie', owner.cookies)
+      .expect(200);
+
+    expect((payerWallet.body as { balance: string }).balance).toBe('410.0000');
+  });
+
+  it('rejects personalAccountId when actor is not payer on create', async () => {
+    const { owner, carlos, maria, spaceId } = await trioSharedSpace();
+    const walletId = await createPersonalWallet(
+      carlos.cookies,
+      carlos.profile.personalSpaceId,
+    );
+    const ids = [owner.profile.id, carlos.profile.id, maria.profile.id];
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/shared-expenses`)
+      .set('Cookie', owner.cookies)
+      .send({
+        totalAmount: '20.00',
+        currency: 'EUR',
+        payment: {
+          source: 'MEMBER',
+          paidByUserId: carlos.profile.id,
+          personalAccountId: walletId,
+        },
+        split: { mode: 'EQUAL', participantUserIds: ids },
+      })
+      .expect(403)
+      .expect((r) => {
+        expect((r.body as { code?: string }).code).toBe(
+          'PERSONAL_LINK_NOT_ALLOWED',
+        );
+      });
   });
 
   it('MEMBER without role cannot void expense recorded by owner', async () => {

@@ -386,6 +386,22 @@ export class SharedExpensesService {
             },
           });
         }
+
+        if (
+          prepared.paymentSource === PaymentSource.MEMBER ||
+          current.paymentSource === PaymentSource.MEMBER
+        ) {
+          await this.crossSpaceCashLinksService.syncSharedExpenseMemberPaymentLinksInTransaction(
+            tx,
+            current.id,
+            {
+              amount: totalAmount,
+              currency: prepared.currency,
+              occurredAt: prepared.occurredAt,
+              description: dto.description ?? null,
+            },
+          );
+        }
       }),
     );
 
@@ -437,6 +453,13 @@ export class SharedExpensesService {
           changedByUserId: actorUserId,
           reason: dto.reason,
         });
+
+        await this.crossSpaceCashLinksService.voidAllLinksForSharedExpenseInTransaction(
+          tx,
+          sharedExpenseId,
+          actorUserId,
+          at,
+        );
 
         await voidSharedExpenseInTransaction(tx, {
           spaceId,
@@ -903,6 +926,7 @@ export class SharedExpensesService {
         kind: CrossSpaceCashLinkKind.SHARED_EXPENSE_MEMBER_PAYMENT,
         ownerUserId: viewerUserId,
         sharedExpenseId: { in: sharedExpenseIds },
+        personalTransaction: { voidedAt: null },
       },
       select: { sharedExpenseId: true },
     });

@@ -136,6 +136,8 @@ Membresía **ACTIVE** en espacio **SHARED** (`SHARED_SPACE_REQUIRED` en PERSONAL
 
 Body orientativo: `totalAmount`, `currency?`, `occurredAt?`, `categoryId?`, `payment` (`MEMBER` + `paidByUserId` + `personalAccountId?` solo si el actor es el pagador, o `SPACE_ACCOUNT` + `accountId`), `split` (`EQUAL` \| `PERCENTAGE` \| `FIXED_AMOUNT`). Importes de entrada hasta decimales de la moneda; respuesta con 4 decimales. En detalle/listado SHARED, si el usuario de sesión es el pagador `MEMBER`, puede incluir `myPersonalCashLink: { linked, canLink }` (sin exponer id de cuenta personal a otros).
 
+Anular un gasto `MEMBER` con enlace personal (B-8.3) anula también el movimiento PERSONAL vinculado; PATCH de importe/fecha/descripción propaga al movimiento personal activo. `myPersonalCashLink.linked` refleja solo enlaces con movimiento personal no anulado.
+
 Códigos: los de reparto/alta más `SHARED_EXPENSE_NOT_FOUND` (404), `SHARED_EXPENSE_EDIT_FORBIDDEN` (403, P-09), `VERSION_CONFLICT` (409), `ALREADY_VOIDED` (409), `PAYMENT_SOURCE_IMMUTABLE` (400), `NOT_PAYER` (403), `PERSONAL_LINK_NOT_ALLOWED` (403/400), `PERSONAL_LINK_ALREADY_EXISTS` (409). Los movimientos vinculados a un gasto compartido no se editan por PATCH de transacciones (**409** `TRANSACTION_LINKED_TO_SHARED_EXPENSE`).
 
 ### Saldos y liquidaciones (fase 7 — B-7)

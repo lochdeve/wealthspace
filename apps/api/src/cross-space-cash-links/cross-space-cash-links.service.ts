@@ -384,4 +384,34 @@ export class CrossSpaceCashLinksService {
       data: { amount, currency },
     });
   }
+
+  async syncSharedExpenseMemberPaymentLinksInTransaction(
+    tx: Prisma.TransactionClient,
+    sharedExpenseId: string,
+    snapshot: {
+      amount: Prisma.Decimal;
+      currency: string;
+      occurredAt: Date;
+      description?: string | null;
+    },
+  ): Promise<void> {
+    const links = await tx.crossSpaceCashLink.findMany({
+      where: {
+        sharedExpenseId,
+        kind: CrossSpaceCashLinkKind.SHARED_EXPENSE_MEMBER_PAYMENT,
+      },
+    });
+
+    for (const link of links) {
+      await tx.financialTransaction.updateMany({
+        where: { id: link.personalTransactionId, voidedAt: null },
+        data: {
+          amount: snapshot.amount,
+          currency: snapshot.currency,
+          occurredAt: snapshot.occurredAt,
+          description: snapshot.description ?? null,
+        },
+      });
+    }
+  }
 }
