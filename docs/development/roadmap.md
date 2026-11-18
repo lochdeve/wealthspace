@@ -21,7 +21,7 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 | 6    | Gastos compartidos con reparto                                 | ✅  | ✅  | Migraciones `20261115183000`.                             |
 | 7    | Saldos y liquidaciones                                         | ✅  | ✅  | Migración `20261117160000`; E2E SHARED local.             |
 | 4.1  | Transferencia de ownership                                     | ✅  | ✅  | B-4.1 + F-4.1.                                            |
-| 8    | Cuentas personales vinculadas y aportaciones                   | ⬜  | ⬜  | P-01…P-07 aprobados; **gate:** plan técnico coordinación. |
+| 8    | Cuentas personales vinculadas y aportaciones                   | ⬜  | ⬜  | Plan fase 8 ✅; en curso **B-8.0+**. |
 | 9    | Presupuestos, informes y dashboard                             | ⬜  | ⬜  | P-17 aprobado; falta perfil/`Budget`.                     |
 | 10   | Preparación para producción                                    | ⬜  | ⬜  | E2E en CI, hardening, despliegue.                         |
 
@@ -82,7 +82,7 @@ Criterios de aceptación: ver [shared-expenses.md](../product/shared-expenses.md
 
 ### Fase 8 — ✨ Cuentas personales vinculadas
 
-**Gate:** [phase-8-technical-plan.md](./phase-8-technical-plan.md) aprobado por producto (decisiones P-01…P-07 ya en [decisions.md §2e](../product/decisions.md#2e-decisiones-aprobadas--fase-8-cuentas-vinculadas-2026-11-18)). Referencia: [accounts-model.md](../product/accounts-model.md).
+**Plan:** [phase-8-technical-plan.md](./phase-8-technical-plan.md) **APROBADO** (2026-11-18). Decisiones P-01…P-07 en [decisions.md §2e](../product/decisions.md#2e-decisiones-aprobadas--fase-8-cuentas-vinculadas-2026-11-18). Referencia: [accounts-model.md](../product/accounts-model.md).
 
 **Aceptación (provisional):** P-02 (salida del pagador al adelantar); P-05/P-06 (aportaciones y personal↔común); P-07 (vínculos de liquidación por lado + UX que facilite entrada al acreedor); tests de no filtración en respuestas SHARED.
 
@@ -102,7 +102,7 @@ E2E en CI, rate limiting, revisión de seguridad, backups, políticas.
 
 | Riesgo                                           | Mitigación                                          |
 | ------------------------------------------------ | --------------------------------------------------- |
-| Fase 8 sin plan → contratos improvisados         | Plan técnico B-8/F-8 revisado antes de codificar    |
+| Migración B-8.0 sin revisión                     | Borrador → coordinación → aprobar → aplicar           |
 | Fuga de datos al vincular cuentas personales     | Tests de no filtración obligatorios en B-8          |
 | Informes sin P-17                                | No iniciar presupuestos/dashboard                   |
 | Drift de migraciones                             | `test:db` en CI; borrador → aprobación coordinación |

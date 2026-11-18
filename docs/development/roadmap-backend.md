@@ -65,7 +65,7 @@ Orden recomendado: **B-6.1** → **B-R1** → **B-6.0** (aplicar, aprobada) → 
 
 ## B-8 — ✨ Cuentas personales vinculadas y aportaciones ⛔ (revisión plan)
 
-Plan detallado: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (B-8.0…B-8.10). **Gate:** OK producto en §10 del plan antes de migración.
+Plan detallado: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (B-8.0…B-8.10). **Gate producto:** ✅ §10. **Siguiente:** B-8.0 borrador → revisión coordinación → aplicar.
 
 | Entrega | P- | Resumen |
 | ------- | -- | ------- |

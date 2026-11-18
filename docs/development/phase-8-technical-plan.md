@@ -1,7 +1,7 @@
 # Plan técnico — Fase 8 (B-8 / F-8)
 
-**Estado:** borrador para revisión del responsable de producto (2026-11-18).  
-**Gate:** aprobación explícita de este documento **antes** de `migrate dev` o código en `apps/api` / `apps/web`.
+**Estado:** **APROBADO** (2026-11-18, producto + coordinación; resoluciones §10).  
+**Gate:** cerrado — backend puede **B-8.0** (borrador migración → revisión coordinación → aplicar).
 
 Fuentes: [decisions.md §2e](../product/decisions.md#2e-decisiones-aprobadas--fase-8-cuentas-vinculadas-2026-11-18), [accounts-model.md](../product/accounts-model.md), [database-design.md](../architecture/database-design.md), [security.md](../architecture/security.md).
 
@@ -96,7 +96,7 @@ No se añade `ownerUserId` en `Account`.
 | **B-8.6** | **P-07** — Void settlement → void txs personales enlazadas | Integración |
 | **B-8.7** | **P-05/P-06** — `POST /spaces/:spaceId/contributions` (body: `sharedAccountId`, `amount`, `currency`, `occurredAt?`, `personalAccountId?`, `note?`) | Dos movimientos + `contribution_group_id`; solo titular inicia desde personal |
 | **B-8.8** | Lecturas PERSONAL: `GET` detalle/listado de transacciones incluye `crossSpaceSummary?` **solo** en espacio PERSONAL del usuario | Nunca en rutas SHARED |
-| **B-8.9** | **P-07 hint** — `GET /spaces/:spaceId/settlements/link-hints` o campo en `GET /balances` para usuario actual: `suggestedPersonalAccountId?` (última cuenta P-02 del acreedor en ese espacio, heurística documentada) | Opcional MVP si coste alto; si no, F-8 sugiere desde última tx local |
+| **B-8.9** | **P-07 hint** — `GET /spaces/:spaceId/settlements/link-hints` o similar (opcional) | **Fuera de MVP fase 8:** sugerencia de cuenta en **front** (última cuenta usada en vínculos del usuario); B-8.9 solo si hace falta en implementación |
 | **B-8.10** | OpenAPI + [frontend-api-dependencies.md](./frontend-api-dependencies.md) | Códigos de error nuevos listados abajo |
 
 ### Códigos de error nuevos (propuesta)
@@ -245,17 +245,17 @@ flowchart TD
   OK --> B80 --> B81 --> B82 --> B84 --> B87 --> B810 --> F81
 ```
 
-Backend puede entregar B-8.2 + B-8.4 antes que B-8.7 si coordinación prioriza gastos/liquidaciones sobre aportaciones.
+**Orden obligatorio en fase 8:** B-8.2 (P-02) → B-8.4–6 (P-07) → B-8.7 (P-05/06), misma migración B-8.0; no abrir fase 9 hasta cerrar las tres olas.
 
 ---
 
-## 10. Pendiente de tu revisión
+## 10. Resoluciones de implementación (cerradas 2026-11-18)
 
-Marca ✅ o comenta cambios en:
+| Tema | Decisión |
+| ---- | -------- |
+| Modelo de vínculo | **`cross_space_cash_links`**; no FKs de transacciones personales en filas `settlements` expuestas al SHARED (privacidad + listados uniformes). |
+| Cuenta sugerida al cobrar | **Heurística en front** en v1; **B-8.9 en API** diferido salvo necesidad técnica demostrada. |
+| Aviso acreedor (P-07) | **Saldos y listado de liquidaciones** (F-8.4): mismo componente/acción `link-personal-cash-flow`. |
+| Alcance y orden fase 8 | **P-02 → P-07 → P-05/P-06** en el mismo tren; B-8.7 tercera ola, no fase 8.1 aparte. |
 
-1. Tabla `cross_space_cash_links` vs. alternativa «dos FK opcionales en settlement» (descartada por privacidad en listados).
-2. ¿**B-8.9** hints de cuenta sugerida en API o solo heurística en front?
-3. ¿**F-8.4** banner global o solo en flujo «Saldos»?
-4. Orden: ¿implementar **aportaciones (P-5/6)** en la misma fase 8 o sub-entrega posterior dentro de 8?
-
-Tras tu OK, coordinación marca este documento como **APROBADO**, actualiza `current-status.md` y los chats backend/frontend pueden empezar por **B-8.0** (borrador migración).
+Documento **APROBADO**; gate de producto para codificar fase 8 **abierto**.

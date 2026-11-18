@@ -51,7 +51,7 @@ Copy: «Registrar pago» o «Liquidar», nunca «Confirmar». Mensaje fijo: «We
 
 ## F-8 — ✨ Cuentas personales vinculadas y aportaciones ⛔ (B-8)
 
-Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (F-8.1…F-8.7). Tras B-8.10.
+Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (F-8.1…F-8.7, **APROBADO**). Tras B-8.10; F-8.4 aviso acreedor en Saldos **y** liquidaciones.
 
 | Entrega | Resumen |
 | ------- | ------- |

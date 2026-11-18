@@ -1,6 +1,6 @@
 # Estado actual del desarrollo
 
-**Última actualización:** 2026-11-18 — plan técnico fase 8 en [phase-8-technical-plan.md](./phase-8-technical-plan.md) (**revisión pendiente**).
+**Última actualización:** 2026-11-18 — plan fase 8 **APROBADO** ([phase-8-technical-plan.md](./phase-8-technical-plan.md) §10); gate abierto a **B-8.0**.
 
 Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/decisions.md) · Contratos: [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 
@@ -27,15 +27,15 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 **Aprobadas hoy:** P-01…P-07, P-17, C-05 (4.2). Detalle: [decisions.md §2e](../product/decisions.md#2e-decisiones-aprobadas--fase-8-cuentas-vinculadas-2026-11-18).
 
-**Gate fase 8:** tu **OK** al [plan técnico](./phase-8-technical-plan.md) (§10) antes de B-8.0 / código.
+**Gate fase 8:** ✅ plan aprobado; migración aún requiere **revisión explícita** del SQL de B-8.0 antes de aplicar.
 
 ## Siguiente tarea por chat
 
 | Chat             | Tarea                                                             | Bloqueos |
 | ---------------- | ----------------------------------------------------------------- | -------- |
-| **Coordinación** | Cerrar revisión del plan (§10) y marcar APROBADO                    | Tu OK    |
-| **Backend**      | **B-8.0** borrador migración tras OK; deuda menor API             | Plan OK  |
-| **Frontend**     | **C-05** confirmación leave último ACTIVE (paralelo); F-8 tras B-8.10 | Plan OK  |
+| **Coordinación** | Revisar PR borrador migración B-8.0                               | —        |
+| **Backend**      | **B-8.0** borrador migración + integridad; seguir B-8.1…          | —        |
+| **Frontend**     | **C-05** leave último ACTIVE (paralelo); **F-8** tras **B-8.10**  | B-8.10   |
 | **Release**      | `migrate deploy` 6+7 en cada entorno                              | —        |
 
 ## Notas operativas

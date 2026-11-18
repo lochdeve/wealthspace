@@ -1,6 +1,6 @@
 # Modelo de cuentas — análisis y recomendación
 
-**Estado: DECISIONES APROBADAS (2026-11-18).** P-01…P-07 y P-17 en [decisions.md §2e](./decisions.md#2e-decisiones-aprobadas--fase-8-cuentas-vinculadas-2026-11-18). Plan técnico: [phase-8-technical-plan.md](../development/phase-8-technical-plan.md) (**revisión pendiente**). No implementar código hasta OK del plan.
+**Estado: DECISIONES APROBADAS (2026-11-18).** P-01…P-07 y P-17 en [decisions.md §2e](./decisions.md#2e-decisiones-aprobadas--fase-8-cuentas-vinculadas-2026-11-18). Plan técnico **APROBADO**: [phase-8-technical-plan.md](../development/phase-8-technical-plan.md). Código tras migración B-8.0 revisada.
 
 ---
 
