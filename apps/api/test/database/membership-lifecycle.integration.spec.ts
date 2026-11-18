@@ -176,6 +176,79 @@ describe('Membership lifecycle (integration)', () => {
       });
   });
 
+  it('owner transfers ownership; former owner becomes ADMIN and can leave', async () => {
+    const owner = await registerAndLogin('xfer-owner');
+    const member = await registerAndLogin('xfer-member');
+    const shared = await createSharedSpace(owner.cookies);
+    await inviteAndAccept(owner.cookies, member, shared.id);
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${shared.id}/ownership/transfer`)
+      .set('Cookie', owner.cookies)
+      .send({ newOwnerUserId: member.userId })
+      .expect(204);
+
+    const prisma = app.get(PrismaService);
+    const ownerRow = await prisma.spaceMembership.findFirst({
+      where: { spaceId: shared.id, userId: owner.userId, status: 'ACTIVE' },
+    });
+    const memberRow = await prisma.spaceMembership.findFirst({
+      where: { spaceId: shared.id, userId: member.userId, status: 'ACTIVE' },
+    });
+    expect(ownerRow?.role).toBe('ADMIN');
+    expect(memberRow?.role).toBe('OWNER');
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${shared.id}/membership/leave`)
+      .set('Cookie', owner.cookies)
+      .expect(204);
+  });
+
+  it('non-owner cannot transfer ownership', async () => {
+    const owner = await registerAndLogin('xfer-deny-owner');
+    const member = await registerAndLogin('xfer-deny-member');
+    const shared = await createSharedSpace(owner.cookies);
+    await inviteAndAccept(owner.cookies, member, shared.id);
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${shared.id}/ownership/transfer`)
+      .set('Cookie', member.cookies)
+      .send({ newOwnerUserId: owner.userId })
+      .expect(403)
+      .expect((r) => {
+        expect((r.body as { code?: string }).code).toBe('INSUFFICIENT_ROLE');
+      });
+  });
+
+  it('rejects transfer to self', async () => {
+    const owner = await registerAndLogin('xfer-self');
+    const shared = await createSharedSpace(owner.cookies);
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${shared.id}/ownership/transfer`)
+      .set('Cookie', owner.cookies)
+      .send({ newOwnerUserId: owner.userId })
+      .expect(409)
+      .expect((r) => {
+        expect((r.body as { code?: string }).code).toBe('TRANSFER_TO_SELF');
+      });
+  });
+
+  it('returns 404 when transfer target is not an active member', async () => {
+    const owner = await registerAndLogin('xfer-miss-owner');
+    const outsider = await registerAndLogin('xfer-outsider');
+    const shared = await createSharedSpace(owner.cookies);
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${shared.id}/ownership/transfer`)
+      .set('Cookie', owner.cookies)
+      .send({ newOwnerUserId: outsider.userId })
+      .expect(404)
+      .expect((r) => {
+        expect((r.body as { code?: string }).code).toBe('MEMBER_NOT_FOUND');
+      });
+  });
+
   it('owner removes member (REMOVED)', async () => {
     const owner = await registerAndLogin('rem-owner');
     const member = await registerAndLogin('rem-member');

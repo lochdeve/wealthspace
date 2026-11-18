@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { SpaceType, type Settlement } from '@prisma/client';
+import { runWithVersionConflictMapping } from '../common/prisma-version-conflict';
 import { BalancesService } from '../balances/balances.service';
 import { PrismaService } from '../prisma/prisma.service';
 import type { ActiveSpaceMembership } from '../spaces/spaces.service';
@@ -159,44 +160,46 @@ export class SettlementsService {
 
     const at = new Date();
 
-    await this.prisma.$transaction(async (tx) => {
-      const lastRev = await tx.financialRevision.findFirst({
-        where: { settlementId: current.id },
-        orderBy: { revisionNumber: 'desc' },
-      });
-      const revisionNumber = (lastRev?.revisionNumber ?? 0) + 1;
-
-      await tx.financialRevision.create({
-        data: {
-          revisionNumber,
-          snapshot: buildSettlementSnapshot(current),
-          changedByUserId: actorUserId,
-          settlementId: current.id,
-          reason: dto.reason,
-        },
-      });
-
-      const updated = await tx.settlement.updateMany({
-        where: {
-          id: current.id,
-          spaceId,
-          version: dto.expectedVersion,
-          voidedAt: null,
-        },
-        data: {
-          voidedAt: at,
-          voidedByUserId: actorUserId,
-        },
-      });
-
-      if (updated.count === 0) {
-        throw new ConflictException({
-          statusCode: 409,
-          code: 'VERSION_CONFLICT',
-          message: 'Settlement was modified by another request',
+    await runWithVersionConflictMapping(() =>
+      this.prisma.$transaction(async (tx) => {
+        const lastRev = await tx.financialRevision.findFirst({
+          where: { settlementId: current.id },
+          orderBy: { revisionNumber: 'desc' },
         });
-      }
-    });
+        const revisionNumber = (lastRev?.revisionNumber ?? 0) + 1;
+
+        await tx.financialRevision.create({
+          data: {
+            revisionNumber,
+            snapshot: buildSettlementSnapshot(current),
+            changedByUserId: actorUserId,
+            settlementId: current.id,
+            reason: dto.reason,
+          },
+        });
+
+        const updated = await tx.settlement.updateMany({
+          where: {
+            id: current.id,
+            spaceId,
+            version: dto.expectedVersion,
+            voidedAt: null,
+          },
+          data: {
+            voidedAt: at,
+            voidedByUserId: actorUserId,
+          },
+        });
+
+        if (updated.count === 0) {
+          throw new ConflictException({
+            statusCode: 409,
+            code: 'VERSION_CONFLICT',
+            message: 'Settlement was modified by another request',
+          });
+        }
+      }),
+    );
 
     const row = await this.findInSpace(spaceId, settlementId);
     return this.toDto(row);

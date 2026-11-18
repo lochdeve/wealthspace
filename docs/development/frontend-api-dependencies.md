@@ -45,9 +45,12 @@ Espacio activo (solo UI): cookie `wealthspace_active_space`, establecida con Ser
 | Rechazar                    | POST   | `/invitations/:id/reject`                 | Lista de invitaciones               |
 | Miembros activos            | GET    | `/spaces/:spaceId/members`                | Panel en detalle SHARED             |
 | Salir del espacio           | POST   | `/spaces/:spaceId/membership/leave`       | Detalle SHARED (cualquier ACTIVE)   |
+| Transferir ownership (4.1)  | POST   | `/spaces/:spaceId/ownership/transfer`     | Body: `newOwnerUserId`; solo OWNER  |
 | Expulsar miembro            | POST   | `/spaces/:spaceId/members/:userId/remove` | Detalle SHARED (OWNER/ADMIN)        |
 
 **Leave:** sin body; **204**; solo SHARED; el caller sale (`LEFT` + `leftAt`). OWNER único → **409** `CANNOT_LEAVE_AS_SOLE_OWNER`.
+
+**Transfer ownership (4.1):** body `{ newOwnerUserId }`; **204**; solo OWNER ACTIVE; receptor ACTIVE ADMIN/MEMBER → OWNER; antiguo OWNER → ADMIN. **403** `INSUFFICIENT_ROLE`; **404** `MEMBER_NOT_FOUND`; **409** `TRANSFER_TO_SELF`, `TRANSFER_TARGET_NOT_ELIGIBLE`.
 
 **Remove:** sin body; **204**; OWNER puede expulsar ADMIN/MEMBER; ADMIN solo MEMBER; no auto-expulsión → **409** `USE_LEAVE_INSTEAD`; único OWNER → **409** `CANNOT_REMOVE_SOLE_OWNER`; miembro inexistente/no ACTIVE → **404** `MEMBER_NOT_FOUND`.
 
@@ -58,7 +61,7 @@ Espacio activo (solo UI): cookie `wealthspace_active_space`, establecida con Ser
 - `INVITATION_ALREADY_PENDING`, `INVITEE_ALREADY_MEMBER` (409) — crear invitación
 - `INVITATION_NOT_FOUND` (404) — aceptar o rechazar invitación inexistente o no dirigida al usuario
 - `INVITATION_EXPIRED`, `ALREADY_MEMBER` (409) — aceptar
-- `CANNOT_LEAVE_AS_SOLE_OWNER`, `USE_LEAVE_INSTEAD`, `CANNOT_REMOVE_SOLE_OWNER` (409) — leave/remove
+- `CANNOT_LEAVE_AS_SOLE_OWNER`, `USE_LEAVE_INSTEAD`, `CANNOT_REMOVE_SOLE_OWNER`, `TRANSFER_TO_SELF`, `TRANSFER_TARGET_NOT_ELIGIBLE` (409) — leave/remove/transfer
 - `MEMBER_NOT_FOUND` (404) — remove
 - Mensaje genérico de API en el resto de casos
 
@@ -155,4 +158,3 @@ Códigos: `SHARED_SPACE_REQUIRED`, `SETTLEMENT_SAME_USER`, `SETTLEMENT_USER_NOT_
 | ---------------------------------------------------- | ---- | --------------------------------------------------------------- |
 | Cuentas personales vinculadas, aportaciones          | 8    | En análisis ([accounts-model.md](../product/accounts-model.md)) |
 | Presupuestos, informes, dashboard, edición de perfil | 9    | Pendiente (P-17)                                                |
-| Transferencia de ownership                           | 4.1  | [spaces-membership-mvp.md](../product/spaces-membership-mvp.md) |

@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -18,6 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { SpaceMemberDto } from './dto/space-member.dto';
+import { TransferOwnershipDto } from './dto/transfer-ownership.dto';
 import {
   CurrentUser,
   type RequestUser,
@@ -50,7 +52,7 @@ export class SpaceMembershipsController {
   @ApiOperation({
     summary: 'Leave a shared space',
     description:
-      'Sets membership to LEFT with leftAt. Sole OWNER cannot leave until ownership transfer exists (PENDIENTE DE DECISIÓN).',
+      'Sets membership to LEFT with leftAt. Sole OWNER cannot leave until ownership is transferred (4.1).',
   })
   @ApiNoContentResponse()
   @ApiForbiddenResponse({
@@ -69,6 +71,31 @@ export class SpaceMembershipsController {
     @Param('spaceId', ParseUUIDPipe) spaceId: string,
   ): Promise<void> {
     await this.membershipsService.leaveSpace(user.userId, spaceId);
+  }
+
+  @Post('ownership/transfer')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Transfer space ownership (4.1)',
+    description:
+      'ACTIVE OWNER assigns OWNER to an ACTIVE ADMIN or MEMBER; former OWNER becomes ADMIN. Unilateral, immediate.',
+  })
+  @ApiNoContentResponse()
+  @ApiForbiddenResponse({ description: 'INSUFFICIENT_ROLE' })
+  @ApiNotFoundResponse({ description: 'MEMBER_NOT_FOUND' })
+  @ApiConflictResponse({
+    description: 'TRANSFER_TO_SELF or TRANSFER_TARGET_NOT_ELIGIBLE',
+  })
+  async transferOwnership(
+    @CurrentUser() user: RequestUser,
+    @Param('spaceId', ParseUUIDPipe) spaceId: string,
+    @Body() dto: TransferOwnershipDto,
+  ): Promise<void> {
+    await this.membershipsService.transferOwnership(
+      user.userId,
+      spaceId,
+      dto.newOwnerUserId,
+    );
   }
 
   @Post('members/:userId/remove')

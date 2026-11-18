@@ -2,6 +2,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { MembershipRole, MembershipStatus, SpaceType } from '@prisma/client';
@@ -12,6 +13,8 @@ import { SpacesService } from './spaces.service';
 
 @Injectable()
 export class MembershipsService {
+  private readonly logger = new Logger(MembershipsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly spacesService: SpacesService,
@@ -61,7 +64,7 @@ export class MembershipsService {
           statusCode: 409,
           code: 'CANNOT_LEAVE_AS_SOLE_OWNER',
           message:
-            'Cannot leave while you are the only active owner (transfer ownership first — PENDIENTE DE DECISIÓN)',
+            'Cannot leave while you are the only active owner (transfer ownership first)',
         });
       }
     }
@@ -125,6 +128,80 @@ export class MembershipsService {
     }
 
     await this.endMembership(target.id, MembershipStatus.REMOVED);
+  }
+
+  async transferOwnership(
+    actorUserId: string,
+    spaceId: string,
+    newOwnerUserId: string,
+  ): Promise<void> {
+    const actor = await this.spacesService.requireActiveMembership(
+      actorUserId,
+      spaceId,
+    );
+    this.assertSharedSpace(actor);
+
+    if (actor.role !== MembershipRole.OWNER) {
+      throw new ForbiddenException({
+        statusCode: 403,
+        code: 'INSUFFICIENT_ROLE',
+        message: 'Only the owner can transfer ownership',
+      });
+    }
+
+    if (newOwnerUserId === actorUserId) {
+      throw new ConflictException({
+        statusCode: 409,
+        code: 'TRANSFER_TO_SELF',
+        message: 'You are already the owner',
+      });
+    }
+
+    const target = await this.prisma.spaceMembership.findFirst({
+      where: {
+        spaceId,
+        userId: newOwnerUserId,
+        status: MembershipStatus.ACTIVE,
+      },
+    });
+
+    if (target === null) {
+      throw this.memberNotFound();
+    }
+
+    if (
+      target.role !== MembershipRole.ADMIN &&
+      target.role !== MembershipRole.MEMBER
+    ) {
+      throw new ConflictException({
+        statusCode: 409,
+        code: 'TRANSFER_TARGET_NOT_ELIGIBLE',
+        message: 'New owner must be an active admin or member',
+      });
+    }
+
+    const at = new Date();
+
+    await this.prisma.$transaction([
+      this.prisma.spaceMembership.update({
+        where: { id: actor.id },
+        data: { role: MembershipRole.ADMIN },
+      }),
+      this.prisma.spaceMembership.update({
+        where: { id: target.id },
+        data: { role: MembershipRole.OWNER },
+      }),
+    ]);
+
+    this.logger.log(
+      JSON.stringify({
+        event: 'ownership_transferred',
+        spaceId,
+        fromUserId: actorUserId,
+        toUserId: newOwnerUserId,
+        transferredAt: at.toISOString(),
+      }),
+    );
   }
 
   private assertSharedSpace(membership: ActiveSpaceMembership): void {

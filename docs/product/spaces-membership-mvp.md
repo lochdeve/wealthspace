@@ -2,7 +2,7 @@
 
 Decisiones de producto acordadas (coordinación). Fuente para API y web; no inventar reglas fuera de este documento — marcar gaps como **PENDIENTE DE DECISIÓN**.
 
-Criterio de cierre **Fase 4 (MVP):** espacios, invitaciones, leave/remove y espacio activo operativos, con único OWNER y salida del único OWNER bloqueada (409) hasta **entrega 4.1** (transferencia). Pendientes documentados aquí **no impiden fases posteriores**. Estado: Fase 4 cerrada (MVP); 4.1 y 4.2 no implementadas (verificado 2026-11-15).
+Criterio de cierre **Fase 4 (MVP):** espacios, invitaciones, leave/remove y espacio activo operativos, con único OWNER y salida del único OWNER bloqueada (409) hasta **entrega 4.1** (transferencia). Pendientes documentados aquí **no impiden fases posteriores**. Estado: Fase 4 cerrada (MVP); **4.1 implementada** en API; 4.2 no implementada.
 
 ---
 
@@ -40,7 +40,7 @@ Criterio de cierre **Fase 4 (MVP):** espacios, invitaciones, leave/remove y espa
 
 | Tema                                       | Hasta implementar                   |
 | ------------------------------------------ | ----------------------------------- |
-| Transferencia 4.1                          | 409 sole OWNER en leave/remove      |
+| Transferencia 4.1                          | Implementada en API (UI F-4.1)      |
 | Último miembro ACTIVE hace leave (4.2)     | Propuesta: 409 `LAST_ACTIVE_MEMBER` |
 | Disolver / archivar espacio                | Fuera MVP                           |
 | Varios OWNERs                              | Fuera MVP                           |

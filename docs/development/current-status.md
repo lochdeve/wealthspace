@@ -17,7 +17,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Área                    | API                   | Web       |
 | ----------------------- | --------------------- | --------- |
 | Auth                    | ✅                    | ✅        |
-| Espacios y membresía    | ✅ (sin 4.1/4.2)      | ✅        |
+| Espacios y membresía    | ✅ 4.1 API; 4.2 ⬜    | ✅ (F-4.1 UI pendiente) |
 | Cuentas y movimientos   | ✅                    | ✅        |
 | Gastos compartidos      | ✅ API fase 6 (B-6.5) | ✅ UI F-6 |
 | Deudas y liquidaciones  | ✅ B-7 (migración aplicada en dev local) | ✅ UI F-7 |
@@ -35,7 +35,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | ------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
 | Coordinación | CI/prod: aplicar `20261117160000` cuando toque el release                                     | —                                          |
 | Frontend     | F-R2 ✅; siguiente fase producto o pulido según roadmap                                       | Ninguno                                    |
-| Backend      | **B-7** cerrado; migración aplicada en dev local                                              | —                                          |
+| Backend      | **B-4.1** transfer ownership + mapeo P2002→`VERSION_CONFLICT` en revisiones                   | B-8 ⛔ modelo cuentas                      |
 
 ## Notas operativas
 

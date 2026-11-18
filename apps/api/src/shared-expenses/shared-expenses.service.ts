@@ -12,6 +12,7 @@ import {
   SpaceType,
   TransactionType,
 } from '@prisma/client';
+import { runWithVersionConflictMapping } from '../common/prisma-version-conflict';
 import { AccountsService } from '../accounts/accounts.service';
 import { PrismaService } from '../prisma/prisma.service';
 import type { ActiveSpaceMembership } from '../spaces/spaces.service';
@@ -221,83 +222,85 @@ export class SharedExpensesService {
 
     const totalAmount = new Prisma.Decimal(dto.totalAmount);
 
-    await this.prisma.$transaction(async (tx) => {
-      const accountIdForSnapshot =
-        current.financialTransaction?.accountId ?? null;
+    await runWithVersionConflictMapping(() =>
+      this.prisma.$transaction(async (tx) => {
+        const accountIdForSnapshot =
+          current.financialTransaction?.accountId ?? null;
 
-      await this.appendRevision(tx, {
-        sharedExpenseId: current.id,
-        snapshot: buildSharedExpenseSnapshot(current, {
-          accountId: accountIdForSnapshot,
-        }),
-        changedByUserId: actorUserId,
-        reason: dto.reason,
-      });
-
-      await tx.expenseParticipant.deleteMany({
-        where: { sharedExpenseId: current.id },
-      });
-      await tx.expenseParticipant.createMany({
-        data: prepared.allocations.map((a) => ({
+        await this.appendRevision(tx, {
           sharedExpenseId: current.id,
-          userId: a.userId,
-          displayNameSnapshot: a.displayName,
-          allocatedAmount: a.allocatedAmount,
-          sharePercent: a.sharePercent,
-        })),
-      });
-
-      const updated = await tx.sharedExpense.updateMany({
-        where: {
-          id: current.id,
-          spaceId,
-          version: dto.expectedVersion,
-        },
-        data: {
-          totalAmount,
-          currency: prepared.currency,
-          description: dto.description,
-          occurredAt: prepared.occurredAt,
-          splitMode: prepared.splitMode,
-          paidByUserId:
-            prepared.paymentSource === PaymentSource.MEMBER
-              ? prepared.paidByUserId
-              : null,
-          categoryId: dto.categoryId ?? null,
-          version: { increment: 1 },
-        },
-      });
-
-      if (updated.count === 0) {
-        throw new ConflictException({
-          statusCode: 409,
-          code: 'VERSION_CONFLICT',
-          message: 'Shared expense was modified by another request',
+          snapshot: buildSharedExpenseSnapshot(current, {
+            accountId: accountIdForSnapshot,
+          }),
+          changedByUserId: actorUserId,
+          reason: dto.reason,
         });
-      }
 
-      if (
-        current.paymentSource === PaymentSource.SPACE_ACCOUNT &&
-        current.financialTransactionId !== null &&
-        dto.payment.source === 'SPACE_ACCOUNT'
-      ) {
-        await tx.financialTransaction.updateMany({
+        await tx.expenseParticipant.deleteMany({
+          where: { sharedExpenseId: current.id },
+        });
+        await tx.expenseParticipant.createMany({
+          data: prepared.allocations.map((a) => ({
+            sharedExpenseId: current.id,
+            userId: a.userId,
+            displayNameSnapshot: a.displayName,
+            allocatedAmount: a.allocatedAmount,
+            sharePercent: a.sharePercent,
+          })),
+        });
+
+        const updated = await tx.sharedExpense.updateMany({
           where: {
-            id: current.financialTransactionId,
+            id: current.id,
             spaceId,
-            voidedAt: null,
+            version: dto.expectedVersion,
           },
           data: {
-            amount: totalAmount,
+            totalAmount,
             currency: prepared.currency,
             description: dto.description,
             occurredAt: prepared.occurredAt,
+            splitMode: prepared.splitMode,
+            paidByUserId:
+              prepared.paymentSource === PaymentSource.MEMBER
+                ? prepared.paidByUserId
+                : null,
             categoryId: dto.categoryId ?? null,
-            accountId: dto.payment.accountId,
+            version: { increment: 1 },
           },
         });
-      }
-    });
+
+        if (updated.count === 0) {
+          throw new ConflictException({
+            statusCode: 409,
+            code: 'VERSION_CONFLICT',
+            message: 'Shared expense was modified by another request',
+          });
+        }
+
+        if (
+          current.paymentSource === PaymentSource.SPACE_ACCOUNT &&
+          current.financialTransactionId !== null &&
+          dto.payment.source === 'SPACE_ACCOUNT'
+        ) {
+          await tx.financialTransaction.updateMany({
+            where: {
+              id: current.financialTransactionId,
+              spaceId,
+              voidedAt: null,
+            },
+            data: {
+              amount: totalAmount,
+              currency: prepared.currency,
+              description: dto.description,
+              occurredAt: prepared.occurredAt,
+              categoryId: dto.categoryId ?? null,
+              accountId: dto.payment.accountId,
+            },
+          });
+        }
+      }),
+    );
 
     const row = await this.findSharedExpenseRow(spaceId, sharedExpenseId);
     return this.toDetailDto(row);
@@ -336,23 +339,25 @@ export class SharedExpensesService {
 
     const at = new Date();
 
-    await this.prisma.$transaction(async (tx) => {
-      await this.appendRevision(tx, {
-        sharedExpenseId: current.id,
-        snapshot: buildSharedExpenseSnapshot(current, {
-          accountId: current.financialTransaction?.accountId ?? null,
-        }),
-        changedByUserId: actorUserId,
-        reason: dto.reason,
-      });
+    await runWithVersionConflictMapping(() =>
+      this.prisma.$transaction(async (tx) => {
+        await this.appendRevision(tx, {
+          sharedExpenseId: current.id,
+          snapshot: buildSharedExpenseSnapshot(current, {
+            accountId: current.financialTransaction?.accountId ?? null,
+          }),
+          changedByUserId: actorUserId,
+          reason: dto.reason,
+        });
 
-      await voidSharedExpenseInTransaction(tx, {
-        spaceId,
-        sharedExpenseId,
-        voidedByUserId: actorUserId,
-        voidedAt: at,
-      });
-    });
+        await voidSharedExpenseInTransaction(tx, {
+          spaceId,
+          sharedExpenseId,
+          voidedByUserId: actorUserId,
+          voidedAt: at,
+        });
+      }),
+    );
 
     const row = await this.findSharedExpenseRow(spaceId, sharedExpenseId);
     return this.toDetailDto(row);

@@ -106,7 +106,7 @@ Análisis completo con los seis escenarios: [accounts-model.md](./accounts-model
 
 | Tema                                         | Estado                                                             | Fuente                                                 |
 | -------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------ |
-| Transferencia de ownership (entrega 4.1)     | Aprobada en diseño; no implementada                                | [spaces-membership-mvp.md](./spaces-membership-mvp.md) |
+| Transferencia de ownership (entrega 4.1)     | Aprobada en diseño; API implementada (UI F-4.1)                    | [spaces-membership-mvp.md](./spaces-membership-mvp.md) |
 | Último miembro ACTIVE hace leave (4.2)       | Propuesta: 409 `LAST_ACTIVE_MEMBER`                                | [spaces-membership-mvp.md](./spaces-membership-mvp.md) |
 | Edición de perfil y zona horaria del usuario | Sin endpoint; necesaria antes de los informes mensuales (fase 9)   | [functional-scope.md](./functional-scope.md)           |
 | Tipos compartidos web/api                    | Herramienta pendiente (openapi-typescript o tipos escritos a mano) | [contracts README](../../packages/contracts/README.md) |

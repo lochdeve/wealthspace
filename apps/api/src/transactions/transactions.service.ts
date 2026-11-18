@@ -11,6 +11,7 @@ import {
   TransactionType,
   type FinancialTransaction,
 } from '@prisma/client';
+import { runWithVersionConflictMapping } from '../common/prisma-version-conflict';
 import { AccountsService } from '../accounts/accounts.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { SpacesService } from '../spaces/spaces.service';
@@ -318,101 +319,103 @@ export class TransactionsService {
       });
     }
 
-    return this.prisma.$transaction(async (tx) => {
-      const current = await tx.financialTransaction.findFirst({
-        where: { id: transactionId, spaceId },
-      });
-      if (current === null) {
-        throw new NotFoundException({
-          statusCode: 404,
-          code: 'TRANSACTION_NOT_FOUND',
-          message: 'Transaction not found',
+    return runWithVersionConflictMapping(() =>
+      this.prisma.$transaction(async (tx) => {
+        const current = await tx.financialTransaction.findFirst({
+          where: { id: transactionId, spaceId },
         });
-      }
+        if (current === null) {
+          throw new NotFoundException({
+            statusCode: 404,
+            code: 'TRANSACTION_NOT_FOUND',
+            message: 'Transaction not found',
+          });
+        }
 
-      const linked = await tx.sharedExpense.findFirst({
-        where: { financialTransactionId: transactionId },
-      });
-      if (linked !== null) {
-        throw new ConflictException({
-          statusCode: 409,
-          code: 'TRANSACTION_LINKED_TO_SHARED_EXPENSE',
-          message:
-            'Cannot edit a payment transaction linked to a shared expense',
+        const linked = await tx.sharedExpense.findFirst({
+          where: { financialTransactionId: transactionId },
         });
-      }
+        if (linked !== null) {
+          throw new ConflictException({
+            statusCode: 409,
+            code: 'TRANSACTION_LINKED_TO_SHARED_EXPENSE',
+            message:
+              'Cannot edit a payment transaction linked to a shared expense',
+          });
+        }
 
-      if (current.version !== dto.expectedVersion) {
-        throw new ConflictException({
-          statusCode: 409,
-          code: 'VERSION_CONFLICT',
-          message: 'Transaction was modified by another request',
+        if (current.version !== dto.expectedVersion) {
+          throw new ConflictException({
+            statusCode: 409,
+            code: 'VERSION_CONFLICT',
+            message: 'Transaction was modified by another request',
+          });
+        }
+
+        if (dto.categoryId !== undefined && dto.categoryId !== null) {
+          const expected =
+            current.type === TransactionType.INCOME
+              ? CategoryType.INCOME
+              : CategoryType.EXPENSE;
+          await this.resolveCategory(spaceId, dto.categoryId, expected);
+        }
+
+        const data: Prisma.FinancialTransactionUpdateManyMutationInput = {
+          version: { increment: 1 },
+        };
+
+        if (dto.description !== undefined) {
+          data.description = dto.description;
+        }
+        if (dto.occurredAt !== undefined) {
+          data.occurredAt = new Date(dto.occurredAt);
+        }
+        if (dto.amount !== undefined) {
+          data.amount = this.parseAmountForType(current.type, dto.amount);
+        }
+        if (dto.categoryId !== undefined) {
+          data.categoryId = dto.categoryId;
+        }
+
+        const lastRev = await tx.financialRevision.findFirst({
+          where: { financialTransactionId: transactionId },
+          orderBy: { revisionNumber: 'desc' },
         });
-      }
+        const revisionNumber = (lastRev?.revisionNumber ?? 0) + 1;
 
-      if (dto.categoryId !== undefined && dto.categoryId !== null) {
-        const expected =
-          current.type === TransactionType.INCOME
-            ? CategoryType.INCOME
-            : CategoryType.EXPENSE;
-        await this.resolveCategory(spaceId, dto.categoryId, expected);
-      }
-
-      const data: Prisma.FinancialTransactionUpdateManyMutationInput = {
-        version: { increment: 1 },
-      };
-
-      if (dto.description !== undefined) {
-        data.description = dto.description;
-      }
-      if (dto.occurredAt !== undefined) {
-        data.occurredAt = new Date(dto.occurredAt);
-      }
-      if (dto.amount !== undefined) {
-        data.amount = this.parseAmountForType(current.type, dto.amount);
-      }
-      if (dto.categoryId !== undefined) {
-        data.categoryId = dto.categoryId;
-      }
-
-      const lastRev = await tx.financialRevision.findFirst({
-        where: { financialTransactionId: transactionId },
-        orderBy: { revisionNumber: 'desc' },
-      });
-      const revisionNumber = (lastRev?.revisionNumber ?? 0) + 1;
-
-      await tx.financialRevision.create({
-        data: {
-          revisionNumber,
-          snapshot: buildTransactionSnapshot(current),
-          changedByUserId: userId,
-          financialTransactionId: transactionId,
-          reason: dto.reason,
-        },
-      });
-
-      const updated = await tx.financialTransaction.updateMany({
-        where: {
-          id: transactionId,
-          spaceId,
-          version: dto.expectedVersion,
-        },
-        data,
-      });
-
-      if (updated.count === 0) {
-        throw new ConflictException({
-          statusCode: 409,
-          code: 'VERSION_CONFLICT',
-          message: 'Transaction was modified by another request',
+        await tx.financialRevision.create({
+          data: {
+            revisionNumber,
+            snapshot: buildTransactionSnapshot(current),
+            changedByUserId: userId,
+            financialTransactionId: transactionId,
+            reason: dto.reason,
+          },
         });
-      }
 
-      const row = await tx.financialTransaction.findFirstOrThrow({
-        where: { id: transactionId, spaceId },
-      });
-      return this.toDto(row);
-    });
+        const updated = await tx.financialTransaction.updateMany({
+          where: {
+            id: transactionId,
+            spaceId,
+            version: dto.expectedVersion,
+          },
+          data,
+        });
+
+        if (updated.count === 0) {
+          throw new ConflictException({
+            statusCode: 409,
+            code: 'VERSION_CONFLICT',
+            message: 'Transaction was modified by another request',
+          });
+        }
+
+        const row = await tx.financialTransaction.findFirstOrThrow({
+          where: { id: transactionId, spaceId },
+        });
+        return this.toDto(row);
+      }),
+    );
   }
 
   private parseAmountForType(

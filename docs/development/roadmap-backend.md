@@ -71,9 +71,9 @@ Diseño de referencia: [accounts-model.md](../product/accounts-model.md). Se det
 - `PATCH /auth/me` (o equivalente) para `displayName` y `timezone` — puede adelantarse si coordinación lo asigna.
 - Presupuestos e informes mensuales en `User.timezone`.
 
-## B-4.1 — ✨ Transferencia de ownership (paralela, no bloqueante)
+## B-4.1 — ✅ Transferencia de ownership (paralela, no bloqueante)
 
-`POST /spaces/:spaceId/ownership/transfer` según [spaces-membership-mvp.md](../product/spaces-membership-mvp.md); auditoría mínima; tests de leave del antiguo OWNER después de la transferencia.
+`POST /spaces/:spaceId/ownership/transfer`; auditoría mínima (log estructurado); tests de leave del antiguo OWNER después de la transferencia.
 
 ---
 
