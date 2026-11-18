@@ -2,7 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { getSpaceBalances } from '@/lib/api/balances';
 import { removeMember } from '@/lib/api/memberships';
+import { appendNonZeroNetBalanceNotice } from '@/lib/spaces/member-balance-warning';
 import type { MembershipRole, SpaceMember } from '@/lib/api/space-types';
 import { membershipActionErrorMessage } from '@/lib/spaces/membership-messages';
 import { canRemoveMember, membershipRoleLabel } from '@/lib/spaces/labels';
@@ -27,9 +29,20 @@ export function SpaceMembersPanel({
   const [pendingUserId, setPendingUserId] = useState<string | null>(null);
 
   async function handleRemove(member: SpaceMember) {
-    const confirmed = window.confirm(
-      `¿Expulsar a ${member.displayName} (${member.email}) del espacio?`,
-    );
+    let confirmMessage = `¿Expulsar a ${member.displayName} (${member.email}) del espacio?`;
+    try {
+      const balances = await getSpaceBalances(spaceId);
+      confirmMessage = appendNonZeroNetBalanceNotice(
+        confirmMessage,
+        balances,
+        member.userId,
+        'third',
+      );
+    } catch {
+      // Informative only (P-19).
+    }
+
+    const confirmed = window.confirm(confirmMessage);
     if (!confirmed) {
       return;
     }

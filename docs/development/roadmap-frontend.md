@@ -63,7 +63,8 @@ UI en el detalle del espacio para el OWNER; actualizar los mensajes de `CANNOT_L
 
 ## Transversal
 
-- E2E Playwright para el flujo principal de las fases 6–7 (incorporar a la CI en la fase 10).
+- E2E Playwright fases 6–7: spec `e2e/shared-expenses-balances-settlements.spec.ts` (gasto igual → saldos → liquidación parcial → anular); seed HTTP en `e2e/helpers/api.ts`. CI en fase 10.
+- P-19 ✅ aviso informativo (no bloquea) en leave/remove si el saldo neto del usuario ≠ 0 (`GET /balances` antes del confirm).
 - Estados de carga, vacío y error en todas las vistas nuevas; accesibilidad de formularios con varios inputs por participante.
 
 ---

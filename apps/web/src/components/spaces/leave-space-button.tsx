@@ -2,8 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { getSpaceBalances } from '@/lib/api/balances';
 import { leaveSpace } from '@/lib/api/memberships';
 import { membershipActionErrorMessage } from '@/lib/spaces/membership-messages';
+import { appendNonZeroNetBalanceNotice } from '@/lib/spaces/member-balance-warning';
 import { clearActiveSpaceId } from '@/lib/spaces/active-space.server';
 import pageStyles from '@/app/(app)/app-pages.module.css';
 import ui from '@/components/ui/ui.module.css';
@@ -11,17 +13,29 @@ import ui from '@/components/ui/ui.module.css';
 type LeaveSpaceButtonProps = {
   spaceId: string;
   spaceName: string;
+  currentUserId: string;
 };
 
-export function LeaveSpaceButton({ spaceId, spaceName }: LeaveSpaceButtonProps) {
+export function LeaveSpaceButton({ spaceId, spaceName, currentUserId }: LeaveSpaceButtonProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   async function handleLeave() {
-    const confirmed = window.confirm(
-      `¿Salir de «${spaceName}»? Dejarás de ver este espacio hasta que te inviten de nuevo.`,
-    );
+    let confirmMessage = `¿Salir de «${spaceName}»? Dejarás de ver este espacio hasta que te inviten de nuevo.`;
+    try {
+      const balances = await getSpaceBalances(spaceId);
+      confirmMessage = appendNonZeroNetBalanceNotice(
+        confirmMessage,
+        balances,
+        currentUserId,
+        'second',
+      );
+    } catch {
+      // P-19 is informative only; proceed with the default confirm if balances fail.
+    }
+
+    const confirmed = window.confirm(confirmMessage);
     if (!confirmed) {
       return;
     }

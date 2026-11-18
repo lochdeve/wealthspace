@@ -1,6 +1,6 @@
 # Estado actual del desarrollo
 
-**Última actualización:** 2026-11-17 — F-R2 refactor web cerrado (F-R2.4 + F-R2.5).
+**Última actualización:** 2026-11-18 — E2E SHARED (gastos/saldos/liquidaciones) + P-19 aviso leave/remove.
 
 Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/decisions.md) · Contratos implementados: [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 
@@ -34,7 +34,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Chat         | Tarea                                                                                       | Bloqueos                                   |
 | ------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
 | Coordinación | CI/prod: aplicar `20261117160000` cuando toque el release                                     | —                                          |
-| Frontend     | F-4.1 ✅; siguiente producto (F-8 ⛔) o E2E transversal                                       | accounts-model                             |
+| Frontend     | E2E SHARED + P-19 ✅; **no iniciar F-8** hasta P-01…P-07 / accounts-model                     | accounts-model                             |
 | Backend      | **B-4.1** transfer ownership + mapeo P2002→`VERSION_CONFLICT` en revisiones                   | B-8 ⛔ modelo cuentas                      |
 
 ## Notas operativas

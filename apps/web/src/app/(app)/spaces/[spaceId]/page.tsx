@@ -110,7 +110,9 @@ export default async function SpaceDetailPage({ params }: PageProps) {
             />
           ) : null}
 
-          <LeaveSpaceButton spaceId={spaceId} spaceName={space.name} />
+          {user ? (
+            <LeaveSpaceButton spaceId={spaceId} spaceName={space.name} currentUserId={user.id} />
+          ) : null}
         </>
       ) : null}
     </article>
