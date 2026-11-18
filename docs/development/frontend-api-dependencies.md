@@ -148,12 +148,13 @@ Requiere migración `20261117160000_phase7_settlements_void` aplicada en el ento
 | --------- | ------ | --------------------------------------- | ------------------------------------------------------------------- |
 | Saldos    | GET    | `/spaces/:spaceId/balances`             | Deudas netas por par y `net` por miembro, por moneda (P-08)         |
 | Listar    | GET    | `/spaces/:spaceId/settlements`          | Query: `userId`, `includeVoided`, `limit`≤100                       |
-| Registrar | POST   | `/spaces/:spaceId/settlements`          | Body: `fromUserId`, `toUserId`, `amount`, `currency`, `occurredAt?` |
-| Anular    | POST   | `/spaces/:spaceId/settlements/:id/void` | `expectedVersion`, `reason?`                                        |
+| Registrar | POST   | `/spaces/:spaceId/settlements`          | Body: `fromUserId`, `toUserId`, `amount`, `currency`, `occurredAt?`, `personalCashFlow?` (`accountId`) solo si el actor es `from` o `to` (B-8.4) |
+| Vincular  | POST   | `/spaces/:spaceId/settlements/:id/link-personal-cash-flow` | `accountId`, `expectedVersion`; parte `from` o `to` (B-8.5) |
+| Anular    | POST   | `/spaces/:spaceId/settlements/:id/void` | `expectedVersion`, `reason?`; anula movimientos PERSONAL vinculados (B-8.6) |
 
-`POST` liquidación: permisos P-10 (`SETTLEMENT_FORBIDDEN` 403). `from`/`to` con historial en el espacio (P-19); `occurredAt` puede ser posterior a `leftAt`. **201** puede incluir `warnings: ["SETTLEMENT_EXCEEDS_PENDING_DEBT"]` (P-11; sin 400 por sobrepago).
+`POST` liquidación: permisos P-10 (`SETTLEMENT_FORBIDDEN` 403). `from`/`to` con historial en el espacio (P-19); `occurredAt` puede ser posterior a `leftAt`. **201** puede incluir `warnings: ["SETTLEMENT_EXCEEDS_PENDING_DEBT"]` (P-11; sin 400 por sobrepago). Si el usuario de sesión es `from` o `to`, respuesta puede incluir `myPersonalCashLink: { linked, canLink, side }` sin id de cuenta personal.
 
-Códigos: `SHARED_SPACE_REQUIRED`, `SETTLEMENT_SAME_USER`, `SETTLEMENT_USER_NOT_MEMBER`, `SETTLEMENT_NOT_FOUND` (404), `SETTLEMENT_FORBIDDEN`, `VERSION_CONFLICT`, `ALREADY_VOIDED`.
+Códigos: `SHARED_SPACE_REQUIRED`, `SETTLEMENT_SAME_USER`, `SETTLEMENT_USER_NOT_MEMBER`, `SETTLEMENT_NOT_FOUND` (404), `SETTLEMENT_FORBIDDEN`, `VERSION_CONFLICT`, `ALREADY_VOIDED`, `PERSONAL_LINK_NOT_ALLOWED`, `PERSONAL_LINK_ALREADY_EXISTS`.
 
 ## No implementado todavía
 

@@ -31,6 +31,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { SpaceMembershipGuard } from '../spaces/guards/space-membership.guard';
 import { CreateSettlementDto } from './dto/create-settlement.dto';
 import { SettlementResponseDto } from './dto/settlement-response.dto';
+import { LinkPersonalCashFlowDto } from './dto/link-personal-cash-flow.dto';
 import { VoidSettlementDto } from './dto/void-settlement.dto';
 import { SettlementsService } from './settlements.service';
 
@@ -86,6 +87,30 @@ export class SettlementsController {
     @Body() dto: CreateSettlementDto,
   ): Promise<SettlementResponseDto> {
     return this.settlementsService.createInSpace(user.userId, spaceId, dto);
+  }
+
+  @Post(':settlementId/link-personal-cash-flow')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Link personal account for payer or payee (P-07)',
+  })
+  @ApiOkResponse({ type: SettlementResponseDto })
+  @ApiForbiddenResponse({ description: 'PERSONAL_LINK_NOT_ALLOWED' })
+  @ApiConflictResponse({
+    description: 'VERSION_CONFLICT, ALREADY_VOIDED, or PERSONAL_LINK_ALREADY_EXISTS',
+  })
+  async linkPersonalCashFlow(
+    @CurrentUser() user: RequestUser,
+    @Param('spaceId', ParseUUIDPipe) spaceId: string,
+    @Param('settlementId', ParseUUIDPipe) settlementId: string,
+    @Body() dto: LinkPersonalCashFlowDto,
+  ): Promise<SettlementResponseDto> {
+    return this.settlementsService.linkPersonalCashFlowInSpace(
+      user.userId,
+      spaceId,
+      settlementId,
+      dto,
+    );
   }
 
   @Post(':settlementId/void')

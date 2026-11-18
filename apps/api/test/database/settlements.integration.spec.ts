@@ -27,6 +27,7 @@ type SettlementBody = {
   version: number;
   voidedAt?: string | null;
   warnings?: string[];
+  myPersonalCashLink?: { linked: boolean; canLink: boolean; side: string };
 };
 
 function asCookieSetHeader(setCookie: string | string[] | undefined): string[] {
@@ -258,6 +259,183 @@ describe('Settlements and balances (integration)', () => {
     expect((res.body as SettlementBody).warnings).toContain(
       'SETTLEMENT_EXCEEDS_PENDING_DEBT',
     );
+  });
+
+  async function createPersonalWallet(
+    cookies: string[],
+    personalSpaceId: string,
+    opening = '500.0000',
+  ): Promise<string> {
+    const res = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${personalSpaceId}/accounts`)
+      .set('Cookie', cookies)
+      .send({ name: 'Wallet', currency: 'EUR' })
+      .expect(201);
+    const accountId = (res.body as { id: string }).id;
+    await request(app.getHttpServer())
+      .post(
+        `/api/v1/spaces/${personalSpaceId}/accounts/${accountId}/opening-balance`,
+      )
+      .set('Cookie', cookies)
+      .send({ amount: opening })
+      .expect(201);
+    return accountId;
+  }
+
+  it('B-8.4: payer links personalCashFlow on create', async () => {
+    const { owner, carlos, spaceId } = await trioSharedSpace();
+    const walletId = await createPersonalWallet(
+      carlos.cookies,
+      carlos.profile.personalSpaceId,
+    );
+
+    const res = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/settlements`)
+      .set('Cookie', carlos.cookies)
+      .send({
+        fromUserId: carlos.profile.id,
+        toUserId: owner.profile.id,
+        amount: '25.00',
+        currency: 'EUR',
+        personalCashFlow: { accountId: walletId },
+      })
+      .expect(201);
+
+    expect((res.body as SettlementBody).myPersonalCashLink).toEqual({
+      linked: true,
+      canLink: false,
+      side: 'from',
+    });
+    expect(JSON.stringify(res.body)).not.toContain(walletId);
+
+    const wallet = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${carlos.profile.personalSpaceId}/accounts/${walletId}`)
+      .set('Cookie', carlos.cookies)
+      .expect(200);
+
+    expect((wallet.body as { balance: string }).balance).toBe('475.0000');
+  });
+
+  it('B-8.4: owner cannot send personalCashFlow when not a party', async () => {
+    const { owner, carlos, maria, spaceId } = await trioSharedSpace();
+    const walletId = await createPersonalWallet(
+      owner.cookies,
+      owner.profile.personalSpaceId,
+    );
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/settlements`)
+      .set('Cookie', owner.cookies)
+      .send({
+        fromUserId: carlos.profile.id,
+        toUserId: maria.profile.id,
+        amount: '10.00',
+        currency: 'EUR',
+        personalCashFlow: { accountId: walletId },
+      })
+      .expect(403)
+      .expect((r) => {
+        expect((r.body as { code?: string }).code).toBe(
+          'PERSONAL_LINK_NOT_ALLOWED',
+        );
+      });
+  });
+
+  it('B-8.5: payee links after owner registered settlement', async () => {
+    const { owner, carlos, spaceId } = await trioSharedSpace();
+    const walletId = await createPersonalWallet(
+      owner.cookies,
+      owner.profile.personalSpaceId,
+    );
+
+    const created = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/settlements`)
+      .set('Cookie', carlos.cookies)
+      .send({
+        fromUserId: carlos.profile.id,
+        toUserId: owner.profile.id,
+        amount: '12.00',
+        currency: 'EUR',
+      })
+      .expect(201);
+
+    const body = created.body as SettlementBody;
+    expect(body.myPersonalCashLink).toEqual({
+      linked: false,
+      canLink: true,
+      side: 'from',
+    });
+
+    const linked = await request(app.getHttpServer())
+      .post(
+        `/api/v1/spaces/${spaceId}/settlements/${body.id}/link-personal-cash-flow`,
+      )
+      .set('Cookie', owner.cookies)
+      .send({ accountId: walletId, expectedVersion: body.version })
+      .expect(200);
+
+    expect((linked.body as SettlementBody).myPersonalCashLink).toEqual({
+      linked: true,
+      canLink: false,
+      side: 'to',
+    });
+
+    const wallet = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${owner.profile.personalSpaceId}/accounts/${walletId}`)
+      .set('Cookie', owner.cookies)
+      .expect(200);
+
+    expect((wallet.body as { balance: string }).balance).toBe('512.0000');
+  });
+
+  it('B-8.6: void settlement voids personal cash flow link', async () => {
+    const { owner, carlos, spaceId } = await trioSharedSpace();
+    const walletId = await createPersonalWallet(
+      carlos.cookies,
+      carlos.profile.personalSpaceId,
+    );
+
+    const createRes = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/settlements`)
+      .set('Cookie', carlos.cookies)
+      .send({
+        fromUserId: carlos.profile.id,
+        toUserId: owner.profile.id,
+        amount: '20.00',
+        currency: 'EUR',
+        personalCashFlow: { accountId: walletId },
+      })
+      .expect(201);
+
+    const created = createRes.body as SettlementBody;
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${spaceId}/settlements/${created.id}/void`)
+      .set('Cookie', carlos.cookies)
+      .send({ expectedVersion: created.version })
+      .expect(200);
+
+    const afterVoid = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${spaceId}/settlements`)
+      .set('Cookie', carlos.cookies)
+      .query({ includeVoided: true, userId: carlos.profile.id })
+      .expect(200);
+
+    const row = (
+      afterVoid.body as SettlementBody[]
+    ).find((s) => s.id === created.id);
+    expect(row?.myPersonalCashLink).toEqual({
+      linked: false,
+      canLink: false,
+      side: 'from',
+    });
+
+    const wallet = await request(app.getHttpServer())
+      .get(`/api/v1/spaces/${carlos.profile.personalSpaceId}/accounts/${walletId}`)
+      .set('Cookie', carlos.cookies)
+      .expect(200);
+
+    expect((wallet.body as { balance: string }).balance).toBe('500.0000');
   });
 
   it('void settlement restores balance', async () => {

@@ -1,12 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
   IsDateString,
   IsOptional,
   IsString,
   IsUUID,
   Matches,
+  ValidateNested,
 } from 'class-validator';
+import { PersonalCashFlowDto } from './personal-cash-flow.dto';
 
 const MONEY_INPUT = /^\d+(\.\d{1,4})?$/;
 
@@ -41,4 +44,13 @@ export class CreateSettlementDto {
   @IsOptional()
   @IsDateString()
   occurredAt?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Optional personal account on the actor side (from → out, to → in)',
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PersonalCashFlowDto)
+  personalCashFlow?: PersonalCashFlowDto;
 }

@@ -724,6 +724,18 @@ BEGIN
       IF rec.kind = 'SETTLEMENT_TO_IN' AND rec.tx_type <> 'INCOME'::"TransactionType" THEN
         RAISE EXCEPTION 'SETTLEMENT_TO_IN requires personal INCOME';
       END IF;
+      IF rec.tx_voided IS NOT NULL THEN
+        CONTINUE;
+      END IF;
+      IF EXISTS (
+        SELECT 1
+        FROM settlements st
+        WHERE st.id = rec.settlement_id
+          AND st.space_id = rec.shared_space_id
+          AND st.voided_at IS NOT NULL
+      ) THEN
+        CONTINUE;
+      END IF;
       IF NOT EXISTS (
         SELECT 1
         FROM settlements st
