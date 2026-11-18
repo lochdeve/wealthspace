@@ -108,10 +108,11 @@ Disponible en `main` (Fase 5 API). Membresía **ACTIVE** en el espacio (mismo gu
 
 **Gasto individual en SHARED** (`POST .../transactions/expense` con `attributedToUserId`): imputa el gasto a **un** miembro, sin reparto ni deuda. **No es un gasto compartido** (P-14 en [decisions.md](../product/decisions.md)). UI: `/spaces/:id/expenses/individual/new`. `accountId` opcional; sin cuenta → `displayCurrency` del espacio o `currency` en el body. Atribución: Owner/Admin → cualquier ACTIVE; Member → solo él mismo.
 
-### Errores transversales (validación y concurrencia)
+### Errores transversales (validación y concurrencia) — B-R1 / C-02–C-03
 
-- `VALIDATION_ERROR` (400) — body inválido (`ValidationPipe`); incluye `field` cuando es posible; la web traduce por `code`, no por `message`.
-- `VERSION_CONFLICT` (409) — `expectedVersion` desactualizado en PATCH de transacciones.
+- `VALIDATION_ERROR` (400) — cualquier endpoint con body DTO (`ValidationPipe` global); incluye `field` cuando es posible; la web traduce por `code`, no por `message`.
+- `VERSION_CONFLICT` (409) — `expectedVersion` desactualizado en PATCH de transacciones (y otros recursos con versión).
+- `CATEGORY_NOT_FOUND` (404), `INVALID_CATEGORY_TYPE` (400) — `categoryId` en PATCH de transacciones (C-02).
 
 Códigos: `ATTRIBUTION_REQUIRED`, `ATTRIBUTION_NOT_ALLOWED`, `ATTRIBUTEE_NOT_ACTIVE_MEMBER`, `ACCOUNT_REQUIRED`, `CURRENCY_REQUIRED`, `CURRENCY_MISMATCH`, `SAME_ACCOUNT_TRANSFER`, `CATEGORY_NOT_FOUND`, `INVALID_CATEGORY_TYPE`, `NO_CHANGES`, más los de slice 1–2.
 

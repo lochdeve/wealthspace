@@ -20,12 +20,14 @@ import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { validationErrorOpenApiExample } from '../common/swagger-validation-error';
 import {
   CurrentUser,
   type RequestUser,
@@ -86,9 +88,16 @@ export class SpaceTransactionsController {
   @ApiOperation({
     summary: 'Update transaction',
     description:
-      'Optimistic lock via expectedVersion; stores FinancialRevision snapshot.',
+      'Optimistic lock via expectedVersion; stores FinancialRevision snapshot. categoryId nullable clears category (C-02).',
   })
   @ApiOkResponse({ type: FinancialTransactionDto })
+  @ApiBadRequestResponse({
+    description: 'VALIDATION_ERROR, NO_CHANGES, INVALID_CATEGORY_TYPE',
+    schema: { example: validationErrorOpenApiExample },
+  })
+  @ApiNotFoundResponse({
+    description: 'TRANSACTION_NOT_FOUND or CATEGORY_NOT_FOUND',
+  })
   @ApiConflictResponse({
     schema: {
       example: {

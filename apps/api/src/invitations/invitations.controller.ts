@@ -9,12 +9,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiConflictResponse,
   ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { validationErrorOpenApiExample } from '../common/swagger-validation-error';
 import {
   CurrentUser,
   type RequestUser,
@@ -42,6 +45,19 @@ export class InvitationsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Accept an invitation' })
   @ApiNoContentResponse()
+  @ApiNotFoundResponse({
+    description: 'Invitation not found for this user',
+    schema: {
+      example: {
+        statusCode: 404,
+        code: 'INVITATION_NOT_FOUND',
+        message: 'Invitation not found',
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    schema: { example: validationErrorOpenApiExample },
+  })
   @ApiConflictResponse({ description: 'Expired or already a member' })
   async accept(
     @CurrentUser() user: RequestUser,
@@ -54,6 +70,19 @@ export class InvitationsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Reject an invitation' })
   @ApiNoContentResponse()
+  @ApiNotFoundResponse({
+    description: 'Invitation not found for this user',
+    schema: {
+      example: {
+        statusCode: 404,
+        code: 'INVITATION_NOT_FOUND',
+        message: 'Invitation not found',
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    schema: { example: validationErrorOpenApiExample },
+  })
   async reject(
     @CurrentUser() user: RequestUser,
     @Param('invitationId', ParseUUIDPipe) invitationId: string,

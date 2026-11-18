@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import cookieParser from 'cookie-parser';
 import request from 'supertest';
@@ -13,6 +13,7 @@ import {
   withClient,
 } from './helpers';
 import { applyTestApiEnv } from './test-api-env';
+import { createTestValidationPipe } from './test-validation-pipe';
 
 type AuthSession = {
   cookies: string[];
@@ -53,14 +54,7 @@ describe('Invitations (integration)', () => {
     app = moduleFixture.createNestApplication();
     app.use(cookieParser());
     app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-        transformOptions: { enableImplicitConversion: false },
-      }),
-    );
+    app.useGlobalPipes(createTestValidationPipe());
     setupSwagger(app);
     await app.init();
   });
@@ -221,5 +215,29 @@ describe('Invitations (integration)', () => {
       .expect(200);
 
     expect(listRes.body as unknown[]).toHaveLength(0);
+  });
+
+  it('accept returns INVITATION_NOT_FOUND for unknown id', async () => {
+    const user = await registerAndLogin('inv-missing');
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/invitations/${randomUUID()}/accept`)
+      .set('Cookie', user.cookies)
+      .expect(404)
+      .expect((r) => {
+        expect((r.body as { code?: string }).code).toBe('INVITATION_NOT_FOUND');
+      });
+  });
+
+  it('reject returns INVITATION_NOT_FOUND for unknown id', async () => {
+    const user = await registerAndLogin('inv-reject-missing');
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/invitations/${randomUUID()}/reject`)
+      .set('Cookie', user.cookies)
+      .expect(404)
+      .expect((r) => {
+        expect((r.body as { code?: string }).code).toBe('INVITATION_NOT_FOUND');
+      });
   });
 });

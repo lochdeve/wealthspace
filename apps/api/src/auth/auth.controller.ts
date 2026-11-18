@@ -10,6 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNoContentResponse,
@@ -18,6 +19,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { validationErrorOpenApiExample } from '../common/swagger-validation-error';
 import type { Response } from 'express';
 import { ENV_TOKEN } from '../config/env';
 import type { AppEnv } from '../config/env';
@@ -50,6 +52,10 @@ export class AuthController {
   @ApiCreatedResponse({
     description: 'User created',
     type: RegisterResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid body (C-03)',
+    schema: { example: validationErrorOpenApiExample },
   })
   @ApiConflictResponse({
     description: 'Email already in use',

@@ -367,6 +367,30 @@ describe('Transactions (integration)', () => {
       });
   });
 
+  it('PATCH returns VALIDATION_ERROR for non-whitelisted fields (C-03)', async () => {
+    const { cookies, profile } = await registerAndLogin('tx-validation');
+    const accountId = await createAccount(cookies, profile.personalSpaceId);
+
+    const createRes = await request(app.getHttpServer())
+      .post(`/api/v1/spaces/${profile.personalSpaceId}/transactions/income`)
+      .set('Cookie', cookies)
+      .send({ accountId, amount: '10' })
+      .expect(201);
+
+    const tx = createRes.body as TxBody & { version: number; id: string };
+
+    await request(app.getHttpServer())
+      .patch(`/api/v1/spaces/${profile.personalSpaceId}/transactions/${tx.id}`)
+      .set('Cookie', cookies)
+      .send({ expectedVersion: tx.version, notAField: true })
+      .expect(400)
+      .expect((res) => {
+        const body = res.body as { code?: string; field?: string };
+        expect(body.code).toBe('VALIDATION_ERROR');
+        expect(body.field).toBeDefined();
+      });
+  });
+
   it('PATCH can set, change and clear categoryId', async () => {
     const { cookies, profile } = await registerAndLogin('tx-category');
 

@@ -48,9 +48,9 @@ Orden recomendado: **B-6.1** → **B-R1** → **B-6.0** (aplicar, aprobada) → 
 
 | Entrega | Contenido                                                                                        | Aceptación                                                                                |
 | ------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| B-R1.1  | `categoryId` en `PATCH /spaces/:spaceId/transactions/:txId` (C-02)                               | Tests: cambio válido, categoría de otro espacio (404), tipo incompatible, 409 por versión |
-| B-R1.2  | `code: "VALIDATION_ERROR"` (+ campo afectado si es viable) en los 400 de `ValidationPipe` (C-03) | Tests e2e de un DTO inválido; OpenAPI y catálogo actualizados                             |
-| B-R1.3  | Añadir `INVITATION_NOT_FOUND` (404 al aceptar o rechazar) al catálogo                            | Catálogo al día                                                                           |
+| B-R1.1  | `categoryId` en `PATCH /spaces/:spaceId/transactions/:txId` (C-02)                               | ✅ tests integración (set/clear, 404 foreign cat, tipo incompatible, 409 versión)       |
+| B-R1.2  | `code: "VALIDATION_ERROR"` (+ campo afectado si es viable) en los 400 de `ValidationPipe` (C-03) | ✅ auth + PATCH tx; OpenAPI auth/invitations/transactions                               |
+| B-R1.3  | `INVITATION_NOT_FOUND` (404 aceptar/rechazar) en catálogo                                        | ✅ catálogo + tests integración + OpenAPI                                                |
 
 ## B-7 — ✨ Saldos y liquidaciones (P-10…P-19 aprobados 2026-11-15)
 
