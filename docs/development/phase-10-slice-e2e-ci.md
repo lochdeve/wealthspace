@@ -43,12 +43,12 @@ Que un PR no pueda romper flujos **6–7**, **8 (cuentas personales vinculadas)*
 
 ### Alcance CI
 
-| Spec | Flujo |
-| ---- | ----- |
-| `shared-expenses-balances-settlements.spec.ts` | Gasto compartido, saldos, liquidación parcial, anular |
-| `phase8-personal-cash-flow.spec.ts` | P-02 / P-07: gasto con cuenta personal, liquidación anotada |
-| `auth.spec.ts` | Redirección a login, enlace desde home |
-| `home.spec.ts` | Portada |
+| Spec                                           | Flujo                                                       |
+| ---------------------------------------------- | ----------------------------------------------------------- |
+| `shared-expenses-balances-settlements.spec.ts` | Gasto compartido, saldos, liquidación parcial, anular       |
+| `phase8-personal-cash-flow.spec.ts`            | P-02 / P-07: gasto con cuenta personal, liquidación anotada |
+| `auth.spec.ts`                                 | Redirección a login, enlace desde home                      |
+| `home.spec.ts`                                 | Portada                                                     |
 
 ### Regla operativa
 

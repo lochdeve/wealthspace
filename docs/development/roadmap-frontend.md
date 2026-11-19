@@ -77,9 +77,9 @@ Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (F-8.1…F-8.7, *
 
 ## F-10 — Preparación para producción
 
-| Entrega   | Contenido                                                                                                                       |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| F-10.1 ✅ | Playwright en CI — spec fases 6–7 ([phase-10-slice-e2e-ci.md](./phase-10-slice-e2e-ci.md)) |
+| Entrega   | Contenido                                                                                      |
+| --------- | ---------------------------------------------------------------------------------------------- |
+| F-10.1 ✅ | Playwright en CI — spec fases 6–7 ([phase-10-slice-e2e-ci.md](./phase-10-slice-e2e-ci.md))     |
 | F-10.2 🟡 | Regresión ampliada: todos los specs `e2e/` en CI; seed obligatorio en CI (§ slice 2 mismo doc) |
 
 ## F-4.1 — ✨ Transferencia de ownership (paralela) ✅ (B-4.1)

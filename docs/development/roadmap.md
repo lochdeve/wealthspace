@@ -10,7 +10,7 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 
 | Fase | Contenido                                                      | API | Web | Notas                                                                            |
 | ---- | -------------------------------------------------------------- | --- | --- | -------------------------------------------------------------------------------- |
-| 0    | Monorepo, CI, esquema y migración inicial, tests de integridad | ✅  | ✅  | E2E: specs 6–7, 8, auth, home en job `e2e` (F-10.2).                              |
+| 0    | Monorepo, CI, esquema y migración inicial, tests de integridad | ✅  | ✅  | E2E: specs 6–7, 8, auth, home en job `e2e` (F-10.2).                             |
 | 1    | Fundación backend                                              | ✅  | —   |                                                                                  |
 | 2    | Autenticación API                                              | ✅  | —   | `PATCH /auth/me` (B-9.1).                                                        |
 | 3    | Autenticación web                                              | —   | ✅  | E2E auth local.                                                                  |
@@ -34,13 +34,13 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 
 ### Parcial o pendiente menor (post-MVP)
 
-| Tema                                          | Estado                                            |
-| --------------------------------------------- | ------------------------------------------------- |
+| Tema                                          | Estado                                              |
+| --------------------------------------------- | --------------------------------------------------- |
 | E2E Playwright en CI                          | 🟡 F-10.2 suite `e2e/` (6–7, 8, humo); fase 9 local |
-| Dashboard API agregado multi-espacio          | Opcional; web compone en cliente                  |
-| Presupuesto vs consumo en UI                  | Opcional (API informe + budgets listos)           |
-| Deuda técnica API                             | Errores Prisma/trigger sin `code` → 500 ocasional |
-| Paginación cursor, renombrar cuenta/categoría | Fuera de prioridad                                |
+| Dashboard API agregado multi-espacio          | Opcional; web compone en cliente                    |
+| Presupuesto vs consumo en UI                  | Opcional (API informe + budgets listos)             |
+| Deuda técnica API                             | Errores Prisma/trigger sin `code` → 500 ocasional   |
+| Paginación cursor, renombrar cuenta/categoría | Fuera de prioridad                                  |
 
 ### Refactorización histórica (cerrada)
 

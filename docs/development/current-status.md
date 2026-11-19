@@ -6,11 +6,11 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 ## Repositorio
 
-| Elemento  | Estado                                                                              |
-| --------- | ----------------------------------------------------------------------------------- |
-| `main`    | Fases 0–9 MVP (incl. migración fase 8, B-8/B-9, F-8/F-9).                           |
-| CI        | `quality` + `database-integrity` + `e2e` (Playwright: specs 6–7, 8, auth, home).    |
-| E2E local | `pnpm --filter @wealthspace/web test:e2e` (API + BD; Chromium instalado).           |
+| Elemento  | Estado                                                                           |
+| --------- | -------------------------------------------------------------------------------- |
+| `main`    | Fases 0–9 MVP (incl. migración fase 8, B-8/B-9, F-8/F-9).                        |
+| CI        | `quality` + `database-integrity` + `e2e` (Playwright: specs 6–7, 8, auth, home). |
+| E2E local | `pnpm --filter @wealthspace/web test:e2e` (API + BD; Chromium instalado).        |
 
 ## Por área
 
@@ -44,12 +44,12 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 
 ## Siguiente tarea por chat
 
-| Chat             | Tarea                                                                    | Bloqueos |
-| ---------------- | ------------------------------------------------------------------------ | -------- |
-| **Coordinación** | Mantener coherencia docs; revisar PR fase 10                             | —        |
-| **Backend**      | Deuda menor (`code` en errores Prisma); opcional **B-9.4** dashboard     | —        |
+| Chat             | Tarea                                                                           | Bloqueos |
+| ---------------- | ------------------------------------------------------------------------------- | -------- |
+| **Coordinación** | Mantener coherencia docs; revisar PR fase 10                                    | —        |
+| **Backend**      | Deuda menor (`code` en errores Prisma); opcional **B-9.4** dashboard            | —        |
 | **Frontend**     | **F-10.2** verificar CI verde con suite E2E completa; luego pulido F-9 opcional | —        |
-| **Release**      | Checklist `migrate deploy` **6+7+8** en cada entorno compartido          | —        |
+| **Release**      | Checklist `migrate deploy` **6+7+8** en cada entorno compartido                 | —        |
 
 ## Notas operativas
 
