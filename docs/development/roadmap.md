@@ -91,7 +91,7 @@ Criterios de aceptación: ver [shared-expenses.md](../product/shared-expenses.md
 
 ### Fase 10 — Preparación para producción
 
-**Primer slice aprobado:** [phase-10-slice-e2e-ci.md](./phase-10-slice-e2e-ci.md) (Playwright spec fases 6–7 en CI). Resto (rate limiting, backups, despliegue) pendiente de priorización.
+**Hecho:** E2E en CI (F-10.1–10.2). **Operaciones:** [release-runbook.md](./release-runbook.md) (migraciones, env, smoke; hosting §7 pendiente). **Siguiente slices:** backups, rate limit, pipeline `migrate deploy` en staging — ver gap en runbook §6.
 
 ### 4.2 — ✅ Último miembro ACTIVE
 

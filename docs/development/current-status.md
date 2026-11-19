@@ -49,7 +49,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | **Coordinación** | Mantener coherencia docs; revisar PR fase 10                                    | —        |
 | **Backend**      | Deuda menor (`code` en errores Prisma); opcional **B-9.4** dashboard            | —        |
 | **Frontend**     | Mantener regresión E2E al entregar UI crítica; opcional pulido F-9 / E2E fase 9   | —        |
-| **Release**      | Checklist `migrate deploy` **6+7+8** en cada entorno compartido                 | —        |
+| **Release**      | [release-runbook.md](./release-runbook.md): migraciones 1–4, matriz env, smoke; cerrar §7 hosting | —        |
 
 ## Notas operativas
 
