@@ -34,8 +34,8 @@ export function ConsumptionReportSummary({
               {title}
             </h2>
             <p className={styles.lead}>
-              Periodo local {report.periodStartLocal} — {report.periodEndLocal} (
-              {report.timezone}). Solo consumo (P-17); sin flujo de caja entre espacios.
+              Periodo local {report.periodStartLocal} — {report.periodEndLocal} ({report.timezone}).
+              Solo consumo (P-17); sin flujo de caja entre espacios.
             </p>
           </div>
         </header>
@@ -62,10 +62,7 @@ export function ConsumptionReportSummary({
           <h3 className={styles.sectionHeading}>Por categoría</h3>
           <ul className={styles.spaceGrid}>
             {report.byCategory.map((row) => (
-              <li
-                key={`${row.categoryId ?? 'none'}-${row.currency}`}
-                className={styles.spaceCard}
-              >
+              <li key={`${row.categoryId ?? 'none'}-${row.currency}`} className={styles.spaceCard}>
                 <span>{categoryLabel(categories, row.categoryId)}</span>
                 <strong>{formatMoneyAmount(row.amount, row.currency)}</strong>
               </li>

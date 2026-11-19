@@ -35,8 +35,6 @@ describe('transactionContextLine', () => {
       sourceAccountId: 'acc-a',
       destinationAccountId: 'acc-b',
     };
-    expect(
-      transactionContextLine(transfer, (id) => (id === 'acc-a' ? 'A' : 'B')),
-    ).toBe('A → B');
+    expect(transactionContextLine(transfer, (id) => (id === 'acc-a' ? 'A' : 'B'))).toBe('A → B');
   });
 });

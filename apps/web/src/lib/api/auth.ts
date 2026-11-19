@@ -1,10 +1,5 @@
 import { apiRequest } from '@/lib/api/client';
-import type {
-  LoginInput,
-  RegisterInput,
-  UpdateProfileInput,
-  UserProfile,
-} from '@/lib/api/types';
+import type { LoginInput, RegisterInput, UpdateProfileInput, UserProfile } from '@/lib/api/types';
 
 export function register(data: RegisterInput): Promise<UserProfile> {
   return apiRequest<UserProfile>('/auth/register', {

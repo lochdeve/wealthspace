@@ -309,7 +309,9 @@ describe('Settlements and balances (integration)', () => {
     expect(JSON.stringify(res.body)).not.toContain(walletId);
 
     const wallet = await request(app.getHttpServer())
-      .get(`/api/v1/spaces/${carlos.profile.personalSpaceId}/accounts/${walletId}`)
+      .get(
+        `/api/v1/spaces/${carlos.profile.personalSpaceId}/accounts/${walletId}`,
+      )
       .set('Cookie', carlos.cookies)
       .expect(200);
 
@@ -381,7 +383,9 @@ describe('Settlements and balances (integration)', () => {
     });
 
     const wallet = await request(app.getHttpServer())
-      .get(`/api/v1/spaces/${owner.profile.personalSpaceId}/accounts/${walletId}`)
+      .get(
+        `/api/v1/spaces/${owner.profile.personalSpaceId}/accounts/${walletId}`,
+      )
       .set('Cookie', owner.cookies)
       .expect(200);
 
@@ -421,9 +425,9 @@ describe('Settlements and balances (integration)', () => {
       .query({ includeVoided: true, userId: carlos.profile.id })
       .expect(200);
 
-    const row = (
-      afterVoid.body as SettlementBody[]
-    ).find((s) => s.id === created.id);
+    const row = (afterVoid.body as SettlementBody[]).find(
+      (s) => s.id === created.id,
+    );
     expect(row?.myPersonalCashLink).toEqual({
       linked: false,
       canLink: false,
@@ -431,7 +435,9 @@ describe('Settlements and balances (integration)', () => {
     });
 
     const wallet = await request(app.getHttpServer())
-      .get(`/api/v1/spaces/${carlos.profile.personalSpaceId}/accounts/${walletId}`)
+      .get(
+        `/api/v1/spaces/${carlos.profile.personalSpaceId}/accounts/${walletId}`,
+      )
       .set('Cookie', carlos.cookies)
       .expect(200);
 

@@ -8,25 +8,25 @@ Leyenda de estado: ✅ implementado (API + web) · 🟡 parcial · ⬜ no implem
 
 ## 1. Usuarios y sesión
 
-| Requisito                                                       | Estado                               |
-| --------------------------------------------------------------- | ------------------------------------ |
-| Alta atómica: usuario + espacio PERSONAL + membresía OWNER      | ✅                                   |
-| Login/logout con cookie HttpOnly; perfil `GET /auth/me`         | ✅                                   |
-| Editar perfil y zona horaria (`PATCH /auth/me`, `/settings`)      | ✅                                   |
-| Sin borrado físico de usuarios con historial; sin anonimización | Regla (RESTRICT en BD)               |
+| Requisito                                                       | Estado                 |
+| --------------------------------------------------------------- | ---------------------- |
+| Alta atómica: usuario + espacio PERSONAL + membresía OWNER      | ✅                     |
+| Login/logout con cookie HttpOnly; perfil `GET /auth/me`         | ✅                     |
+| Editar perfil y zona horaria (`PATCH /auth/me`, `/settings`)    | ✅                     |
+| Sin borrado físico de usuarios con historial; sin anonimización | Regla (RESTRICT en BD) |
 
 ## 2. Espacios y membresía
 
 Fuente: [spaces-membership-mvp.md](./spaces-membership-mvp.md).
 
-| Requisito                                                    | Estado                     |
-| ------------------------------------------------------------ | -------------------------- |
-| Listar espacios, crear SHARED, espacio activo en UI          | ✅                         |
-| Invitaciones (crear, revocar, aceptar, rechazar; TTL 7 días) | ✅                         |
-| Leave/remove con único OWNER protegido (409)                 | ✅                         |
-| Transferencia de ownership (4.1)                             | ✅                         |
-| Último miembro ACTIVE (4.2, C-05)                            | ✅                         |
-| Aviso saldo ≠ 0 al leave/remove (P-19)                       | ✅                         |
+| Requisito                                                    | Estado |
+| ------------------------------------------------------------ | ------ |
+| Listar espacios, crear SHARED, espacio activo en UI          | ✅     |
+| Invitaciones (crear, revocar, aceptar, rechazar; TTL 7 días) | ✅     |
+| Leave/remove con único OWNER protegido (409)                 | ✅     |
+| Transferencia de ownership (4.1)                             | ✅     |
+| Último miembro ACTIVE (4.2, C-05)                            | ✅     |
+| Aviso saldo ≠ 0 al leave/remove (P-19)                       | ✅     |
 
 ## 3. Cuentas y movimientos
 

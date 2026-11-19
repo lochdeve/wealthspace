@@ -80,9 +80,7 @@ export default async function SharedExpenseDetailPage({ params }: PageProps) {
           <p className={styles.lead}>{space.name}</p>
         </div>
         <nav className={styles.pageHeaderActions} aria-label="Acciones">
-          {canMutate && !expense.voidedAt ? (
-            <Link href="#edit-shared-expense">Editar</Link>
-          ) : null}
+          {canMutate && !expense.voidedAt ? <Link href="#edit-shared-expense">Editar</Link> : null}
           <Link href={sharedExpensesHref(spaceId, { includeVoided: Boolean(expense.voidedAt) })}>
             ← Gastos compartidos
           </Link>

@@ -50,7 +50,7 @@ export function LinkSettlementPersonalCashFlowForm({
 
   useEffect(() => {
     const remembered = readLastPersonalAccountId(currentUserId);
-  const initial =
+    const initial =
       (remembered && options.some((row) => row.id === remembered) ? remembered : null) ??
       options[0]?.id ??
       '';

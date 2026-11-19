@@ -71,11 +71,7 @@ export function EditProfileForm({ initial }: EditProfileFormProps) {
       <Field id="profile-email" label="Correo">
         <TextInput id="profile-email" value={initial.email} disabled readOnly />
       </Field>
-      <Field
-        id="profile-display-name"
-        label="Nombre visible"
-        error={fieldErrors.displayName}
-      >
+      <Field id="profile-display-name" label="Nombre visible" error={fieldErrors.displayName}>
         <TextInput
           id="profile-display-name"
           value={displayName}

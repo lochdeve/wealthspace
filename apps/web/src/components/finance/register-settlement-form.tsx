@@ -60,7 +60,8 @@ export function RegisterSettlementForm({
 
   const actorSide = settlementActorSide(fromUserId, toUserId, currentUserId);
   const showPersonalCashFlow =
-    actorSide !== null && canRegisterSettlementPersonalCashFlow(fromUserId, toUserId, currentUserId);
+    actorSide !== null &&
+    canRegisterSettlementPersonalCashFlow(fromUserId, toUserId, currentUserId);
 
   const personalAccountOptions = useMemo(
     () => activeAccountsMatchingCurrency(personalAccounts, currency),
@@ -80,7 +81,9 @@ export function RegisterSettlementForm({
     const initial =
       (remembered && personalAccountOptions.some((row) => row.id === remembered)
         ? remembered
-        : null) ?? personalAccountOptions[0]?.id ?? '';
+        : null) ??
+      personalAccountOptions[0]?.id ??
+      '';
     setPersonalAccountId((current) =>
       current && personalAccountOptions.some((row) => row.id === current) ? current : initial,
     );

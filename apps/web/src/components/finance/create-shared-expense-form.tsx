@@ -13,8 +13,15 @@ import type {
   SplitInput,
 } from '@/lib/api/shared-expense-types';
 import { ApiError } from '@/lib/api/errors';
-import { createSharedExpense, previewSharedExpense, updateSharedExpense } from '@/lib/api/shared-expenses';
-import { splitStateFromDetail, toDatetimeLocalValue } from '@/lib/finance/shared-expense-form-state';
+import {
+  createSharedExpense,
+  previewSharedExpense,
+  updateSharedExpense,
+} from '@/lib/api/shared-expenses';
+import {
+  splitStateFromDetail,
+  toDatetimeLocalValue,
+} from '@/lib/finance/shared-expense-form-state';
 import { canPickAttributionFor } from '@/lib/finance/attribution';
 import { isPositiveAmount, normalizeAmountInput } from '@/lib/finance/amount';
 import { percentsForUserIds } from '@/lib/finance/equal-percent-shares';
@@ -208,7 +215,10 @@ export function CreateSharedExpenseForm({
     if (splitMode !== 'FIXED_AMOUNT' || participantIds.length === 0) {
       return null;
     }
-    return fixedAmountSplitHint(amount, participantIds.map((id) => fixedShares[id] ?? ''));
+    return fixedAmountSplitHint(
+      amount,
+      participantIds.map((id) => fixedShares[id] ?? ''),
+    );
   }, [splitMode, participantIds, fixedShares, amount]);
 
   function syncPercentageShares(nextParticipantIds: string[], previous?: Record<string, string>) {
@@ -302,10 +312,7 @@ export function CreateSharedExpenseForm({
       setPersonalAccountId('');
       return;
     }
-    if (
-      personalAccountId &&
-      !personalAccountOptions.some((row) => row.id === personalAccountId)
-    ) {
+    if (personalAccountId && !personalAccountOptions.some((row) => row.id === personalAccountId)) {
       setPersonalAccountId('');
     }
   }, [showPersonalAccountField, personalAccountOptions, personalAccountId]);
@@ -549,14 +556,14 @@ export function CreateSharedExpenseForm({
             id="shared-payer"
             className={styles.selectNative}
             value={paidByUserId}
-          onChange={(event) => {
-            clearParticipantFieldError();
-            setPaidByUserId(event.target.value);
-            if (event.target.value !== currentUserId) {
-              setPersonalAccountId('');
-            }
-          }}
-          disabled={pending || payerOptions.length <= 1}
+            onChange={(event) => {
+              clearParticipantFieldError();
+              setPaidByUserId(event.target.value);
+              if (event.target.value !== currentUserId) {
+                setPersonalAccountId('');
+              }
+            }}
+            disabled={pending || payerOptions.length <= 1}
             aria-invalid={Boolean(fieldErrors.payer) || undefined}
           >
             {payerOptions.map((member) => (

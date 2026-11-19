@@ -39,9 +39,7 @@ export function AccountTransactionsList({
           {transactionContextLine(tx, resolveAccount, memberName) ? (
             <p className={styles.meta}>{transactionContextLine(tx, resolveAccount, memberName)}</p>
           ) : null}
-          {tx.crossSpaceSummary ? (
-            <CrossSpaceSummaryBadge summary={tx.crossSpaceSummary} />
-          ) : null}
+          {tx.crossSpaceSummary ? <CrossSpaceSummaryBadge summary={tx.crossSpaceSummary} /> : null}
           <p className={styles.meta}>{new Date(tx.occurredAt).toLocaleString('es')}</p>
           <p>
             <Link href={`/spaces/${spaceId}/transactions/${tx.id}`}>Ver / editar</Link>

@@ -8,10 +8,7 @@ import { rethrowUnlessSpaceFound } from '@/lib/api/page-errors.server';
 import { getConsumptionReportWithCookie } from '@/lib/api/reports';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { spaceBudgetsHref } from '@/lib/finance/routes';
-import {
-  currentYearMonthInTimezone,
-  parseReportMonthQuery,
-} from '@/lib/reports/report-month';
+import { currentYearMonthInTimezone, parseReportMonthQuery } from '@/lib/reports/report-month';
 import { getSessionCookieHeader, requireUser } from '@/lib/auth/session.server';
 import styles from '@/app/(app)/app-pages.module.css';
 

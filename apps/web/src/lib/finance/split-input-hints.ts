@@ -61,5 +61,7 @@ export function fixedAmountSplitHint(totalAmount: string, shareAmounts: string[]
   if (delta > 0) {
     return `Sobran ${delta.toFixed(4).replace(/\.?0+$/, '')} respecto al total.`;
   }
-  return `Faltan ${Math.abs(delta).toFixed(4).replace(/\.?0+$/, '')} para llegar al total.`;
+  return `Faltan ${Math.abs(delta)
+    .toFixed(4)
+    .replace(/\.?0+$/, '')} para llegar al total.`;
 }

@@ -47,15 +47,15 @@ test.describe('SHARED: expense, balances, partial settlement, void', () => {
 
     await expect(page.locator('#balances-page-title')).toBeVisible();
     await expect(
-      page.getByText(new RegExp(`${ctx.member.displayName} debe .*60.* a ${ctx.owner.displayName}`)),
+      page.getByText(
+        new RegExp(`${ctx.member.displayName} debe .*60.* a ${ctx.owner.displayName}`),
+      ),
     ).toBeVisible();
 
     await page
       .getByRole('listitem')
       .filter({
-        hasText: new RegExp(
-          `${ctx.member.displayName} debe .*60.* a ${ctx.owner.displayName}`,
-        ),
+        hasText: new RegExp(`${ctx.member.displayName} debe .*60.* a ${ctx.owner.displayName}`),
       })
       .getByRole('link', { name: 'Registrar pago' })
       .click();
@@ -71,7 +71,9 @@ test.describe('SHARED: expense, balances, partial settlement, void', () => {
 
     await page.goto(`/spaces/${ctx.spaceId}/balances`);
     await expect(
-      page.getByText(new RegExp(`${ctx.member.displayName} debe .*45.* a ${ctx.owner.displayName}`)),
+      page.getByText(
+        new RegExp(`${ctx.member.displayName} debe .*45.* a ${ctx.owner.displayName}`),
+      ),
     ).toBeVisible();
 
     await page.goto(`/spaces/${ctx.spaceId}/settlements`);
@@ -81,7 +83,9 @@ test.describe('SHARED: expense, balances, partial settlement, void', () => {
 
     await page.goto(`/spaces/${ctx.spaceId}/balances`);
     await expect(
-      page.getByText(new RegExp(`${ctx.member.displayName} debe .*60.* a ${ctx.owner.displayName}`)),
+      page.getByText(
+        new RegExp(`${ctx.member.displayName} debe .*60.* a ${ctx.owner.displayName}`),
+      ),
     ).toBeVisible();
   });
 });

@@ -1,11 +1,7 @@
 import Link from 'next/link';
 import type { SpaceBalances } from '@/lib/api/balance-types';
 import type { MembershipRole, SpaceMember } from '@/lib/api/space-types';
-import {
-  debtLine,
-  memberNetSummary,
-  viewerAffectedByDebt,
-} from '@/lib/finance/balance-view';
+import { debtLine, memberNetSummary, viewerAffectedByDebt } from '@/lib/finance/balance-view';
 import { registerSettlementHref } from '@/lib/finance/routes';
 import { canRegisterSettlement } from '@/lib/finance/settlement-permissions';
 import styles from './finance-forms.module.css';

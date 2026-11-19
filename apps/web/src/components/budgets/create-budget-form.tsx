@@ -128,11 +128,7 @@ export function CreateBudgetForm({
           required
         />
       </Field>
-      <Field
-        id="budget-period-start"
-        label="Inicio del periodo"
-        error={fieldErrors.periodStart}
-      >
+      <Field id="budget-period-start" label="Inicio del periodo" error={fieldErrors.periodStart}>
         <TextInput
           id="budget-period-start"
           type="date"

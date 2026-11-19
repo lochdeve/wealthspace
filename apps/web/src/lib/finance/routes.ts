@@ -15,10 +15,7 @@ export function individualExpenseHref(spaceId: string, accountId?: string): stri
   return `/spaces/${spaceId}/expenses/individual/new${toQueryString({ accountId })}`;
 }
 
-export function sharedExpensesHref(
-  spaceId: string,
-  query?: { includeVoided?: boolean },
-): string {
+export function sharedExpensesHref(spaceId: string, query?: { includeVoided?: boolean }): string {
   return `/spaces/${spaceId}/expenses${toQueryString({
     includeVoided: query?.includeVoided ? '1' : undefined,
   })}`;

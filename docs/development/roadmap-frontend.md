@@ -53,32 +53,32 @@ Copy: «Registrar pago» o «Liquidar», nunca «Confirmar». Mensaje fijo: «We
 
 Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (F-8.1…F-8.7, **APROBADO**). F-8.4 aviso acreedor en Saldos **y** liquidaciones.
 
-| Entrega | Resumen |
-| ------- | ------- |
-| F-8.1 ✅ | P-02 selector «Pagado desde mi cuenta» en alta (solo pagador = yo) |
-| F-8.2 ✅ | CTA «Vincular pago personal» en detalle (`link-personal-payment`) |
-| F-8.3 ✅ | P-07 `personalCashFlow` al registrar (mi lado) |
+| Entrega  | Resumen                                                             |
+| -------- | ------------------------------------------------------------------- |
+| F-8.1 ✅ | P-02 selector «Pagado desde mi cuenta» en alta (solo pagador = yo)  |
+| F-8.2 ✅ | CTA «Vincular pago personal» en detalle (`link-personal-payment`)   |
+| F-8.3 ✅ | P-07 `personalCashFlow` al registrar (mi lado)                      |
 | F-8.4 ✅ | Aviso acreedor + `link-personal-cash-flow` (Saldos y liquidaciones) |
-| F-8.5 ✅ | Aportaciones a cuenta común (`/accounts/:id/contribute`) |
-| F-8.6 ✅ | Badge `crossSpaceSummary` en listados y detalle tx PERSONAL |
-| F-8.7 ✅ | E2E opcional `phase8-personal-cash-flow.spec.ts` (P-02 + P-07) |
-| C-05 ✅ | Leave último ACTIVE: aviso + doble confirmación |
+| F-8.5 ✅ | Aportaciones a cuenta común (`/accounts/:id/contribute`)            |
+| F-8.6 ✅ | Badge `crossSpaceSummary` en listados y detalle tx PERSONAL         |
+| F-8.7 ✅ | E2E opcional `phase8-personal-cash-flow.spec.ts` (P-02 + P-07)      |
+| C-05 ✅  | Leave último ACTIVE: aviso + doble confirmación                     |
 
 ## F-9 — ✨ Presupuestos, informes, dashboard y perfil ✅ (B-9)
 
-| ID | Entrega | Estado |
-| --- | --- | --- |
-| F-9.1 | `/settings` — `PATCH /auth/me` | ✅ |
-| F-9.2 | `/spaces/:id/budgets` — CRUD presupuestos (alta + listado + borrar) | ✅ |
-| F-9.3 | `/spaces/:id/reports/consumption` — informe mensual | ✅ |
-| F-9.4 | `/dashboard` — panel (consumo personal + enlaces por espacio) | ✅ |
+| ID    | Entrega                                                             | Estado |
+| ----- | ------------------------------------------------------------------- | ------ |
+| F-9.1 | `/settings` — `PATCH /auth/me`                                      | ✅     |
+| F-9.2 | `/spaces/:id/budgets` — CRUD presupuestos (alta + listado + borrar) | ✅     |
+| F-9.3 | `/spaces/:id/reports/consumption` — informe mensual                 | ✅     |
+| F-9.4 | `/dashboard` — panel (consumo personal + enlaces por espacio)       | ✅     |
 
 **Fase 9 web:** ✅ MVP cerrada. Opcional: edición presupuestos (`PATCH`), comparativa presupuesto vs consumo, E2E fase 9.
 
 ## F-10 — Preparación para producción
 
-| Entrega | Contenido |
-| ------- | --------- |
+| Entrega   | Contenido                                                                                                                       |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | F-10.1 ✅ | Playwright en CI — spec `shared-expenses-balances-settlements.spec.ts` ([phase-10-slice-e2e-ci.md](./phase-10-slice-e2e-ci.md)) |
 
 ## F-4.1 — ✨ Transferencia de ownership (paralela) ✅ (B-4.1)

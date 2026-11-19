@@ -98,15 +98,15 @@ Disponible en `main` (Fase 5 API). Membresía **ACTIVE** en el espacio (mismo gu
 
 ### Transacciones
 
-| Recurso       | Método | Ruta                                                   | Notas                                                                                              |
-| ------------- | ------ | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| Saldo inicial | POST   | `/spaces/:spaceId/accounts/:accountId/opening-balance` | Una por cuenta                                                                                     |
-| Ingreso       | POST   | `/spaces/:spaceId/transactions/income`                 | `accountId` obligatorio (PERSONAL y SHARED)                                                        |
-| Gasto         | POST   | `/spaces/:spaceId/transactions/expense`                | PERSONAL: `accountId`; SHARED: `attributedToUserId`                                                |
-| Transferencia | POST   | `/spaces/:spaceId/transactions/transfer`               | Misma moneda; cuentas distintas                                                                    |
+| Recurso       | Método | Ruta                                                   | Notas                                                                                                                    |
+| ------------- | ------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Saldo inicial | POST   | `/spaces/:spaceId/accounts/:accountId/opening-balance` | Una por cuenta                                                                                                           |
+| Ingreso       | POST   | `/spaces/:spaceId/transactions/income`                 | `accountId` obligatorio (PERSONAL y SHARED)                                                                              |
+| Gasto         | POST   | `/spaces/:spaceId/transactions/expense`                | PERSONAL: `accountId`; SHARED: `attributedToUserId`                                                                      |
+| Transferencia | POST   | `/spaces/:spaceId/transactions/transfer`               | Misma moneda; cuentas distintas                                                                                          |
 | Listar txs    | GET    | `/spaces/:spaceId/transactions`                        | `accountId`, `type`, `limit` (≤100); en espacio **PERSONAL** del usuario, `crossSpaceSummary?` en txs vinculadas (B-8.8) |
-| Detalle tx    | GET    | `/spaces/:spaceId/transactions/:transactionId`         | Incluye `version`; mismo `crossSpaceSummary?` solo en PERSONAL                                     |
-| Editar tx     | PATCH  | `/spaces/:spaceId/transactions/:transactionId`         | `expectedVersion` + `description`, `occurredAt`, `amount`, `categoryId` (nullable); revisión en BD |
+| Detalle tx    | GET    | `/spaces/:spaceId/transactions/:transactionId`         | Incluye `version`; mismo `crossSpaceSummary?` solo en PERSONAL                                                           |
+| Editar tx     | PATCH  | `/spaces/:spaceId/transactions/:transactionId`         | `expectedVersion` + `description`, `occurredAt`, `amount`, `categoryId` (nullable); revisión en BD                       |
 
 **UI (slice 2 PERSONAL):** transferencia en detalle de cuenta; categorías ver arriba.
 
@@ -126,16 +126,16 @@ Códigos: `ATTRIBUTION_REQUIRED`, `ATTRIBUTION_NOT_ALLOWED`, `ATTRIBUTEE_NOT_ACT
 
 Membresía **ACTIVE** en espacio **SHARED** (`SHARED_SPACE_REQUIRED` en PERSONAL).
 
-| Recurso       | Método | Ruta                                             | Notas                                                                       |
-| ------------- | ------ | ------------------------------------------------ | --------------------------------------------------------------------------- |
-| Listar        | GET    | `/spaces/:spaceId/shared-expenses`               | Query: `from`, `to`, `participantUserId`, `includeVoided`, `limit`≤100      |
-| Previsualizar | POST   | `/spaces/:spaceId/shared-expenses/preview`       | **200**; mismo body que el alta; no persiste (`version: 0`, id placeholder) |
-| Crear         | POST   | `/spaces/:spaceId/shared-expenses`               | **201**; participantes, `generatedDebts`, `version`                         |
-| Detalle       | GET    | `/spaces/:spaceId/shared-expenses/:id`           | Incluye `generatedDebts`, `voidedAt`, `version`                             |
-| Editar        | PATCH  | `/spaces/:spaceId/shared-expenses/:id`           | Mismo body que el alta + `expectedVersion`; `payment.source` inmutable      |
-| Anular        | POST   | `/spaces/:spaceId/shared-expenses/:id/void`      | Body: `expectedVersion`, `reason?`; restaura saldo si `SPACE_ACCOUNT`       |
+| Recurso       | Método | Ruta                                                         | Notas                                                                             |
+| ------------- | ------ | ------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| Listar        | GET    | `/spaces/:spaceId/shared-expenses`                           | Query: `from`, `to`, `participantUserId`, `includeVoided`, `limit`≤100            |
+| Previsualizar | POST   | `/spaces/:spaceId/shared-expenses/preview`                   | **200**; mismo body que el alta; no persiste (`version: 0`, id placeholder)       |
+| Crear         | POST   | `/spaces/:spaceId/shared-expenses`                           | **201**; participantes, `generatedDebts`, `version`                               |
+| Detalle       | GET    | `/spaces/:spaceId/shared-expenses/:id`                       | Incluye `generatedDebts`, `voidedAt`, `version`                                   |
+| Editar        | PATCH  | `/spaces/:spaceId/shared-expenses/:id`                       | Mismo body que el alta + `expectedVersion`; `payment.source` inmutable            |
+| Anular        | POST   | `/spaces/:spaceId/shared-expenses/:id/void`                  | Body: `expectedVersion`, `reason?`; restaura saldo si `SPACE_ACCOUNT`             |
 | Vincular pago | POST   | `/spaces/:spaceId/shared-expenses/:id/link-personal-payment` | Body: `personalAccountId`, `expectedVersion`; solo pagador `MEMBER` (P-02, B-8.2) |
-| Revisiones    | GET    | `/spaces/:spaceId/shared-expenses/:id/revisions` | Instantáneas inmutables con `participants`                                  |
+| Revisiones    | GET    | `/spaces/:spaceId/shared-expenses/:id/revisions`             | Instantáneas inmutables con `participants`                                        |
 
 Body orientativo: `totalAmount`, `currency?`, `occurredAt?`, `categoryId?`, `payment` (`MEMBER` + `paidByUserId` + `personalAccountId?` solo si el actor es el pagador, o `SPACE_ACCOUNT` + `accountId`), `split` (`EQUAL` \| `PERCENTAGE` \| `FIXED_AMOUNT`). Importes de entrada hasta decimales de la moneda; respuesta con 4 decimales. En detalle/listado SHARED, si el usuario de sesión es el pagador `MEMBER`, puede incluir `myPersonalCashLink: { linked, canLink }` (sin exponer id de cuenta personal a otros).
 
@@ -147,13 +147,13 @@ Códigos: los de reparto/alta más `SHARED_EXPENSE_NOT_FOUND` (404), `SHARED_EXP
 
 Requiere migración `20261117160000_phase7_settlements_void` aplicada en el entorno. Membresía **ACTIVE**; espacio **SHARED**.
 
-| Recurso   | Método | Ruta                                    | Notas                                                               |
-| --------- | ------ | --------------------------------------- | ------------------------------------------------------------------- |
-| Saldos    | GET    | `/spaces/:spaceId/balances`             | Deudas netas por par y `net` por miembro, por moneda (P-08)         |
-| Listar    | GET    | `/spaces/:spaceId/settlements`          | Query: `userId`, `includeVoided`, `limit`≤100                       |
-| Registrar | POST   | `/spaces/:spaceId/settlements`          | Body: `fromUserId`, `toUserId`, `amount`, `currency`, `occurredAt?`, `personalCashFlow?` (`accountId`) solo si el actor es `from` o `to` (B-8.4) |
-| Vincular  | POST   | `/spaces/:spaceId/settlements/:id/link-personal-cash-flow` | `accountId`, `expectedVersion`; parte `from` o `to` (B-8.5) |
-| Anular    | POST   | `/spaces/:spaceId/settlements/:id/void` | `expectedVersion`, `reason?`; anula movimientos PERSONAL vinculados (B-8.6) |
+| Recurso   | Método | Ruta                                                       | Notas                                                                                                                                            |
+| --------- | ------ | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Saldos    | GET    | `/spaces/:spaceId/balances`                                | Deudas netas por par y `net` por miembro, por moneda (P-08)                                                                                      |
+| Listar    | GET    | `/spaces/:spaceId/settlements`                             | Query: `userId`, `includeVoided`, `limit`≤100                                                                                                    |
+| Registrar | POST   | `/spaces/:spaceId/settlements`                             | Body: `fromUserId`, `toUserId`, `amount`, `currency`, `occurredAt?`, `personalCashFlow?` (`accountId`) solo si el actor es `from` o `to` (B-8.4) |
+| Vincular  | POST   | `/spaces/:spaceId/settlements/:id/link-personal-cash-flow` | `accountId`, `expectedVersion`; parte `from` o `to` (B-8.5)                                                                                      |
+| Anular    | POST   | `/spaces/:spaceId/settlements/:id/void`                    | `expectedVersion`, `reason?`; anula movimientos PERSONAL vinculados (B-8.6)                                                                      |
 
 `POST` liquidación: permisos P-10 (`SETTLEMENT_FORBIDDEN` 403). `from`/`to` con historial en el espacio (P-19); `occurredAt` puede ser posterior a `leftAt`. **201** puede incluir `warnings: ["SETTLEMENT_EXCEEDS_PENDING_DEBT"]` (P-11; sin 400 por sobrepago). Si el usuario de sesión es `from` o `to`, respuesta puede incluir `myPersonalCashLink: { linked, canLink, side }` sin id de cuenta personal.
 
@@ -163,9 +163,9 @@ Códigos: `SHARED_SPACE_REQUIRED`, `SETTLEMENT_SAME_USER`, `SETTLEMENT_USER_NOT_
 
 Espacio **SHARED**; el actor aporta en su propio nombre.
 
-| Recurso | Método | Ruta | Notas |
-| ------- | ------ | ---- | ----- |
-| Aportar | POST | `/spaces/:spaceId/contributions` | Body: `sharedAccountId`, `amount`, `currency`, `occurredAt?`, `personalAccountId?`, `note?` |
+| Recurso | Método | Ruta                             | Notas                                                                                       |
+| ------- | ------ | -------------------------------- | ------------------------------------------------------------------------------------------- |
+| Aportar | POST   | `/spaces/:spaceId/contributions` | Body: `sharedAccountId`, `amount`, `currency`, `occurredAt?`, `personalAccountId?`, `note?` |
 
 Con `personalAccountId`: `INCOME` en cuenta SHARED con `attributedToUserId` = actor + `EXPENSE` en PERSONAL + `CONTRIBUTION_PAIR` (`contributionGroupId` en respuesta). Sin `personalAccountId`: solo `INCOME` en cuenta compartida (sin aportante en atributos). Respuesta sin id de cuenta personal ajena.
 
@@ -179,14 +179,14 @@ Códigos: `SHARED_SPACE_REQUIRED`, `CROSS_SPACE_CURRENCY_MISMATCH`, `PERSONAL_AC
 
 ### Endpoints nuevos (implementados)
 
-| Decisión | Método | Ruta |
-| -------- | ------ | ---- |
-| P-02 | POST | `/spaces/:spaceId/shared-expenses/:id/link-personal-payment` |
-| P-07 | POST | `/spaces/:spaceId/settlements` (ext. `personalCashFlow`) |
-| P-07 | POST | `/spaces/:spaceId/settlements/:id/link-personal-cash-flow` |
-| P-05/06 | POST | `/spaces/:spaceId/contributions` |
-| P-02 | — | `POST/PATCH shared-expenses` (`payment.personalAccountId?` en alta) |
-| B-8.8 | GET | `/spaces/:spaceId/transactions` (+ detalle) en **PERSONAL** con `crossSpaceSummary?` |
+| Decisión | Método | Ruta                                                                                 |
+| -------- | ------ | ------------------------------------------------------------------------------------ |
+| P-02     | POST   | `/spaces/:spaceId/shared-expenses/:id/link-personal-payment`                         |
+| P-07     | POST   | `/spaces/:spaceId/settlements` (ext. `personalCashFlow`)                             |
+| P-07     | POST   | `/spaces/:spaceId/settlements/:id/link-personal-cash-flow`                           |
+| P-05/06  | POST   | `/spaces/:spaceId/contributions`                                                     |
+| P-02     | —      | `POST/PATCH shared-expenses` (`payment.personalAccountId?` en alta)                  |
+| B-8.8    | GET    | `/spaces/:spaceId/transactions` (+ detalle) en **PERSONAL** con `crossSpaceSummary?` |
 
 **No implementado (MVP):** `GET …/settlements/link-hints` (B-8.9) — la web puede recordar la última cuenta usada en local.
 
@@ -197,25 +197,25 @@ Códigos: `SHARED_SPACE_REQUIRED`, `CROSS_SPACE_CURRENCY_MISMATCH`, `PERSONAL_AC
 
 ### Campos de respuesta (sesión)
 
-| Recurso | Campo | Forma |
-| ------- | ----- | ----- |
-| Shared expense | `myPersonalCashLink?` | `{ linked, canLink }` — solo si `payment` es `MEMBER` y el viewer es el pagador |
-| Settlement | `myPersonalCashLink?` | `{ linked, canLink, side: "from" \| "to" }` — solo si el viewer es parte del par |
-| Contribution (201) | — | `personalLegLinked`, `contributionGroupId?`, `sharedIncomeTransactionId`; sin wallet ajeno |
-| Transaction (GET, PERSONAL) | `crossSpaceSummary?` | Ver sección Aportaciones arriba |
+| Recurso                     | Campo                 | Forma                                                                                      |
+| --------------------------- | --------------------- | ------------------------------------------------------------------------------------------ |
+| Shared expense              | `myPersonalCashLink?` | `{ linked, canLink }` — solo si `payment` es `MEMBER` y el viewer es el pagador            |
+| Settlement                  | `myPersonalCashLink?` | `{ linked, canLink, side: "from" \| "to" }` — solo si el viewer es parte del par           |
+| Contribution (201)          | —                     | `personalLegLinked`, `contributionGroupId?`, `sharedIncomeTransactionId`; sin wallet ajeno |
+| Transaction (GET, PERSONAL) | `crossSpaceSummary?`  | Ver sección Aportaciones arriba                                                            |
 
 ### Códigos de error fase 8
 
-| code | HTTP | Uso |
-| ---- | ---- | --- |
-| `NOT_PAYER` | 403 | Vincular pago personal sin ser pagador |
-| `PERSONAL_LINK_NOT_ALLOWED` | 403 / 400 | Regla de negocio (rol, PATCH con `personalAccountId`, liquidación) |
-| `PERSONAL_LINK_ALREADY_EXISTS` | 409 | Segundo vínculo en el mismo lado |
-| `PERSONAL_ACCOUNT_NOT_OWNED` | 403 | Cuenta no pertenece al PERSONAL del actor (`ACCOUNT_NOT_FOUND` si id inválido) |
-| `CROSS_SPACE_CURRENCY_MISMATCH` | 400 | Moneda distinta de la cuenta destino |
-| `PERSONAL_LINK_NOT_FOUND` | 404 | Dominio interno (no expuesto en rutas nuevas) |
-| `PERSONAL_ACCOUNT_REQUIRED` | — | **Reservado** (plan); no emitido — `personalAccountId` es opcional en aportaciones |
-| `CONTRIBUTION_NOT_ALLOWED` | — | **Reservado** (plan); no emitido en B-8.7 |
+| code                            | HTTP      | Uso                                                                                |
+| ------------------------------- | --------- | ---------------------------------------------------------------------------------- |
+| `NOT_PAYER`                     | 403       | Vincular pago personal sin ser pagador                                             |
+| `PERSONAL_LINK_NOT_ALLOWED`     | 403 / 400 | Regla de negocio (rol, PATCH con `personalAccountId`, liquidación)                 |
+| `PERSONAL_LINK_ALREADY_EXISTS`  | 409       | Segundo vínculo en el mismo lado                                                   |
+| `PERSONAL_ACCOUNT_NOT_OWNED`    | 403       | Cuenta no pertenece al PERSONAL del actor (`ACCOUNT_NOT_FOUND` si id inválido)     |
+| `CROSS_SPACE_CURRENCY_MISMATCH` | 400       | Moneda distinta de la cuenta destino                                               |
+| `PERSONAL_LINK_NOT_FOUND`       | 404       | Dominio interno (no expuesto en rutas nuevas)                                      |
+| `PERSONAL_ACCOUNT_REQUIRED`     | —         | **Reservado** (plan); no emitido — `personalAccountId` es opcional en aportaciones |
+| `CONTRIBUTION_NOT_ALLOWED`      | —         | **Reservado** (plan); no emitido en B-8.7                                          |
 
 Los códigos de concurrencia y espacio (`VERSION_CONFLICT`, `SHARED_SPACE_REQUIRED`, etc.) se reutilizan de fases anteriores.
 
@@ -223,13 +223,13 @@ Los códigos de concurrencia y espacio (`VERSION_CONFLICT`, `SHARED_SPACE_REQUIR
 
 Membresía **ACTIVE** en el espacio. Informes mensuales usan el `timezone` IANA del usuario autenticado (B-10). Consumo según **P-17** (participaciones + gastos individuales atribuidos; excluye vínculos cross-space personales, aportaciones y liquidaciones).
 
-| Recurso            | Método | Ruta                                      | Notas |
-| ------------------ | ------ | ----------------------------------------- | ----- |
-| Listar presupuestos | GET    | `/spaces/:spaceId/budgets`                | Query opcional `periodFrom`, `periodTo` (YYYY-MM-DD, solape) |
-| Crear presupuesto  | POST   | `/spaces/:spaceId/budgets`                | `name`, `amount`, `currency`, `periodStart`, `periodEnd`, `categoryId?` |
-| Actualizar         | PATCH  | `/spaces/:spaceId/budgets/:budgetId`      | Parcial; `categoryId: null` quita categoría |
-| Eliminar           | DELETE | `/spaces/:spaceId/budgets/:budgetId`      | **204** |
-| Informe consumo    | GET    | `/spaces/:spaceId/reports/consumption`    | Query `year`, `month` (1–12); respuesta `totalsByCurrency`, `byCategory` |
+| Recurso             | Método | Ruta                                   | Notas                                                                    |
+| ------------------- | ------ | -------------------------------------- | ------------------------------------------------------------------------ |
+| Listar presupuestos | GET    | `/spaces/:spaceId/budgets`             | Query opcional `periodFrom`, `periodTo` (YYYY-MM-DD, solape)             |
+| Crear presupuesto   | POST   | `/spaces/:spaceId/budgets`             | `name`, `amount`, `currency`, `periodStart`, `periodEnd`, `categoryId?`  |
+| Actualizar          | PATCH  | `/spaces/:spaceId/budgets/:budgetId`   | Parcial; `categoryId: null` quita categoría                              |
+| Eliminar            | DELETE | `/spaces/:spaceId/budgets/:budgetId`   | **204**                                                                  |
+| Informe consumo     | GET    | `/spaces/:spaceId/reports/consumption` | Query `year`, `month` (1–12); respuesta `totalsByCurrency`, `byCategory` |
 
 ### Códigos de error (fase 9)
 
@@ -239,7 +239,7 @@ Membresía **ACTIVE** en el espacio. Informes mensuales usan el `timezone` IANA 
 
 ## No implementado todavía
 
-| Área                              | Fase | Contrato previsto                    |
-| --------------------------------- | ---- | ------------------------------------ |
-| Dashboard agregado multi-espacio  | 9    | Pendiente acuerdo MVP                |
-| Comparativa presupuesto vs consumo en un solo GET | 9+ | Opcional UI |
+| Área                                              | Fase | Contrato previsto     |
+| ------------------------------------------------- | ---- | --------------------- |
+| Dashboard agregado multi-espacio                  | 9    | Pendiente acuerdo MVP |
+| Comparativa presupuesto vs consumo en un solo GET | 9+   | Opcional UI           |

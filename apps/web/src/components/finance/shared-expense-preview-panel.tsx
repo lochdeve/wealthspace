@@ -26,10 +26,16 @@ export function SharedExpensePreviewPanel({
   members,
 }: SharedExpensePreviewPanelProps) {
   return (
-    <section className={styles.metaBox} aria-live="polite" aria-busy={active && loading ? true : undefined}>
+    <section
+      className={styles.metaBox}
+      aria-live="polite"
+      aria-busy={active && loading ? true : undefined}
+    >
       <h3 className={styles.sectionTitle}>Previsualización del reparto</h3>
       {!active ? (
-        <p className={styles.meta}>Completa importe y participantes para ver la previsualización.</p>
+        <p className={styles.meta}>
+          Completa importe y participantes para ver la previsualización.
+        </p>
       ) : null}
       {active && loading ? <p className={styles.meta}>Calculando…</p> : null}
       {active && error ? (
@@ -68,7 +74,9 @@ export function SharedExpensePreviewPanel({
           )}
         </>
       ) : active && !loading && !error ? (
-        <p className={styles.meta}>Ajusta el reparto si hace falta; los importes los calcula el servidor.</p>
+        <p className={styles.meta}>
+          Ajusta el reparto si hace falta; los importes los calcula el servidor.
+        </p>
       ) : null}
     </section>
   );

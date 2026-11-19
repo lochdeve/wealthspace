@@ -15,7 +15,10 @@ export function setupSwagger(app: INestApplication): void {
     .setVersion('1.0')
     .addServer('/api/v1', 'API v1')
     .addTag('contributions', 'SHARED account contributions (P-05/P-06)')
-    .addTag('shared-expenses', 'Shared expenses and personal payment links (P-02)')
+    .addTag(
+      'shared-expenses',
+      'Shared expenses and personal payment links (P-02)',
+    )
     .addTag('settlements', 'Settlements and personal cash-flow links (P-07)')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);

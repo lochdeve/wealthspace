@@ -27,12 +27,7 @@ describe('member-balance-warning', () => {
   });
 
   it('appends informative notice for leave', () => {
-    const message = appendNonZeroNetBalanceNotice(
-      '¿Salir?',
-      balances('-40'),
-      userId,
-      'second',
-    );
+    const message = appendNonZeroNetBalanceNotice('¿Salir?', balances('-40'), userId, 'second');
     expect(message).toContain('¿Salir?');
     expect(message).toContain('Tienes saldo pendiente');
     expect(message).toContain('EUR:');

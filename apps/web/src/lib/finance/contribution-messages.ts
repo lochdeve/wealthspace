@@ -11,5 +11,9 @@ const CONTRIBUTION_ERROR_MESSAGES: Record<string, string> = {
 };
 
 export function contributionActionErrorMessage(error: unknown): string {
-  return userErrorMessage(error, CONTRIBUTION_ERROR_MESSAGES, 'No se pudo registrar la aportación.');
+  return userErrorMessage(
+    error,
+    CONTRIBUTION_ERROR_MESSAGES,
+    'No se pudo registrar la aportación.',
+  );
 }

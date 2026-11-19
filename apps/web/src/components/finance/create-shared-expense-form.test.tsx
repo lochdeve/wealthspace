@@ -1,6 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { Account } from '@/lib/api/finance-types';
-import { createSharedExpense, previewSharedExpense, updateSharedExpense } from '@/lib/api/shared-expenses';
+import {
+  createSharedExpense,
+  previewSharedExpense,
+  updateSharedExpense,
+} from '@/lib/api/shared-expenses';
 import type { SharedExpenseDetail } from '@/lib/api/shared-expense-types';
 import { CreateSharedExpenseForm } from './create-shared-expense-form';
 
@@ -112,10 +116,7 @@ describe('CreateSharedExpenseForm', () => {
     renderForm();
     fireEvent.change(screen.getByLabelText('Importe total'), { target: { value: '90' } });
 
-    await waitFor(
-      () => expect(previewMock).toHaveBeenCalled(),
-      { timeout: 1_500 },
-    );
+    await waitFor(() => expect(previewMock).toHaveBeenCalled(), { timeout: 1_500 });
     expect(previewMock.mock.calls.at(-1)?.[1].split).toEqual({
       mode: 'EQUAL',
       participantUserIds: ['ana', 'carlos'],
@@ -127,7 +128,9 @@ describe('CreateSharedExpenseForm', () => {
       ReturnType<typeof createSharedExpense>
     >);
     renderForm();
-    fireEvent.change(screen.getByLabelText('Método de reparto'), { target: { value: 'PERCENTAGE' } });
+    fireEvent.change(screen.getByLabelText('Método de reparto'), {
+      target: { value: 'PERCENTAGE' },
+    });
     fireEvent.change(screen.getByLabelText('Importe total'), { target: { value: '100' } });
     fireEvent.click(screen.getByRole('button', { name: 'Registrar gasto compartido' }));
 
@@ -142,7 +145,9 @@ describe('CreateSharedExpenseForm', () => {
   });
 
   it('updates an existing expense when edit props are provided', async () => {
-    updateMock.mockResolvedValueOnce({ id: 'exp-edit' } as Awaited<ReturnType<typeof updateSharedExpense>>);
+    updateMock.mockResolvedValueOnce({ id: 'exp-edit' } as Awaited<
+      ReturnType<typeof updateSharedExpense>
+    >);
     const expense = {
       id: 'exp-edit',
       description: 'Cena',

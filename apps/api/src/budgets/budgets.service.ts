@@ -44,7 +44,10 @@ export class BudgetsService {
     return budgets.map((row) => this.toDto(row));
   }
 
-  async createInSpace(spaceId: string, dto: CreateBudgetDto): Promise<BudgetDto> {
+  async createInSpace(
+    spaceId: string,
+    dto: CreateBudgetDto,
+  ): Promise<BudgetDto> {
     const periodStart = parseDateOnly(dto.periodStart);
     const periodEnd = parseDateOnly(dto.periodEnd);
     this.assertValidPeriod(periodStart, periodEnd);
@@ -121,9 +124,7 @@ export class BudgetsService {
         ...(dto.currency !== undefined ? { currency: dto.currency } : {}),
         periodStart,
         periodEnd,
-        ...(dto.categoryId !== undefined
-          ? { categoryId: dto.categoryId }
-          : {}),
+        ...(dto.categoryId !== undefined ? { categoryId: dto.categoryId } : {}),
       },
     });
     return this.toDto(budget);

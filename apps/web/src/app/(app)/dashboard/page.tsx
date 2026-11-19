@@ -3,10 +3,7 @@ import { ConsumptionReportSummary } from '@/components/reports/consumption-repor
 import { listCategoriesWithCookie } from '@/lib/api/categories';
 import { getConsumptionReportWithCookie } from '@/lib/api/reports';
 import { listSpacesWithCookie } from '@/lib/api/spaces';
-import {
-  consumptionReportHref,
-  spaceBudgetsHref,
-} from '@/lib/finance/routes';
+import { consumptionReportHref, spaceBudgetsHref } from '@/lib/finance/routes';
 import { spaceTypeLabel } from '@/lib/spaces/labels';
 import { currentYearMonthInTimezone } from '@/lib/reports/report-month';
 import { getSessionCookieHeader, requireUser } from '@/lib/auth/session.server';

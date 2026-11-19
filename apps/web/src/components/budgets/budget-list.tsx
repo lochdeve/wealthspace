@@ -63,8 +63,8 @@ export function BudgetList({ spaceId, budgets, categories }: BudgetListProps) {
             <li key={budget.id} className={styles.spaceCard}>
               <h3 className={styles.sectionHeading}>{budget.name}</h3>
               <p>
-                {formatMoneyAmount(budget.amount, budget.currency)} ·{' '}
-                {budget.periodStart} — {budget.periodEnd}
+                {formatMoneyAmount(budget.amount, budget.currency)} · {budget.periodStart} —{' '}
+                {budget.periodEnd}
               </p>
               {cat ? <p className={styles.lead}>Categoría: {cat}</p> : null}
               <Button

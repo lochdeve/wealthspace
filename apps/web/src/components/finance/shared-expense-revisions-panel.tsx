@@ -13,8 +13,7 @@ function memberName(members: SpaceMember[], userId: string): string {
 }
 
 function revisionTotalLine(snapshot: Record<string, unknown>): string | null {
-  const total =
-    typeof snapshot.totalAmount === 'string' ? snapshot.totalAmount : null;
+  const total = typeof snapshot.totalAmount === 'string' ? snapshot.totalAmount : null;
   const currency = typeof snapshot.currency === 'string' ? snapshot.currency : '';
   if (!total) {
     return null;

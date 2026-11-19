@@ -23,7 +23,10 @@ describe('OpenAPI (phase 8 catalog)', () => {
   });
 
   it('includes phase 8 HTTP paths and schemas', () => {
-    const config = new DocumentBuilder().setTitle('Wealthspace API').setVersion('1').build();
+    const config = new DocumentBuilder()
+      .setTitle('Wealthspace API')
+      .setVersion('1')
+      .build();
     const document = SwaggerModule.createDocument(app, config);
     const paths = Object.keys(document.paths);
 

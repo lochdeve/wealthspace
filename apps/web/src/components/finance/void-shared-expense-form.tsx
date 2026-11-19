@@ -44,7 +44,10 @@ export function VoidSharedExpenseForm({
       router.refresh();
     } catch (error) {
       const message = sharedExpenseActionErrorMessage(error);
-      if (error instanceof ApiError && (error.code === 'VERSION_CONFLICT' || error.code === 'ALREADY_VOIDED')) {
+      if (
+        error instanceof ApiError &&
+        (error.code === 'VERSION_CONFLICT' || error.code === 'ALREADY_VOIDED')
+      ) {
         router.refresh();
       }
       setFormError(message);
@@ -58,7 +61,9 @@ export function VoidSharedExpenseForm({
       <h2 id="void-shared-expense-title" className={styles.sectionTitle}>
         Anular gasto
       </h2>
-      <p className={styles.meta}>La anulación es definitiva: no borra el registro, pero revierte sus efectos.</p>
+      <p className={styles.meta}>
+        La anulación es definitiva: no borra el registro, pero revierte sus efectos.
+      </p>
       {formError ? (
         <p className={ui.alert} role="alert">
           {formError}
@@ -73,7 +78,12 @@ export function VoidSharedExpenseForm({
             disabled={pending}
           />
         </Field>
-        <Button type="button" variant="secondary" disabled={pending} onClick={() => void handleVoid()}>
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={pending}
+          onClick={() => void handleVoid()}
+        >
           {pending ? 'Anulando…' : 'Anular gasto compartido'}
         </Button>
       </div>

@@ -16,6 +16,8 @@ describe('sharedExpenseParticipantError', () => {
   });
 
   it('rejects when only the payer is selected', () => {
-    expect(sharedExpenseParticipantError('MEMBER', 'ana', ['ana'], 2)).toMatch(/distinta del pagador/i);
+    expect(sharedExpenseParticipantError('MEMBER', 'ana', ['ana'], 2)).toMatch(
+      /distinta del pagador/i,
+    );
   });
 });

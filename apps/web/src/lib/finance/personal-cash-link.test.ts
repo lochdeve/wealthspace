@@ -24,10 +24,7 @@ function account(id: string, currency: string, archived = false): Account {
 
 describe('personal-cash-link', () => {
   it('filters personal accounts by currency', () => {
-    const rows = activeAccountsMatchingCurrency(
-      [account('a', 'EUR'), account('b', 'USD')],
-      'EUR',
-    );
+    const rows = activeAccountsMatchingCurrency([account('a', 'EUR'), account('b', 'USD')], 'EUR');
     expect(rows).toHaveLength(1);
     expect(rows[0]?.id).toBe('a');
   });

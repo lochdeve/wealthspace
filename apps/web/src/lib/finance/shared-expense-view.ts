@@ -1,4 +1,8 @@
-import type { GeneratedDebt, SharedExpenseParticipant, SplitMode } from '@/lib/api/shared-expense-types';
+import type {
+  GeneratedDebt,
+  SharedExpenseParticipant,
+  SplitMode,
+} from '@/lib/api/shared-expense-types';
 import { formatMoneyAmount } from '@/lib/finance/format-money';
 
 const SPLIT_MODE_LABELS: Record<SplitMode, string> = {
@@ -28,9 +32,13 @@ export function viewerDebtLines(
   const lines: string[] = [];
   for (const debt of debts) {
     if (debt.fromUserId === viewerUserId) {
-      lines.push(`Debes ${formatMoneyAmount(debt.amount, currency)} a ${displayName(debt.toUserId)}`);
+      lines.push(
+        `Debes ${formatMoneyAmount(debt.amount, currency)} a ${displayName(debt.toUserId)}`,
+      );
     } else if (debt.toUserId === viewerUserId) {
-      lines.push(`${displayName(debt.fromUserId)} te debe ${formatMoneyAmount(debt.amount, currency)}`);
+      lines.push(
+        `${displayName(debt.fromUserId)} te debe ${formatMoneyAmount(debt.amount, currency)}`,
+      );
     }
   }
   return lines;

@@ -6,17 +6,17 @@
 
 ## Objetivo del slice
 
-Correr **Playwright E2E** en el job de CI `quality` (o job hermano `e2e`) contra API + web en el mismo workflow, sin sustituir `database-integrity`.
+Correr **Playwright E2E** en el job de CI `quality` (o job hermano `e2e`) contra API + web en el mismo workflow, sin sustituir `database-integrity`. Job `e2e` usa **`ubuntu-24.04`** hasta subir `@playwright/test` ≥ 1.61 (soporte `ubuntu-latest` 26.04).
 
 ## Alcance MVP del slice
 
-| Incluido | Excluido (fases posteriores dentro de 10) |
-| -------- | ----------------------------------------- |
-| Servicio Postgres en CI (reutilizar imagen/versión de `database-integrity` o compartir service) | E2E contra despliegue real |
-| `migrate deploy` migraciones 6–8 en BD E2E desechable | Rate limiting, WAF, backups |
-| Seed HTTP mínimo existente (`apps/web/e2e/helpers/api.ts`) | Todos los specs a la vez en v1 |
-| **Un** spec obligatorio en CI: `shared-expenses-balances-settlements.spec.ts` | `phase8-personal-cash-flow.spec.ts` hasta estabilizar datos cross-space |
-| Documentar variables `PLAYWRIGHT_*` / `API_URL` / `WEB_URL` en README o `current-status` | Parallel shards, vídeos en artifact obligatorios |
+| Incluido                                                                                        | Excluido (fases posteriores dentro de 10)                               |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Servicio Postgres en CI (reutilizar imagen/versión de `database-integrity` o compartir service) | E2E contra despliegue real                                              |
+| `migrate deploy` migraciones 6–8 en BD E2E desechable                                           | Rate limiting, WAF, backups                                             |
+| Seed HTTP mínimo existente (`apps/web/e2e/helpers/api.ts`)                                      | Todos los specs a la vez en v1                                          |
+| **Un** spec obligatorio en CI: `shared-expenses-balances-settlements.spec.ts`                   | `phase8-personal-cash-flow.spec.ts` hasta estabilizar datos cross-space |
+| Documentar variables `PLAYWRIGHT_*` / `API_URL` / `WEB_URL` en README o `current-status`        | Parallel shards, vídeos en artifact obligatorios                        |
 
 ## Criterios de terminado del slice
 

@@ -63,9 +63,9 @@ test.describe('Phase 8: P-02 and P-07 personal cash links', () => {
 
     await loginThroughUi(page, ctx.member.email, ctx.member.password);
     await page.goto(`/spaces/${ctx.spaceId}/balances`);
-    const memberOwesOwner = page
-      .getByRole('listitem')
-      .filter({ hasText: new RegExp(`${ctx.member.displayName} debe .* a ${ctx.owner.displayName}`) });
+    const memberOwesOwner = page.getByRole('listitem').filter({
+      hasText: new RegExp(`${ctx.member.displayName} debe .* a ${ctx.owner.displayName}`),
+    });
     await expect(memberOwesOwner).toBeVisible({ timeout: 15_000 });
     await memberOwesOwner.getByRole('link', { name: 'Registrar pago' }).click();
     await expect(page).toHaveURL(

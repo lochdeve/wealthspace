@@ -34,8 +34,11 @@ export function SharedExpenseDetailPanel({
 }: SharedExpenseDetailPanelProps) {
   const voided = Boolean(expense.voidedAt);
   const yourShare = findParticipantShare(viewerUserId, expense.participants);
-  const viewerDebts = viewerDebtLines(viewerUserId, expense.currency, expense.generatedDebts, (id) =>
-    memberName(members, id),
+  const viewerDebts = viewerDebtLines(
+    viewerUserId,
+    expense.currency,
+    expense.generatedDebts,
+    (id) => memberName(members, id),
   );
 
   const paymentLabel =
@@ -53,8 +56,8 @@ export function SharedExpenseDetailPanel({
       {voided ? (
         <p className={ui.alert} role="status">
           <strong>Anulado</strong>
-          {expense.voidedAt ? ` el ${new Date(expense.voidedAt).toLocaleString('es')}` : ''}. Las deudas
-          que generó ya no cuentan.
+          {expense.voidedAt ? ` el ${new Date(expense.voidedAt).toLocaleString('es')}` : ''}. Las
+          deudas que generó ya no cuentan.
         </p>
       ) : null}
       <h2 id="shared-expense-detail-title" className={styles.sectionTitle}>
@@ -125,14 +128,13 @@ export function SharedExpenseDetailPanel({
       {expense.generatedDebts.length > 0 ? (
         <div className={styles.metaBox}>
           <p className={styles.legend}>Deudas generadas por este gasto</p>
-          {voided ? (
-            <p className={styles.meta}>Solo informativo: el gasto está anulado.</p>
-          ) : null}
+          {voided ? <p className={styles.meta}>Solo informativo: el gasto está anulado.</p> : null}
           <ul className={styles.list}>
             {expense.generatedDebts.map((debt, index) => (
               <li key={`${debt.fromUserId}-${debt.toUserId}-${index}`} className={styles.meta}>
                 {memberName(members, debt.fromUserId)} debe{' '}
-                {formatMoneyAmount(debt.amount, expense.currency)} a {memberName(members, debt.toUserId)}
+                {formatMoneyAmount(debt.amount, expense.currency)} a{' '}
+                {memberName(members, debt.toUserId)}
               </li>
             ))}
           </ul>

@@ -87,20 +87,9 @@ export function localMonthUtcBounds(
     });
   }
 
-  const startUtc = zonedLocalInstantToUtc(
-    year,
-    month,
-    1,
-    0,
-    0,
-    0,
-    0,
-    timeZone,
-  );
+  const startUtc = zonedLocalInstantToUtc(year, month, 1, 0, 0, 0, 0, timeZone);
   const next =
-    month === 12
-      ? { year: year + 1, month: 1 }
-      : { year, month: month + 1 };
+    month === 12 ? { year: year + 1, month: 1 } : { year, month: month + 1 };
   const endUtcExclusive = zonedLocalInstantToUtc(
     next.year,
     next.month,

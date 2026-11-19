@@ -220,7 +220,10 @@ describe('Phase 9 budgets and consumption reports (integration)', () => {
 
     const owner = await registerAndLogin('xspace-owner');
     const member = await registerAndLogin('xspace-member');
-    const walletId = await createAccount(owner.cookies, owner.profile.personalSpaceId);
+    const walletId = await createAccount(
+      owner.cookies,
+      owner.profile.personalSpaceId,
+    );
 
     await request(app.getHttpServer())
       .post(
@@ -231,7 +234,9 @@ describe('Phase 9 budgets and consumption reports (integration)', () => {
       .expect(201);
 
     await request(app.getHttpServer())
-      .post(`/api/v1/spaces/${owner.profile.personalSpaceId}/transactions/expense`)
+      .post(
+        `/api/v1/spaces/${owner.profile.personalSpaceId}/transactions/expense`,
+      )
       .set('Cookie', owner.cookies)
       .send({
         accountId: walletId,
@@ -253,7 +258,9 @@ describe('Phase 9 budgets and consumption reports (integration)', () => {
       .send({ email: member.email })
       .expect(201);
     await request(app.getHttpServer())
-      .post(`/api/v1/invitations/${(inviteRes.body as { id: string }).id}/accept`)
+      .post(
+        `/api/v1/invitations/${(inviteRes.body as { id: string }).id}/accept`,
+      )
       .set('Cookie', member.cookies)
       .expect(204);
 

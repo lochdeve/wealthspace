@@ -4,9 +4,7 @@ import type { PaymentSource } from '@/lib/api/shared-expense-types';
 
 export function activeAccountsMatchingCurrency(accounts: Account[], currency: string): Account[] {
   const code = currency.trim().toUpperCase();
-  return accounts.filter(
-    (row) => !row.archivedAt && row.currency.trim().toUpperCase() === code,
-  );
+  return accounts.filter((row) => !row.archivedAt && row.currency.trim().toUpperCase() === code);
 }
 
 /** P-02: optional personal account only when the actor is the member payer on create. */
@@ -54,18 +52,13 @@ export function canRegisterSettlementPersonalCashFlow(
   return settlementActorSide(fromUserId, toUserId, currentUserId) !== null;
 }
 
-export function settlementPersonalCashFlowHint(
-  side: 'from' | 'to',
-): string {
+export function settlementPersonalCashFlowHint(side: 'from' | 'to'): string {
   return side === 'from'
     ? 'Salida en tu cuenta personal por este importe.'
     : 'Entrada en tu cuenta personal por este importe.';
 }
 
-export function settlementNeedsPersonalCashLink(
-  row: Settlement,
-  viewerUserId: string,
-): boolean {
+export function settlementNeedsPersonalCashLink(row: Settlement, viewerUserId: string): boolean {
   if (row.voidedAt) {
     return false;
   }

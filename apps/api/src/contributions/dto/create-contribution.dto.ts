@@ -12,7 +12,10 @@ import {
 const MONEY_INPUT = /^\d+(\.\d{1,4})?$/;
 
 export class CreateContributionDto {
-  @ApiProperty({ format: 'uuid', description: 'SHARED space account receiving funds' })
+  @ApiProperty({
+    format: 'uuid',
+    description: 'SHARED space account receiving funds',
+  })
   @IsUUID()
   sharedAccountId!: string;
 

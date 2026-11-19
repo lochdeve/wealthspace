@@ -448,8 +448,7 @@ export class SettlementsService {
   ): Promise<Map<string, MyPersonalCashLinkSettlementDto>> {
     const result = new Map<string, MyPersonalCashLinkSettlementDto>();
     const relevant = rows.filter(
-      (row) =>
-        viewerUserId === row.fromUserId || viewerUserId === row.toUserId,
+      (row) => viewerUserId === row.fromUserId || viewerUserId === row.toUserId,
     );
     if (relevant.length === 0) {
       return result;

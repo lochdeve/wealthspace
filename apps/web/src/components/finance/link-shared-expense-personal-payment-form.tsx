@@ -65,8 +65,8 @@ export function LinkSharedExpensePersonalPaymentForm({
           Vincular pago personal
         </h2>
         <p className={styles.meta} role="status">
-          No tienes cuentas personales activas en {expense.currency}. Crea una en tu espacio personal o
-          elige otra moneda al vincular más adelante.
+          No tienes cuentas personales activas en {expense.currency}. Crea una en tu espacio
+          personal o elige otra moneda al vincular más adelante.
         </p>
       </section>
     );
@@ -78,8 +78,8 @@ export function LinkSharedExpensePersonalPaymentForm({
         Vincular pago personal
       </h2>
       <p className={styles.meta}>
-        Registra la salida del importe total ({expense.currency}) en tu cuenta personal. Puedes hacerlo
-        ahora o más tarde desde aquí.
+        Registra la salida del importe total ({expense.currency}) en tu cuenta personal. Puedes
+        hacerlo ahora o más tarde desde aquí.
       </p>
       {formError ? (
         <p className={ui.alert} role="alert">

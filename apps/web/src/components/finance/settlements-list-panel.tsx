@@ -66,7 +66,10 @@ export function SettlementsListPanel({
       router.refresh();
     } catch (error) {
       const message = settlementActionErrorMessage(error);
-      if (error instanceof ApiError && (error.code === 'VERSION_CONFLICT' || error.code === 'ALREADY_VOIDED')) {
+      if (
+        error instanceof ApiError &&
+        (error.code === 'VERSION_CONFLICT' || error.code === 'ALREADY_VOIDED')
+      ) {
         router.refresh();
       }
       setPanelError(message);
@@ -154,9 +157,7 @@ export function SettlementsListPanel({
                     settlement={row}
                     personalAccounts={personalAccounts}
                     currentUserId={viewerUserId}
-                    counterpartyName={
-                      viewerUserId === row.toUserId ? fromName : toName
-                    }
+                    counterpartyName={viewerUserId === row.toUserId ? fromName : toName}
                   />
                 ) : null}
                 {canVoid ? (

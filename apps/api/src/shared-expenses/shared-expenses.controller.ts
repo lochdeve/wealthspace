@@ -134,9 +134,12 @@ export class SharedExpensesController {
     summary: 'Link member payment to a personal account (payer only)',
   })
   @ApiOkResponse({ type: SharedExpenseDetailDto })
-  @ApiForbiddenResponse({ description: 'NOT_PAYER or PERSONAL_LINK_NOT_ALLOWED' })
+  @ApiForbiddenResponse({
+    description: 'NOT_PAYER or PERSONAL_LINK_NOT_ALLOWED',
+  })
   @ApiConflictResponse({
-    description: 'VERSION_CONFLICT, ALREADY_VOIDED, or PERSONAL_LINK_ALREADY_EXISTS',
+    description:
+      'VERSION_CONFLICT, ALREADY_VOIDED, or PERSONAL_LINK_ALREADY_EXISTS',
   })
   async linkPersonalPayment(
     @CurrentUser() user: RequestUser,

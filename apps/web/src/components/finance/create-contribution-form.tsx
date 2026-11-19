@@ -97,8 +97,8 @@ export function CreateContributionForm({
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       <p className={styles.meta}>
-        Ingreso en la cuenta común «{sharedAccount.name}» ({sharedAccount.currency}). No genera deudas
-        entre miembros.
+        Ingreso en la cuenta común «{sharedAccount.name}» ({sharedAccount.currency}). No genera
+        deudas entre miembros.
       </p>
       {formError ? (
         <p className={ui.alert} role="alert">

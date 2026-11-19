@@ -40,21 +40,27 @@ export default async function AccountDetailPage({ params }: PageProps) {
     rethrowUnlessSpaceFound(error);
   }
 
-  const [transactions, openingBalanceRows, allAccounts, incomeCategories, expenseCategories, members] =
-    await Promise.all([
-      listTransactionsWithCookie(spaceId, cookieHeader, { accountId, limit: 30 }),
-      listTransactionsWithCookie(spaceId, cookieHeader, {
-        accountId,
-        type: 'OPENING_BALANCE',
-        limit: 1,
-      }),
-      listAccountsWithCookie(spaceId, cookieHeader),
-      listCategoriesWithCookie(spaceId, cookieHeader, 'INCOME'),
-      listCategoriesWithCookie(spaceId, cookieHeader, 'EXPENSE'),
-      space.type === 'SHARED'
-        ? listSpaceMembersWithCookie(spaceId, cookieHeader)
-        : Promise.resolve([]),
-    ]);
+  const [
+    transactions,
+    openingBalanceRows,
+    allAccounts,
+    incomeCategories,
+    expenseCategories,
+    members,
+  ] = await Promise.all([
+    listTransactionsWithCookie(spaceId, cookieHeader, { accountId, limit: 30 }),
+    listTransactionsWithCookie(spaceId, cookieHeader, {
+      accountId,
+      type: 'OPENING_BALANCE',
+      limit: 1,
+    }),
+    listAccountsWithCookie(spaceId, cookieHeader),
+    listCategoriesWithCookie(spaceId, cookieHeader, 'INCOME'),
+    listCategoriesWithCookie(spaceId, cookieHeader, 'EXPENSE'),
+    space.type === 'SHARED'
+      ? listSpaceMembersWithCookie(spaceId, cookieHeader)
+      : Promise.resolve([]),
+  ]);
   const hasOpeningBalance = openingBalanceRows.length > 0;
   const transferTargets = allAccounts.filter(
     (row) => row.id !== accountId && !row.archivedAt && row.currency === account.currency,

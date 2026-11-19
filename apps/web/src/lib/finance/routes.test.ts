@@ -90,8 +90,6 @@ describe('registerSettlementHref', () => {
         amount: '25.0000',
         currency: 'EUR',
       }),
-    ).toBe(
-      '/spaces/space-1/settlements/new?fromUserId=a&toUserId=b&amount=25.0000&currency=EUR',
-    );
+    ).toBe('/spaces/space-1/settlements/new?fromUserId=a&toUserId=b&amount=25.0000&currency=EUR');
   });
 });

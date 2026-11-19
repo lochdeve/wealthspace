@@ -226,7 +226,10 @@ describe('Phase 8 — SHARED privacy (no personal leakage)', () => {
       .expect(200);
 
     assertJsonExcludesIds(JSON.stringify(mariaExpenseList.body), sensitiveIds);
-    assertJsonExcludesIds(JSON.stringify(mariaExpenseDetail.body), sensitiveIds);
+    assertJsonExcludesIds(
+      JSON.stringify(mariaExpenseDetail.body),
+      sensitiveIds,
+    );
     assertJsonExcludesIds(JSON.stringify(mariaSettlements.body), sensitiveIds);
     assertJsonExcludesIds(JSON.stringify(mariaBalances.body), sensitiveIds);
 

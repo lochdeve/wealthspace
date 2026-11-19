@@ -65,26 +65,26 @@ export function SpaceTransactionsPanel({
           {transactions.map((tx) => {
             const context = transactionContextLine(tx, accountName, memberName);
             return (
-            <li key={tx.id} className={styles.listItem}>
-              <div className={styles.listItemHeader}>
-                <strong>{transactionTypeLabel(tx.type)}</strong>
-                <span>{formatMoneyAmount(tx.amount, tx.currency)}</span>
-              </div>
-              {tx.description ? <p className={styles.meta}>{tx.description}</p> : null}
-              {context ? <p className={styles.meta}>{context}</p> : null}
-              {tx.crossSpaceSummary ? (
-                <CrossSpaceSummaryBadge summary={tx.crossSpaceSummary} />
-              ) : null}
-              <p className={styles.meta}>
-                Fecha: {new Date(tx.occurredAt).toLocaleString('es')}
-                {tx.createdAt !== tx.occurredAt
-                  ? ` · Registro: ${new Date(tx.createdAt).toLocaleString('es')}`
-                  : ''}
-              </p>
-              <p>
-                <Link href={`/spaces/${spaceId}/transactions/${tx.id}`}>Ver / editar</Link>
-              </p>
-            </li>
+              <li key={tx.id} className={styles.listItem}>
+                <div className={styles.listItemHeader}>
+                  <strong>{transactionTypeLabel(tx.type)}</strong>
+                  <span>{formatMoneyAmount(tx.amount, tx.currency)}</span>
+                </div>
+                {tx.description ? <p className={styles.meta}>{tx.description}</p> : null}
+                {context ? <p className={styles.meta}>{context}</p> : null}
+                {tx.crossSpaceSummary ? (
+                  <CrossSpaceSummaryBadge summary={tx.crossSpaceSummary} />
+                ) : null}
+                <p className={styles.meta}>
+                  Fecha: {new Date(tx.occurredAt).toLocaleString('es')}
+                  {tx.createdAt !== tx.occurredAt
+                    ? ` · Registro: ${new Date(tx.createdAt).toLocaleString('es')}`
+                    : ''}
+                </p>
+                <p>
+                  <Link href={`/spaces/${spaceId}/transactions/${tx.id}`}>Ver / editar</Link>
+                </p>
+              </li>
             );
           })}
         </ul>

@@ -7,7 +7,6 @@ export function listOwnershipTransferTargets(
 ): SpaceMember[] {
   return members.filter(
     (member) =>
-      member.userId !== currentOwnerUserId &&
-      (member.role === 'ADMIN' || member.role === 'MEMBER'),
+      member.userId !== currentOwnerUserId && (member.role === 'ADMIN' || member.role === 'MEMBER'),
   );
 }

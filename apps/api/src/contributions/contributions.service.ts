@@ -1,8 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import {
-  BadRequestException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { SpaceType, TransactionType } from '@prisma/client';
 import { AccountsService } from '../accounts/accounts.service';
 import { CrossSpaceCashLinksService } from '../cross-space-cash-links/cross-space-cash-links.service';
@@ -10,7 +7,10 @@ import { PrismaService } from '../prisma/prisma.service';
 import type { ActiveSpaceMembership } from '../spaces/spaces.service';
 import { SpacesService } from '../spaces/spaces.service';
 import { assertUserMemberAt } from '../shared-expenses/membership-at';
-import { formatTransactionAmount, parsePositiveMoneyAmount } from '../transactions/money';
+import {
+  formatTransactionAmount,
+  parsePositiveMoneyAmount,
+} from '../transactions/money';
 import type { CreateContributionDto } from './dto/create-contribution.dto';
 import type { ContributionResponseDto } from './dto/contribution-response.dto';
 

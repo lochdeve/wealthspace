@@ -8,21 +8,21 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 
 ## 1. Resumen de estado
 
-| Fase | Contenido                                                      | API | Web | Notas                                                     |
-| ---- | -------------------------------------------------------------- | --- | --- | --------------------------------------------------------- |
-| 0    | Monorepo, CI, esquema y migración inicial, tests de integridad | ✅  | ✅  | E2E slice: spec 6–7 en job `e2e`.                        |
-| 1    | Fundación backend                                              | ✅  | —   |                                                           |
-| 2    | Autenticación API                                              | ✅  | —   | `PATCH /auth/me` (B-9.1).                                 |
-| 3    | Autenticación web                                              | —   | ✅  | E2E auth local.                                           |
-| 4    | Espacios, invitaciones, membresía                              | ✅  | ✅  | C-05 leave último ACTIVE (F-8).                           |
-| 5    | Cuentas, categorías, movimientos                               | ✅  | ✅  | Gasto individual + compartido en rutas distintas.         |
-| R1   | Cierre decisiones producto fases 6–7                           | ✅  | ✅  | P-03…P-16 y P-10…P-19 aprobados.                          |
-| R2   | Alineación fase 5 (F-R2, C-01…C-04)                            | ✅  | ✅  |                                                           |
-| 6    | Gastos compartidos con reparto                                 | ✅  | ✅  | Migraciones `20261115183000`.                             |
-| 7    | Saldos y liquidaciones                                         | ✅  | ✅  | Migración `20261117160000`; E2E SHARED local.             |
-| 4.1  | Transferencia de ownership                                     | ✅  | ✅  | B-4.1 + F-4.1.                                            |
-| 8    | Cuentas personales vinculadas y aportaciones                   | ✅  | ✅  | Migración `20261201120000`; ver README B-8.0.             |
-| 9    | Presupuestos, informes y dashboard                             | ✅  | ✅  | MVP cerrado; mejoras opcionales en roadmaps área.         |
+| Fase | Contenido                                                      | API | Web | Notas                                                                            |
+| ---- | -------------------------------------------------------------- | --- | --- | -------------------------------------------------------------------------------- |
+| 0    | Monorepo, CI, esquema y migración inicial, tests de integridad | ✅  | ✅  | E2E slice: spec 6–7 en job `e2e`.                                                |
+| 1    | Fundación backend                                              | ✅  | —   |                                                                                  |
+| 2    | Autenticación API                                              | ✅  | —   | `PATCH /auth/me` (B-9.1).                                                        |
+| 3    | Autenticación web                                              | —   | ✅  | E2E auth local.                                                                  |
+| 4    | Espacios, invitaciones, membresía                              | ✅  | ✅  | C-05 leave último ACTIVE (F-8).                                                  |
+| 5    | Cuentas, categorías, movimientos                               | ✅  | ✅  | Gasto individual + compartido en rutas distintas.                                |
+| R1   | Cierre decisiones producto fases 6–7                           | ✅  | ✅  | P-03…P-16 y P-10…P-19 aprobados.                                                 |
+| R2   | Alineación fase 5 (F-R2, C-01…C-04)                            | ✅  | ✅  |                                                                                  |
+| 6    | Gastos compartidos con reparto                                 | ✅  | ✅  | Migraciones `20261115183000`.                                                    |
+| 7    | Saldos y liquidaciones                                         | ✅  | ✅  | Migración `20261117160000`; E2E SHARED local.                                    |
+| 4.1  | Transferencia de ownership                                     | ✅  | ✅  | B-4.1 + F-4.1.                                                                   |
+| 8    | Cuentas personales vinculadas y aportaciones                   | ✅  | ✅  | Migración `20261201120000`; ver README B-8.0.                                    |
+| 9    | Presupuestos, informes y dashboard                             | ✅  | ✅  | MVP cerrado; mejoras opcionales en roadmaps área.                                |
 | 10   | Preparación para producción                                    | 🟡  | 🟡  | **Slice 1:** E2E en CI — [phase-10-slice-e2e-ci.md](./phase-10-slice-e2e-ci.md). |
 
 ### Lo que el MVP (fases 0–9) ya cubre
@@ -36,7 +36,7 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 
 | Tema                                          | Estado                                            |
 | --------------------------------------------- | ------------------------------------------------- |
-| E2E Playwright en CI                          | ✅ spec fases 6–7; fase 8 spec local             |
+| E2E Playwright en CI                          | ✅ spec fases 6–7; fase 8 spec local              |
 | Dashboard API agregado multi-espacio          | Opcional; web compone en cliente                  |
 | Presupuesto vs consumo en UI                  | Opcional (API informe + budgets listos)           |
 | Deuda técnica API                             | Errores Prisma/trigger sin `code` → 500 ocasional |
@@ -99,12 +99,12 @@ Criterios de aceptación: ver [shared-expenses.md](../product/shared-expenses.md
 
 ## 4. Riesgos activos
 
-| Riesgo                                           | Mitigación                                          |
-| ------------------------------------------------ | --------------------------------------------------- |
-| Entornos sin migración 8                         | README B-8.0 + checklist Release                    |
-| Fuga de datos al vincular cuentas personales     | Tests de no filtración en B-8 (entregados)          |
-| Regresiones flujo SHARED sin E2E en CI           | Fase 10 slice E2E; specs locales mantenidos        |
-| Drift de migraciones                             | `test:db` en CI; borrador → aprobación coordinación |
+| Riesgo                                       | Mitigación                                          |
+| -------------------------------------------- | --------------------------------------------------- |
+| Entornos sin migración 8                     | README B-8.0 + checklist Release                    |
+| Fuga de datos al vincular cuentas personales | Tests de no filtración en B-8 (entregados)          |
+| Regresiones flujo SHARED sin E2E en CI       | Fase 10 slice E2E; specs locales mantenidos         |
+| Drift de migraciones                         | `test:db` en CI; borrador → aprobación coordinación |
 
 ## 5. Reglas de ejecución
 

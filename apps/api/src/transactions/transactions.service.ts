@@ -570,7 +570,9 @@ export class TransactionsService {
       ...(link.sharedExpenseId !== null
         ? { sharedExpenseId: link.sharedExpenseId }
         : {}),
-      ...(link.settlementId !== null ? { settlementId: link.settlementId } : {}),
+      ...(link.settlementId !== null
+        ? { settlementId: link.settlementId }
+        : {}),
       ...(link.contributionGroupId !== null
         ? { contributionGroupId: link.contributionGroupId }
         : {}),

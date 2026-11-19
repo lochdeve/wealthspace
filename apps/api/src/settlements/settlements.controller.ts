@@ -97,7 +97,8 @@ export class SettlementsController {
   @ApiOkResponse({ type: SettlementResponseDto })
   @ApiForbiddenResponse({ description: 'PERSONAL_LINK_NOT_ALLOWED' })
   @ApiConflictResponse({
-    description: 'VERSION_CONFLICT, ALREADY_VOIDED, or PERSONAL_LINK_ALREADY_EXISTS',
+    description:
+      'VERSION_CONFLICT, ALREADY_VOIDED, or PERSONAL_LINK_ALREADY_EXISTS',
   })
   async linkPersonalCashFlow(
     @CurrentUser() user: RequestUser,

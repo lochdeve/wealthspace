@@ -492,7 +492,10 @@ describe('Shared expenses (integration)', () => {
       .expect(201);
 
     const created = createdRes.body as SharedExpenseBody;
-    expect(created.myPersonalCashLink).toEqual({ linked: true, canLink: false });
+    expect(created.myPersonalCashLink).toEqual({
+      linked: true,
+      canLink: false,
+    });
     expect(JSON.stringify(created)).not.toContain(walletId);
 
     const mariaView = await request(app.getHttpServer())
@@ -506,7 +509,9 @@ describe('Shared expenses (integration)', () => {
     expect(JSON.stringify(mariaView.body)).not.toContain(walletId);
 
     const payerWallet = await request(app.getHttpServer())
-      .get(`/api/v1/spaces/${owner.profile.personalSpaceId}/accounts/${walletId}`)
+      .get(
+        `/api/v1/spaces/${owner.profile.personalSpaceId}/accounts/${walletId}`,
+      )
       .set('Cookie', owner.cookies)
       .expect(200);
 
@@ -533,7 +538,10 @@ describe('Shared expenses (integration)', () => {
       .expect(201);
 
     const created = createdRes.body as SharedExpenseBody;
-    expect(created.myPersonalCashLink).toEqual({ linked: false, canLink: true });
+    expect(created.myPersonalCashLink).toEqual({
+      linked: false,
+      canLink: true,
+    });
 
     await request(app.getHttpServer())
       .post(
@@ -602,7 +610,9 @@ describe('Shared expenses (integration)', () => {
     });
 
     const payerWallet = await request(app.getHttpServer())
-      .get(`/api/v1/spaces/${owner.profile.personalSpaceId}/accounts/${walletId}`)
+      .get(
+        `/api/v1/spaces/${owner.profile.personalSpaceId}/accounts/${walletId}`,
+      )
       .set('Cookie', owner.cookies)
       .expect(200);
 
@@ -648,7 +658,9 @@ describe('Shared expenses (integration)', () => {
       .expect(200);
 
     const payerWallet = await request(app.getHttpServer())
-      .get(`/api/v1/spaces/${owner.profile.personalSpaceId}/accounts/${walletId}`)
+      .get(
+        `/api/v1/spaces/${owner.profile.personalSpaceId}/accounts/${walletId}`,
+      )
       .set('Cookie', owner.cookies)
       .expect(200);
 

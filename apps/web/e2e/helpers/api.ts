@@ -22,9 +22,7 @@ async function readApiError(response: Response): Promise<string> {
 
 function sessionCookieFromResponse(response: Response): string {
   const setCookies =
-    typeof response.headers.getSetCookie === 'function'
-      ? response.headers.getSetCookie()
-      : [];
+    typeof response.headers.getSetCookie === 'function' ? response.headers.getSetCookie() : [];
   const fallback = response.headers.get('set-cookie');
   const raw = setCookies.length > 0 ? setCookies : fallback ? [fallback] : [];
   const pairs = raw
@@ -85,10 +83,9 @@ export async function assertE2EPhase8ApiReady(seed: TwoMemberSharedSeed): Promis
     method: 'POST',
     body: JSON.stringify({ email: seed.owner.email, password: E2E_PASSWORD }),
   });
-  const { data: members } = await apiJson<{ userId: string }[]>(
-    `/spaces/${seed.spaceId}/members`,
-    { cookie },
-  );
+  const { data: members } = await apiJson<{ userId: string }[]>(`/spaces/${seed.spaceId}/members`, {
+    cookie,
+  });
   try {
     await apiJson(`/spaces/${seed.spaceId}/shared-expenses/preview`, {
       method: 'POST',
@@ -122,14 +119,10 @@ export async function assertE2EApiReady(): Promise<void> {
   const base = getE2EApiBaseUrl();
   const response = await fetch(`${base}/api/v1/health`);
   if (!response.ok) {
-    throw new Error(
-      `API not reachable at ${base} (GET /api/v1/health → ${response.status})`,
-    );
+    throw new Error(`API not reachable at ${base} (GET /api/v1/health → ${response.status})`);
   }
 
-  const balancesProbe = await fetch(
-    `${base}/api/v1/spaces/${PHASE7_PROBE_SPACE_ID}/balances`,
-  );
+  const balancesProbe = await fetch(`${base}/api/v1/spaces/${PHASE7_PROBE_SPACE_ID}/balances`);
   if (balancesProbe.status === 404) {
     let detail = balancesProbe.statusText;
     try {
@@ -169,10 +162,7 @@ export type TwoMemberSharedSeed = {
   };
 };
 
-async function createPersonalWallet(
-  cookie: string,
-  personalSpaceId: string,
-): Promise<string> {
+async function createPersonalWallet(cookie: string, personalSpaceId: string): Promise<string> {
   const { data } = await apiJson<{ id: string }>(`/spaces/${personalSpaceId}/accounts`, {
     method: 'POST',
     cookie,
@@ -233,12 +223,13 @@ export async function seedTwoMemberSharedSpace(): Promise<TwoMemberSharedSeed> {
     body: JSON.stringify({ email: memberEmail, password: E2E_PASSWORD }),
   });
 
-  const { data: invitations } = await apiJson<
-    { id: string; spaceId: string; status: string }[]
-  >('/invitations', {
-    method: 'GET',
-    cookie: memberCookie,
-  });
+  const { data: invitations } = await apiJson<{ id: string; spaceId: string; status: string }[]>(
+    '/invitations',
+    {
+      method: 'GET',
+      cookie: memberCookie,
+    },
+  );
 
   const invitation = invitations.find(
     (row) => row.spaceId === space.id && row.status === 'PENDING',
@@ -253,10 +244,7 @@ export async function seedTwoMemberSharedSpace(): Promise<TwoMemberSharedSeed> {
   });
 
   const ownerPersonalAccountId = await createPersonalWallet(ownerCookie, owner.personalSpaceId);
-  const memberPersonalAccountId = await createPersonalWallet(
-    memberCookie,
-    member.personalSpaceId,
-  );
+  const memberPersonalAccountId = await createPersonalWallet(memberCookie, member.personalSpaceId);
 
   return {
     spaceId: space.id,

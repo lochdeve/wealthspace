@@ -1,9 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import {
-  resetSchema,
-  seedMinimalSharedSpace,
-  withClient,
-} from './helpers';
+import { resetSchema, seedMinimalSharedSpace, withClient } from './helpers';
 
 describe('Phase 8 — cross_space_cash_links integrity', () => {
   beforeAll(async () => {
@@ -41,10 +37,9 @@ describe('Phase 8 — cross_space_cash_links integrity', () => {
       const linkId = randomUUID();
 
       const personalSpace = (
-        await c.query(
-          `SELECT personal_space_id FROM users WHERE id = $1`,
-          [ctx.userA],
-        )
+        await c.query(`SELECT personal_space_id FROM users WHERE id = $1`, [
+          ctx.userA,
+        ])
       ).rows[0]?.personal_space_id as string;
 
       await c.query(

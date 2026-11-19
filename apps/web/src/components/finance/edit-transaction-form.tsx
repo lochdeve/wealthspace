@@ -35,7 +35,11 @@ function categoryTypeForTransaction(type: FinancialTransaction['type']): Categor
   return null;
 }
 
-export function EditTransactionForm({ spaceId, transaction, categories }: EditTransactionFormProps) {
+export function EditTransactionForm({
+  spaceId,
+  transaction,
+  categories,
+}: EditTransactionFormProps) {
   const router = useRouter();
   const [amount, setAmount] = useState(transaction.amount);
   const [description, setDescription] = useState(transaction.description ?? '');

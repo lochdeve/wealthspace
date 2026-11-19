@@ -36,7 +36,10 @@ const members: SpaceMember[] = [
 describe('TransferOwnershipForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.stubGlobal('confirm', vi.fn(() => true));
+    vi.stubGlobal(
+      'confirm',
+      vi.fn(() => true),
+    );
   });
 
   afterEach(() => {
@@ -78,6 +81,8 @@ describe('TransferOwnershipForm', () => {
       target: { value: 'carlos' },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Transferir ownership' }));
-    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(/administrador o miembro/i));
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent(/administrador o miembro/i),
+    );
   });
 });

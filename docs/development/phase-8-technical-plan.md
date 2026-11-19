@@ -11,12 +11,12 @@ Fuentes: [decisions.md §2e](../product/decisions.md#2e-decisiones-aprobadas--fa
 
 Conectar **flujo de caja personal** con operaciones del espacio **SHARED**, sin romper aislamiento por `spaceId` ni filtrar cuentas personales a otros miembros:
 
-| Decisión | Comportamiento |
-| -------- | -------------- |
-| **P-02** | Pagador opcional: salida del **total** en su PERSONAL al crear/editar/anular gasto `MEMBER`. |
+| Decisión | Comportamiento                                                                                                                                  |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **P-02** | Pagador opcional: salida del **total** en su PERSONAL al crear/editar/anular gasto `MEMBER`.                                                    |
 | **P-07** | Liquidación: movimiento opcional en **el lado del actor** (salida `from`, entrada `to`); el acreedor confirma su entrada si el deudor registró. |
-| **P-05** | Aportación a cuenta común: `INCOME` con **aportante**; sin deudas. |
-| **P-06** | Personal ↔ común en **una transacción BD**, dos movimientos vinculados. |
+| **P-05** | Aportación a cuenta común: `INCOME` con **aportante**; sin deudas.                                                                              |
+| **P-06** | Personal ↔ común en **una transacción BD**, dos movimientos vinculados.                                                                        |
 
 Fuera de alcance de la fase 8: presupuestos/dashboard (P-17, fase 9), notificaciones push/email (solo in-app en MVP fase 8).
 
@@ -40,17 +40,17 @@ Fuera de alcance de la fase 8: presupuestos/dashboard (P-17, fase 9), notificaci
 
 ### 3.1 Tabla `cross_space_cash_links`
 
-| Columna | Tipo | Notas |
-| ------- | ---- | ----- |
-| `id` | UUID PK | |
-| `kind` | enum | `SHARED_EXPENSE_MEMBER_PAYMENT`, `SETTLEMENT_FROM_OUT`, `SETTLEMENT_TO_IN`, `CONTRIBUTION_PAIR` |
-| `owner_user_id` | UUID FK users | Titular del movimiento personal |
-| `personal_transaction_id` | UUID FK financial_transactions UNIQUE | Siempre en el espacio PERSONAL del `owner_user_id` |
-| `shared_space_id` | UUID FK spaces | Espacio SHARED ancla |
-| `shared_expense_id` | UUID NULL FK | Exclusivo con `settlement_id` salvo `CONTRIBUTION_PAIR` |
-| `settlement_id` | UUID NULL FK | |
-| `contribution_group_id` | UUID NULL | Mismo valor en los dos lados de P-06 |
-| `created_at` | timestamptz | |
+| Columna                   | Tipo                                  | Notas                                                                                           |
+| ------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `id`                      | UUID PK                               |                                                                                                 |
+| `kind`                    | enum                                  | `SHARED_EXPENSE_MEMBER_PAYMENT`, `SETTLEMENT_FROM_OUT`, `SETTLEMENT_TO_IN`, `CONTRIBUTION_PAIR` |
+| `owner_user_id`           | UUID FK users                         | Titular del movimiento personal                                                                 |
+| `personal_transaction_id` | UUID FK financial_transactions UNIQUE | Siempre en el espacio PERSONAL del `owner_user_id`                                              |
+| `shared_space_id`         | UUID FK spaces                        | Espacio SHARED ancla                                                                            |
+| `shared_expense_id`       | UUID NULL FK                          | Exclusivo con `settlement_id` salvo `CONTRIBUTION_PAIR`                                         |
+| `settlement_id`           | UUID NULL FK                          |                                                                                                 |
+| `contribution_group_id`   | UUID NULL                             | Mismo valor en los dos lados de P-06                                                            |
+| `created_at`              | timestamptz                           |                                                                                                 |
 
 **CHECK (SQL):**
 
@@ -85,31 +85,31 @@ No se añade `ownerUserId` en `Account`.
 
 ## 4. Entregas backend (orden)
 
-| ID | Contenido | Aceptación |
-| -- | --------- | ---------- |
-| **B-8.0** | Migración + `custom-integrity.sql` + `test:db` | Coordinación aprueba SQL |
-| **B-8.1** | Servicio de dominio `CrossSpaceCashLink` (crear/void/actualizar importe) + helpers titularidad | Unit tests permisos |
-| **B-8.2** | **P-02** — Extender `POST/PATCH /shared-expenses`; `POST …/link-personal-payment` (pagador posterior) | Una transacción; 403 si no es pagador; sin `personalAccountId` en respuesta SHARED para otros; integración + no filtración |
-| **B-8.3** | **P-02** — Propagación en void/PATCH importe/fecha | Paridad con `SPACE_ACCOUNT` |
-| **B-8.4** | **P-07** — Extender `POST /settlements` con `personalCashFlow?: { accountId }` (solo lado del `recordedBy` si es `from` o `to`) | 201 sin exponer cuenta del otro |
-| **B-8.5** | **P-07** — `POST /settlements/:id/link-personal-cash-flow` para contraparte (`from` o `to`, no el registrador original) | 403 si actor no es la parte; entrada acreedor |
-| **B-8.6** | **P-07** — Void settlement → void txs personales enlazadas | Integración |
-| **B-8.7** | **P-05/P-06** — `POST /spaces/:spaceId/contributions` (body: `sharedAccountId`, `amount`, `currency`, `occurredAt?`, `personalAccountId?`, `note?`) | Dos movimientos + `contribution_group_id`; solo titular inicia desde personal |
-| **B-8.8** | Lecturas PERSONAL: `GET` detalle/listado de transacciones incluye `crossSpaceSummary?` **solo** en espacio PERSONAL del usuario | Nunca en rutas SHARED |
-| **B-8.9** | **P-07 hint** — `GET /spaces/:spaceId/settlements/link-hints` o similar (opcional) | **Fuera de MVP fase 8:** sugerencia de cuenta en **front** (última cuenta usada en vínculos del usuario); B-8.9 solo si hace falta en implementación |
-| **B-8.10** | OpenAPI + [frontend-api-dependencies.md](./frontend-api-dependencies.md) | Códigos de error nuevos listados abajo |
+| ID         | Contenido                                                                                                                                           | Aceptación                                                                                                                                           |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **B-8.0**  | Migración + `custom-integrity.sql` + `test:db`                                                                                                      | Coordinación aprueba SQL                                                                                                                             |
+| **B-8.1**  | Servicio de dominio `CrossSpaceCashLink` (crear/void/actualizar importe) + helpers titularidad                                                      | Unit tests permisos                                                                                                                                  |
+| **B-8.2**  | **P-02** — Extender `POST/PATCH /shared-expenses`; `POST …/link-personal-payment` (pagador posterior)                                               | Una transacción; 403 si no es pagador; sin `personalAccountId` en respuesta SHARED para otros; integración + no filtración                           |
+| **B-8.3**  | **P-02** — Propagación en void/PATCH importe/fecha                                                                                                  | Paridad con `SPACE_ACCOUNT`                                                                                                                          |
+| **B-8.4**  | **P-07** — Extender `POST /settlements` con `personalCashFlow?: { accountId }` (solo lado del `recordedBy` si es `from` o `to`)                     | 201 sin exponer cuenta del otro                                                                                                                      |
+| **B-8.5**  | **P-07** — `POST /settlements/:id/link-personal-cash-flow` para contraparte (`from` o `to`, no el registrador original)                             | 403 si actor no es la parte; entrada acreedor                                                                                                        |
+| **B-8.6**  | **P-07** — Void settlement → void txs personales enlazadas                                                                                          | Integración                                                                                                                                          |
+| **B-8.7**  | **P-05/P-06** — `POST /spaces/:spaceId/contributions` (body: `sharedAccountId`, `amount`, `currency`, `occurredAt?`, `personalAccountId?`, `note?`) | Dos movimientos + `contribution_group_id`; solo titular inicia desde personal                                                                        |
+| **B-8.8**  | Lecturas PERSONAL: `GET` detalle/listado de transacciones incluye `crossSpaceSummary?` **solo** en espacio PERSONAL del usuario                     | Nunca en rutas SHARED                                                                                                                                |
+| **B-8.9**  | **P-07 hint** — `GET /spaces/:spaceId/settlements/link-hints` o similar (opcional)                                                                  | **Fuera de MVP fase 8:** sugerencia de cuenta en **front** (última cuenta usada en vínculos del usuario); B-8.9 solo si hace falta en implementación |
+| **B-8.10** | OpenAPI + [frontend-api-dependencies.md](./frontend-api-dependencies.md)                                                                            | Códigos de error nuevos listados abajo                                                                                                               |
 
 ### Códigos de error nuevos (propuesta)
 
-| code | HTTP |
-| ---- | ---- |
-| `PERSONAL_ACCOUNT_REQUIRED` | 400 |
-| `PERSONAL_ACCOUNT_NOT_OWNED` | 403 |
-| `PERSONAL_LINK_NOT_ALLOWED` | 403 |
-| `PERSONAL_LINK_ALREADY_EXISTS` | 409 |
-| `NOT_PAYER` | 403 |
-| `CROSS_SPACE_CURRENCY_MISMATCH` | 400 |
-| `CONTRIBUTION_NOT_ALLOWED` | 403 |
+| code                            | HTTP |
+| ------------------------------- | ---- |
+| `PERSONAL_ACCOUNT_REQUIRED`     | 400  |
+| `PERSONAL_ACCOUNT_NOT_OWNED`    | 403  |
+| `PERSONAL_LINK_NOT_ALLOWED`     | 403  |
+| `PERSONAL_LINK_ALREADY_EXISTS`  | 409  |
+| `NOT_PAYER`                     | 403  |
+| `CROSS_SPACE_CURRENCY_MISMATCH` | 400  |
+| `CONTRIBUTION_NOT_ALLOWED`      | 403  |
 
 ---
 
@@ -190,15 +190,15 @@ O mover `canLink` a endpoint ligero para no ensuciar listados — decisión impl
 
 ## 6. Entregas frontend (tras catálogo B-8.x)
 
-| ID | Contenido | Aceptación |
-| -- | --------- | ---------- |
+| ID        | Contenido                                                                                                                                                   | Aceptación                                              |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
 | **F-8.1** | Gasto compartido: selector «Pagado desde mi cuenta» (solo si yo soy pagador); lista de cuentas del espacio PERSONAL vía API existente de cuentas personales | Oculto si pagador ≠ yo; mensaje para «vincular después» |
-| **F-8.2** | Detalle gasto: CTA pagador «Vincular pago personal» si `MEMBER` sin enlace | 409/403 manejados |
-| **F-8.3** | Liquidación (F-7.2 extendido): checkbox + cuenta en **mi** lado; copia P-07 | «Registrar pago» sin «Confirmar» |
-| **F-8.4** | Aviso in-app al acreedor: liquidación donde soy `to` y `canLink` (banner en Saldos / listado liquidaciones) | Confirmar → `link-personal-cash-flow`; sugerir cuenta |
-| **F-8.5** | Flujo aportación a cuenta común (desde detalle cuenta SHARED o acción en finanzas) | P-05/P-06 |
-| **F-8.6** | Movimientos PERSONAL: badge/enlace «Relacionado con [espacio] / liquidación / gasto» (solo lectura) | Sin datos de terceros |
-| **F-8.7** | RTL + ajuste E2E opcional (escenario P-02 + P-07 en local; CI fase 10) | |
+| **F-8.2** | Detalle gasto: CTA pagador «Vincular pago personal» si `MEMBER` sin enlace                                                                                  | 409/403 manejados                                       |
+| **F-8.3** | Liquidación (F-7.2 extendido): checkbox + cuenta en **mi** lado; copia P-07                                                                                 | «Registrar pago» sin «Confirmar»                        |
+| **F-8.4** | Aviso in-app al acreedor: liquidación donde soy `to` y `canLink` (banner en Saldos / listado liquidaciones)                                                 | Confirmar → `link-personal-cash-flow`; sugerir cuenta   |
+| **F-8.5** | Flujo aportación a cuenta común (desde detalle cuenta SHARED o acción en finanzas)                                                                          | P-05/P-06                                               |
+| **F-8.6** | Movimientos PERSONAL: badge/enlace «Relacionado con [espacio] / liquidación / gasto» (solo lectura)                                                         | Sin datos de terceros                                   |
+| **F-8.7** | RTL + ajuste E2E opcional (escenario P-02 + P-07 en local; CI fase 10)                                                                                      |                                                         |
 
 **Datos de cuentas personales en forms SHARED:** cargar cuentas con `GET` del espacio PERSONAL del usuario (ya autenticado), nunca desde respuestas de gastos SHARED.
 
@@ -206,15 +206,15 @@ O mover `canLink` a endpoint ligero para no ensuciar listados — decisión impl
 
 ## 7. Privacidad y pruebas
 
-| Prueba | Descripción |
-| ------ | ----------- |
+| Prueba               | Descripción                                                                                                             |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | No filtración SHARED | Miembro A no ve `personalAccountId` / tx ids del PERSONAL de B en `GET shared-expenses`, listados settlements, balances |
-| IDOR personal | Cuenta de otro usuario → 403/404 |
-| Titularidad vínculo | Carlos no puede llamar `link-personal-payment` en gasto pagado por Ana |
-| Integración P-02 | 120 € / 3 → −120 pagador; deudas sin cambio |
-| Integración P-07 | Carlos registra 40 € → Ana `link-personal-cash-flow` +40 |
-| Void en cadena | Anular gasto o liquidación restaura saldos personales |
-| `test:db` | CHECK + triggers nuevos |
+| IDOR personal        | Cuenta de otro usuario → 403/404                                                                                        |
+| Titularidad vínculo  | Carlos no puede llamar `link-personal-payment` en gasto pagado por Ana                                                  |
+| Integración P-02     | 120 € / 3 → −120 pagador; deudas sin cambio                                                                             |
+| Integración P-07     | Carlos registra 40 € → Ana `link-personal-cash-flow` +40                                                                |
+| Void en cadena       | Anular gasto o liquidación restaura saldos personales                                                                   |
+| `test:db`            | CHECK + triggers nuevos                                                                                                 |
 
 Referencia: [testing-strategy.md](./testing-strategy.md).
 
@@ -251,11 +251,11 @@ flowchart TD
 
 ## 10. Resoluciones de implementación (cerradas 2026-11-18)
 
-| Tema | Decisión |
-| ---- | -------- |
-| Modelo de vínculo | **`cross_space_cash_links`**; no FKs de transacciones personales en filas `settlements` expuestas al SHARED (privacidad + listados uniformes). |
-| Cuenta sugerida al cobrar | **Heurística en front** en v1; **B-8.9 en API** diferido salvo necesidad técnica demostrada. |
-| Aviso acreedor (P-07) | **Saldos y listado de liquidaciones** (F-8.4): mismo componente/acción `link-personal-cash-flow`. |
-| Alcance y orden fase 8 | **P-02 → P-07 → P-05/P-06** en el mismo tren; B-8.7 tercera ola, no fase 8.1 aparte. |
+| Tema                      | Decisión                                                                                                                                       |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Modelo de vínculo         | **`cross_space_cash_links`**; no FKs de transacciones personales en filas `settlements` expuestas al SHARED (privacidad + listados uniformes). |
+| Cuenta sugerida al cobrar | **Heurística en front** en v1; **B-8.9 en API** diferido salvo necesidad técnica demostrada.                                                   |
+| Aviso acreedor (P-07)     | **Saldos y listado de liquidaciones** (F-8.4): mismo componente/acción `link-personal-cash-flow`.                                              |
+| Alcance y orden fase 8    | **P-02 → P-07 → P-05/P-06** en el mismo tren; B-8.7 tercera ola, no fase 8.1 aparte.                                                           |
 
 Documento **APROBADO**; gate de producto para codificar fase 8 **abierto**.

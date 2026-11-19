@@ -2,7 +2,11 @@ import Link from 'next/link';
 import type { SharedExpenseDetail } from '@/lib/api/shared-expense-types';
 import { expenseTitle, splitModeLabel } from '@/lib/finance/shared-expense-view';
 import { formatMoneyAmount } from '@/lib/finance/format-money';
-import { sharedExpenseDetailHref, sharedExpensesHref, sharedExpenseHref } from '@/lib/finance/routes';
+import {
+  sharedExpenseDetailHref,
+  sharedExpensesHref,
+  sharedExpenseHref,
+} from '@/lib/finance/routes';
 import styles from './finance-forms.module.css';
 
 type SharedExpensesListPanelProps = {
@@ -63,7 +67,8 @@ export function SharedExpensesListPanel({
                   </p>
                 ) : null}
                 <p className={styles.meta}>
-                  {new Date(expense.occurredAt).toLocaleString('es')} · {splitModeLabel(expense.splitMode)}
+                  {new Date(expense.occurredAt).toLocaleString('es')} ·{' '}
+                  {splitModeLabel(expense.splitMode)}
                 </p>
                 <p>
                   <Link href={sharedExpenseDetailHref(spaceId, expense.id)}>Ver detalle</Link>

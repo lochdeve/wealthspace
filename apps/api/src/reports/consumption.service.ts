@@ -20,7 +20,9 @@ export class ConsumptionService {
     month: number,
     timezone: string,
   ): Promise<ConsumptionReportDto> {
-    const space = await this.prisma.space.findUnique({ where: { id: spaceId } });
+    const space = await this.prisma.space.findUnique({
+      where: { id: spaceId },
+    });
     if (space === null) {
       throw new NotFoundException({
         statusCode: 404,

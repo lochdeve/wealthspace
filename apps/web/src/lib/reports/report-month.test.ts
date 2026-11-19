@@ -1,8 +1,4 @@
-import {
-  currentYearMonthInTimezone,
-  monthLabel,
-  parseReportMonthQuery,
-} from './report-month';
+import { currentYearMonthInTimezone, monthLabel, parseReportMonthQuery } from './report-month';
 
 describe('report-month', () => {
   it('parses valid year and month query', () => {
