@@ -1,13 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, useMemo, useState } from 'react';
 import type { Account } from '@/lib/api/finance-types';
 import type { MembershipRole, SpaceMember } from '@/lib/api/space-types';
 import { createSettlement } from '@/lib/api/settlements';
 import { isPositiveAmount, normalizeAmountInput } from '@/lib/finance/amount';
 import {
-  readLastPersonalAccountId,
+  resolvePersonalAccountSelection,
   writeLastPersonalAccountId,
 } from '@/lib/finance/last-personal-account';
 import {
@@ -68,33 +68,17 @@ export function RegisterSettlementForm({
     [personalAccounts, currency],
   );
 
-  useEffect(() => {
-    if (!showPersonalCashFlow) {
-      setAnnotatePersonalCash(false);
-      setPersonalAccountId('');
-      return;
+  const annotatePersonalForSubmit = showPersonalCashFlow && annotatePersonalCash;
+  const effectivePersonalAccountId = useMemo(() => {
+    if (!annotatePersonalForSubmit) {
+      return '';
     }
-    if (!annotatePersonalCash) {
-      return;
-    }
-    const remembered = readLastPersonalAccountId(currentUserId);
-    const initial =
-      (remembered && personalAccountOptions.some((row) => row.id === remembered)
-        ? remembered
-        : null) ??
-      personalAccountOptions[0]?.id ??
-      '';
-    setPersonalAccountId((current) =>
-      current && personalAccountOptions.some((row) => row.id === current) ? current : initial,
+    return resolvePersonalAccountSelection(
+      currentUserId,
+      personalAccountOptions,
+      personalAccountId,
     );
-  }, [
-    showPersonalCashFlow,
-    annotatePersonalCash,
-    currentUserId,
-    personalAccountOptions,
-    fromUserId,
-    toUserId,
-  ]);
+  }, [annotatePersonalForSubmit, currentUserId, personalAccountOptions, personalAccountId]);
 
   const maySubmit =
     fromUserId &&
@@ -118,7 +102,7 @@ export function RegisterSettlementForm({
       setFormError('No puedes registrar este pago con tu rol en el espacio.');
       return;
     }
-    if (annotatePersonalCash && !personalAccountId) {
+    if (annotatePersonalForSubmit && !effectivePersonalAccountId) {
       setFormError('Selecciona una cuenta personal o desmarca la anotación.');
       return;
     }
@@ -131,12 +115,12 @@ export function RegisterSettlementForm({
         amount: normalized,
         currency: currency.trim().toUpperCase(),
         occurredAt: occurredAt ? new Date(occurredAt).toISOString() : undefined,
-        ...(annotatePersonalCash && personalAccountId
-          ? { personalCashFlow: { accountId: personalAccountId } }
+        ...(annotatePersonalForSubmit && effectivePersonalAccountId
+          ? { personalCashFlow: { accountId: effectivePersonalAccountId } }
           : {}),
       });
-      if (annotatePersonalCash && personalAccountId) {
-        writeLastPersonalAccountId(currentUserId, personalAccountId);
+      if (annotatePersonalForSubmit && effectivePersonalAccountId) {
+        writeLastPersonalAccountId(currentUserId, effectivePersonalAccountId);
       }
       const warning = result.warnings?.[0];
       router.push(settlementsHref(spaceId, warning ? { warning } : undefined));
@@ -161,7 +145,11 @@ export function RegisterSettlementForm({
           id="settlement-from"
           className={styles.selectNative}
           value={fromUserId}
-          onChange={(event) => setFromUserId(event.target.value)}
+          onChange={(event) => {
+            setFromUserId(event.target.value);
+            setAnnotatePersonalCash(false);
+            setPersonalAccountId('');
+          }}
           disabled={pending}
           required
         >
@@ -178,7 +166,11 @@ export function RegisterSettlementForm({
           id="settlement-to"
           className={styles.selectNative}
           value={toUserId}
-          onChange={(event) => setToUserId(event.target.value)}
+          onChange={(event) => {
+            setToUserId(event.target.value);
+            setAnnotatePersonalCash(false);
+            setPersonalAccountId('');
+          }}
           disabled={pending}
           required
         >
@@ -244,7 +236,7 @@ export function RegisterSettlementForm({
                 <select
                   id="settlement-personal-account"
                   className={styles.selectNative}
-                  value={personalAccountId}
+                  value={effectivePersonalAccountId}
                   onChange={(event) => setPersonalAccountId(event.target.value)}
                   disabled={pending}
                   required

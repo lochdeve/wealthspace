@@ -1,13 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, useMemo, useState } from 'react';
 import type { Account } from '@/lib/api/finance-types';
 import { createContribution } from '@/lib/api/contributions';
 import { isPositiveAmount, normalizeAmountInput } from '@/lib/finance/amount';
 import { contributionActionErrorMessage } from '@/lib/finance/contribution-messages';
 import {
-  readLastPersonalAccountId,
+  resolvePersonalAccountSelection,
   writeLastPersonalAccountId,
 } from '@/lib/finance/last-personal-account';
 import { activeAccountsMatchingCurrency } from '@/lib/finance/personal-cash-link';
@@ -44,20 +44,12 @@ export function CreateContributionForm({
     [personalAccounts, sharedAccount.currency],
   );
 
-  useEffect(() => {
+  const effectivePersonalAccountId = useMemo(() => {
     if (!debitPersonal) {
-      setPersonalAccountId('');
-      return;
+      return '';
     }
-    const remembered = readLastPersonalAccountId(currentUserId);
-    const initial =
-      (remembered && personalOptions.some((row) => row.id === remembered) ? remembered : null) ??
-      personalOptions[0]?.id ??
-      '';
-    setPersonalAccountId((current) =>
-      current && personalOptions.some((row) => row.id === current) ? current : initial,
-    );
-  }, [debitPersonal, currentUserId, personalOptions]);
+    return resolvePersonalAccountSelection(currentUserId, personalOptions, personalAccountId);
+  }, [debitPersonal, currentUserId, personalOptions, personalAccountId]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -67,7 +59,7 @@ export function CreateContributionForm({
       setFormError('Importe positivo con hasta 4 decimales.');
       return;
     }
-    if (debitPersonal && !personalAccountId) {
+    if (debitPersonal && !effectivePersonalAccountId) {
       setFormError('Selecciona una cuenta personal o desmarca la salida vinculada.');
       return;
     }
@@ -80,10 +72,12 @@ export function CreateContributionForm({
         currency: sharedAccount.currency,
         occurredAt: occurredAt ? new Date(occurredAt).toISOString() : undefined,
         note: note.trim() || undefined,
-        ...(debitPersonal && personalAccountId ? { personalAccountId } : {}),
+        ...(debitPersonal && effectivePersonalAccountId
+          ? { personalAccountId: effectivePersonalAccountId }
+          : {}),
       });
-      if (debitPersonal && personalAccountId) {
-        writeLastPersonalAccountId(currentUserId, personalAccountId);
+      if (debitPersonal && effectivePersonalAccountId) {
+        writeLastPersonalAccountId(currentUserId, effectivePersonalAccountId);
       }
       router.push(spaceTransactionsHref(spaceId, { accountId: sharedAccount.id }));
       router.refresh();
@@ -154,7 +148,7 @@ export function CreateContributionForm({
               <select
                 id="contribution-personal-account"
                 className={styles.selectNative}
-                value={personalAccountId}
+                value={effectivePersonalAccountId}
                 onChange={(event) => setPersonalAccountId(event.target.value)}
                 disabled={pending}
                 required

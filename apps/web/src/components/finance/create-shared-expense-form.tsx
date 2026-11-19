@@ -307,15 +307,15 @@ export function CreateSharedExpenseForm({
     };
   }
 
-  useEffect(() => {
+  const effectivePersonalAccountId = useMemo(() => {
     if (!showPersonalAccountField) {
-      setPersonalAccountId('');
-      return;
+      return '';
     }
-    if (personalAccountId && !personalAccountOptions.some((row) => row.id === personalAccountId)) {
-      setPersonalAccountId('');
+    if (personalAccountId && personalAccountOptions.some((row) => row.id === personalAccountId)) {
+      return personalAccountId;
     }
-  }, [showPersonalAccountField, personalAccountOptions, personalAccountId]);
+    return '';
+  }, [showPersonalAccountField, personalAccountId, personalAccountOptions]);
 
   function buildPayload(normalizedAmount: string): CreateSharedExpenseInput {
     const payment =
@@ -323,7 +323,9 @@ export function CreateSharedExpenseForm({
         ? {
             source: 'MEMBER' as const,
             paidByUserId,
-            ...(personalAccountId ? { personalAccountId } : {}),
+            ...(effectivePersonalAccountId
+              ? { personalAccountId: effectivePersonalAccountId }
+              : {}),
           }
         : { source: 'SPACE_ACCOUNT' as const, accountId };
     const payload: CreateSharedExpenseInput = {
@@ -543,7 +545,13 @@ export function CreateSharedExpenseForm({
           id="shared-payment-source"
           className={styles.selectNative}
           value={paymentSource}
-          onChange={(event) => setPaymentSource(event.target.value as PaymentSource)}
+          onChange={(event) => {
+            const next = event.target.value as PaymentSource;
+            setPaymentSource(next);
+            if (next !== 'MEMBER') {
+              setPersonalAccountId('');
+            }
+          }}
           disabled={pending || isEdit}
         >
           <option value="MEMBER">Un miembro del espacio</option>
@@ -584,7 +592,7 @@ export function CreateSharedExpenseForm({
           <select
             id="shared-personal-account"
             className={styles.selectNative}
-            value={personalAccountId}
+            value={effectivePersonalAccountId}
             onChange={(event) => setPersonalAccountId(event.target.value)}
             disabled={pending}
             aria-invalid={Boolean(fieldErrors.personalAccount) || undefined}

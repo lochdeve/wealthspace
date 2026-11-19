@@ -1,3 +1,5 @@
+import type { Account } from '@/lib/api/finance-types';
+
 const STORAGE_PREFIX = 'wealthspace:lastPersonalAccountId';
 
 export function readLastPersonalAccountId(userId: string): string | null {
@@ -10,6 +12,23 @@ export function readLastPersonalAccountId(userId: string): string | null {
   } catch {
     return null;
   }
+}
+
+/** Pick a valid personal account for selects (remembered id, else first option). */
+export function resolvePersonalAccountSelection(
+  currentUserId: string,
+  options: Account[],
+  selectedId: string,
+): string {
+  const trimmed = selectedId.trim();
+  if (trimmed && options.some((row) => row.id === trimmed)) {
+    return trimmed;
+  }
+  const remembered = readLastPersonalAccountId(currentUserId);
+  if (remembered && options.some((row) => row.id === remembered)) {
+    return remembered;
+  }
+  return options[0]?.id ?? '';
 }
 
 export function writeLastPersonalAccountId(userId: string, accountId: string): void {

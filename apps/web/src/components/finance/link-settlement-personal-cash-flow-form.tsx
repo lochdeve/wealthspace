@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, useMemo, useState } from 'react';
 import { ApiError } from '@/lib/api/errors';
 import type { Account } from '@/lib/api/finance-types';
 import type { Settlement } from '@/lib/api/settlement-types';
@@ -11,7 +11,7 @@ import {
   settlementPersonalCashFlowHint,
 } from '@/lib/finance/personal-cash-link';
 import {
-  readLastPersonalAccountId,
+  resolvePersonalAccountSelection,
   writeLastPersonalAccountId,
 } from '@/lib/finance/last-personal-account';
 import { formatMoneyAmount } from '@/lib/finance/format-money';
@@ -48,19 +48,15 @@ export function LinkSettlementPersonalCashFlowForm({
   const [formError, setFormError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  useEffect(() => {
-    const remembered = readLastPersonalAccountId(currentUserId);
-    const initial =
-      (remembered && options.some((row) => row.id === remembered) ? remembered : null) ??
-      options[0]?.id ??
-      '';
-    setAccountId(initial);
-  }, [currentUserId, options]);
+  const effectiveAccountId = useMemo(
+    () => resolvePersonalAccountSelection(currentUserId, options, accountId),
+    [currentUserId, options, accountId],
+  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormError(null);
-    if (!accountId) {
+    if (!effectiveAccountId) {
       setFormError('Selecciona una cuenta personal.');
       return;
     }
@@ -68,10 +64,10 @@ export function LinkSettlementPersonalCashFlowForm({
     setPending(true);
     try {
       await linkSettlementPersonalCashFlow(spaceId, settlement.id, {
-        accountId,
+        accountId: effectiveAccountId,
         expectedVersion: settlement.version,
       });
-      writeLastPersonalAccountId(currentUserId, accountId);
+      writeLastPersonalAccountId(currentUserId, effectiveAccountId);
       router.refresh();
     } catch (error) {
       if (error instanceof ApiError && error.code === 'VERSION_CONFLICT') {
@@ -110,7 +106,7 @@ export function LinkSettlementPersonalCashFlowForm({
           <select
             id={`link-settlement-account-${settlement.id}`}
             className={styles.selectNative}
-            value={accountId}
+            value={effectiveAccountId}
             onChange={(event) => setAccountId(event.target.value)}
             disabled={pending}
             required
