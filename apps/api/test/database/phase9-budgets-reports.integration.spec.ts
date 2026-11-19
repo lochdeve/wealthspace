@@ -60,7 +60,7 @@ describe('Phase 9 budgets and consumption reports (integration)', () => {
   async function registerAndLogin(
     label: string,
     timezone = 'UTC',
-  ): Promise<{ cookies: string[]; profile: UserProfileBody }> {
+  ): Promise<{ cookies: string[]; profile: UserProfileBody; email: string }> {
     const email = `${label}-${randomUUID()}@test.local`;
     const password = 'ValidPass10chars!';
 
@@ -255,7 +255,7 @@ describe('Phase 9 budgets and consumption reports (integration)', () => {
     const inviteRes = await request(app.getHttpServer())
       .post(`/api/v1/spaces/${spaceId}/invitations`)
       .set('Cookie', owner.cookies)
-      .send({ email: member.email })
+      .send({ email: member.profile.email })
       .expect(201);
     await request(app.getHttpServer())
       .post(

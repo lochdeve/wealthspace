@@ -546,9 +546,14 @@ export class TransactionsService {
     );
 
     for (let index = 0; index < rows.length; index++) {
-      const link = linkByPersonalTxId.get(rows[index]!.id);
+      const row = rows[index];
+      const dto = dtos[index];
+      if (row === undefined || dto === undefined) {
+        continue;
+      }
+      const link = linkByPersonalTxId.get(row.id);
       if (link !== undefined) {
-        dtos[index]!.crossSpaceSummary = this.mapCrossSpaceSummary(link);
+        dto.crossSpaceSummary = this.mapCrossSpaceSummary(link);
       }
     }
 

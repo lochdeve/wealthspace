@@ -37,10 +37,14 @@ describe('Phase 8 — cross_space_cash_links integrity', () => {
       const linkId = randomUUID();
 
       const personalSpace = (
-        await c.query(`SELECT personal_space_id FROM users WHERE id = $1`, [
-          ctx.userA,
-        ])
-      ).rows[0]?.personal_space_id as string;
+        await c.query<{ personal_space_id: string }>(
+          `SELECT personal_space_id FROM users WHERE id = $1`,
+          [ctx.userA],
+        )
+      ).rows[0]?.personal_space_id;
+      if (personalSpace === undefined) {
+        throw new Error('Expected personal_space_id for test user');
+      }
 
       await c.query(
         `INSERT INTO accounts (id, space_id, name, currency, updated_at)
