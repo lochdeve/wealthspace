@@ -23,7 +23,7 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 | 4.1  | Transferencia de ownership                                     | ✅  | ✅  | B-4.1 + F-4.1.                                                                   |
 | 8    | Cuentas personales vinculadas y aportaciones                   | ✅  | ✅  | Migración `20261201120000`; ver README B-8.0.                                    |
 | 9    | Presupuestos, informes y dashboard                             | ✅  | ✅  | MVP cerrado; mejoras opcionales en roadmaps área.                                |
-| 10   | Preparación para producción                                    | 🟡  | 🟡  | **Slice 1:** E2E en CI — [phase-10-slice-e2e-ci.md](./phase-10-slice-e2e-ci.md). |
+| 10   | Preparación para producción                                    | 🟡  | 🟡  | Slices E2E CI 1–2 ✅ — [phase-10-slice-e2e-ci.md](./phase-10-slice-e2e-ci.md).    |
 
 ### Lo que el MVP (fases 0–9) ya cubre
 
@@ -36,7 +36,7 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 
 | Tema                                          | Estado                                              |
 | --------------------------------------------- | --------------------------------------------------- |
-| E2E Playwright en CI                          | 🟡 F-10.2 suite `e2e/` (6–7, 8, humo); fase 9 local |
+| E2E Playwright en CI                          | ✅ suite `e2e/` (6–7, 8, humo); fase 9 sin CI aún   |
 | Dashboard API agregado multi-espacio          | Opcional; web compone en cliente                    |
 | Presupuesto vs consumo en UI                  | Opcional (API informe + budgets listos)             |
 | Deuda técnica API                             | Errores Prisma/trigger sin `code` → 500 ocasional   |

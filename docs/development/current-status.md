@@ -1,6 +1,6 @@
 # Estado actual del desarrollo
 
-**Última actualización:** 2026-11-19 — **F-10.1** ✅ E2E en CI; **F-10.2** en curso: suite completa `apps/web/e2e` + seed falla en CI (ver [phase-10-slice-e2e-ci.md](./phase-10-slice-e2e-ci.md) § slice 2).
+**Última actualización:** 2026-11-19 — **F-10.1** y **F-10.2** ✅ (E2E completo en CI, `3db7706`). Siguiente fase 10: priorizar slice (release, hardening API, E2E fase 9).
 
 Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/decisions.md) · Contratos: [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 
@@ -48,7 +48,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | ---------------- | ------------------------------------------------------------------------------- | -------- |
 | **Coordinación** | Mantener coherencia docs; revisar PR fase 10                                    | —        |
 | **Backend**      | Deuda menor (`code` en errores Prisma); opcional **B-9.4** dashboard            | —        |
-| **Frontend**     | **F-10.2** verificar CI verde con suite E2E completa; luego pulido F-9 opcional | —        |
+| **Frontend**     | Mantener regresión E2E al entregar UI crítica; opcional pulido F-9 / E2E fase 9   | —        |
 | **Release**      | Checklist `migrate deploy` **6+7+8** en cada entorno compartido                 | —        |
 
 ## Notas operativas

@@ -35,7 +35,7 @@ Correr **Playwright E2E** en el job de CI `quality` (o job hermano `e2e`) contra
 
 ## Slice 2 — confianza en regresiones (E2E ampliado)
 
-**Estado:** planificado en repo (workflow ejecuta **todos** los specs bajo `apps/web/e2e/`).
+**Estado:** ✅ implementado en CI (2026-11-19, commit `3db7706`); workflow ejecuta **todos** los specs bajo `apps/web/e2e/`.
 
 ### Objetivo
 
