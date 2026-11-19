@@ -13,5 +13,7 @@ export async function loginThroughUi(page: Page, email: string, password: string
   await page.locator('#email').fill(email);
   await page.locator('#password').fill(password);
   await page.getByRole('button', { name: 'Entrar' }).click();
-  await expect(page).toHaveURL(/\/spaces/, { timeout: 15_000 });
+  await expect(page.getByRole('button', { name: 'Cerrar sesión' })).toBeVisible({
+    timeout: 15_000,
+  });
 }

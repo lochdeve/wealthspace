@@ -23,7 +23,7 @@ test.describe('Phase 8: P-02 and P-07 personal cash links', () => {
     }
   });
 
-  test.beforeEach(({ page: _page }, testInfo) => {
+  test.beforeEach(async ({}, testInfo) => {
     if (!seed) {
       testInfo.skip(true, 'API seed unavailable');
     }

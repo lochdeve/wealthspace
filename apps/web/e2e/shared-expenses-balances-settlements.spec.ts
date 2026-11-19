@@ -21,7 +21,7 @@ test.describe('SHARED: expense, balances, partial settlement, void', () => {
     }
   });
 
-  test.beforeEach(({ page: _page }, testInfo) => {
+  test.beforeEach(async ({}, testInfo) => {
     if (!seed) {
       testInfo.skip(true, 'API seed unavailable');
     }
