@@ -396,7 +396,13 @@ export class SettlementsService {
     toUserId: string,
     accountId: string | undefined,
   ):
-    | { kind: CrossSpaceCashLinkKind; accountId: string; side: 'from' | 'to' }
+    | {
+        kind:
+          | typeof CrossSpaceCashLinkKind.SETTLEMENT_FROM_OUT
+          | typeof CrossSpaceCashLinkKind.SETTLEMENT_TO_IN;
+        accountId: string;
+        side: 'from' | 'to';
+      }
     | undefined {
     if (accountId === undefined) {
       return undefined;
