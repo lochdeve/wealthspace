@@ -79,6 +79,45 @@ async function apiJson<T>(
 
 const PHASE7_PROBE_SPACE_ID = '00000000-0000-4000-8000-000000000001';
 
+/** Phase 8: POST body must accept payment.personalAccountId (restart API on current main if this fails). */
+export async function assertE2EPhase8ApiReady(seed: TwoMemberSharedSeed): Promise<void> {
+  const { cookie } = await apiJson<UserProfile>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email: seed.owner.email, password: E2E_PASSWORD }),
+  });
+  const { data: members } = await apiJson<{ userId: string }[]>(
+    `/spaces/${seed.spaceId}/members`,
+    { cookie },
+  );
+  try {
+    await apiJson(`/spaces/${seed.spaceId}/shared-expenses/preview`, {
+      method: 'POST',
+      cookie,
+      body: JSON.stringify({
+        totalAmount: '1.00',
+        payment: {
+          source: 'MEMBER',
+          paidByUserId: seed.owner.id,
+          personalAccountId: seed.owner.personalAccountId,
+        },
+        split: {
+          mode: 'EQUAL',
+          participantUserIds: members.map((row) => row.userId),
+        },
+      }),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.includes('personalAccountId')) {
+      throw new Error(
+        `API at ${getE2EApiBaseUrl()} does not accept payment.personalAccountId (phase 8). ` +
+          'Restart `pnpm --filter @wealthspace/api dev` on current main and run phase 8 migrations.',
+      );
+    }
+    throw error;
+  }
+}
+
 export async function assertE2EApiReady(): Promise<void> {
   const base = getE2EApiBaseUrl();
   const response = await fetch(`${base}/api/v1/health`);

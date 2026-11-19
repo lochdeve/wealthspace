@@ -45,13 +45,23 @@ test.describe('SHARED: expense, balances, partial settlement, void', () => {
     await loginThroughUi(page, ctx.member.email, ctx.member.password);
     await page.goto(`/spaces/${ctx.spaceId}/balances`);
 
-    await expect(page.getByRole('heading', { name: 'Saldos' })).toBeVisible();
+    await expect(page.locator('#balances-page-title')).toBeVisible();
     await expect(
       page.getByText(new RegExp(`${ctx.member.displayName} debe .*60.* a ${ctx.owner.displayName}`)),
     ).toBeVisible();
 
-    await page.getByRole('link', { name: 'Registrar pago' }).first().click();
-    await expect(page).toHaveURL(new RegExp(`/spaces/${ctx.spaceId}/settlements/new`));
+    await page
+      .getByRole('listitem')
+      .filter({
+        hasText: new RegExp(
+          `${ctx.member.displayName} debe .*60.* a ${ctx.owner.displayName}`,
+        ),
+      })
+      .getByRole('link', { name: 'Registrar pago' })
+      .click();
+    await expect(page).toHaveURL(
+      new RegExp(`/spaces/${ctx.spaceId}/settlements/new\\?.*fromUserId=`),
+    );
 
     await page.locator('#settlement-amount').fill('15');
     await page.getByRole('button', { name: 'Registrar pago' }).click();

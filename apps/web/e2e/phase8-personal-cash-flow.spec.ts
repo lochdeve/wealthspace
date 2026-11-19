@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import {
   assertE2EApiReady,
+  assertE2EPhase8ApiReady,
   seedTwoMemberSharedSpace,
   type TwoMemberSharedSeed,
 } from './helpers/api';
@@ -15,6 +16,7 @@ test.describe('Phase 8: P-02 and P-07 personal cash links', () => {
     try {
       await assertE2EApiReady();
       seed = await seedTwoMemberSharedSpace();
+      await assertE2EPhase8ApiReady(seed);
     } catch (error) {
       seed = undefined;
       console.warn('[e2e] Skipping phase 8 flow — API seed failed:', error);
@@ -31,10 +33,18 @@ test.describe('Phase 8: P-02 and P-07 personal cash links', () => {
     const ctx = seed!;
     await loginThroughUi(page, ctx.owner.email, ctx.owner.password);
     await page.goto(`/spaces/${ctx.spaceId}/expenses/new`);
+    await page.locator('#shared-description').fill('E2E gasto con cuenta personal');
     await page.locator('#shared-amount').fill('100');
+    const personalAccountOption = page.locator(
+      `#shared-personal-account option[value="${ctx.owner.personalAccountId}"]`,
+    );
+    await expect(personalAccountOption).toHaveCount(1, { timeout: 15_000 });
     await page.locator('#shared-personal-account').selectOption(ctx.owner.personalAccountId);
     await page.getByRole('button', { name: 'Registrar gasto compartido' }).click();
     await expect(page).toHaveURL(new RegExp(`/spaces/${ctx.spaceId}/expenses/[\\w-]+$`), {
+      timeout: 15_000,
+    });
+    await expect(page.getByText(/Tu pago personal está vinculado/i)).toBeVisible({
       timeout: 15_000,
     });
   });
@@ -53,7 +63,14 @@ test.describe('Phase 8: P-02 and P-07 personal cash links', () => {
 
     await loginThroughUi(page, ctx.member.email, ctx.member.password);
     await page.goto(`/spaces/${ctx.spaceId}/balances`);
-    await page.getByRole('link', { name: 'Registrar pago' }).first().click();
+    const memberOwesOwner = page
+      .getByRole('listitem')
+      .filter({ hasText: new RegExp(`${ctx.member.displayName} debe .* a ${ctx.owner.displayName}`) });
+    await expect(memberOwesOwner).toBeVisible({ timeout: 15_000 });
+    await memberOwesOwner.getByRole('link', { name: 'Registrar pago' }).click();
+    await expect(page).toHaveURL(
+      new RegExp(`/spaces/${ctx.spaceId}/settlements/new\\?.*fromUserId=`),
+    );
     await page.locator('#settlement-amount').fill('25');
     await page.locator('#settlement-annotate-personal').check();
     await page.getByRole('button', { name: 'Registrar pago' }).click();
@@ -67,6 +84,10 @@ test.describe('Phase 8: P-02 and P-07 personal cash links', () => {
       timeout: 15_000,
     });
     await page.getByRole('button', { name: 'Anotar en mi cuenta' }).first().click();
+    await expect(page.getByText(/Anotar cobros en tu cuenta personal/i)).not.toBeVisible({
+      timeout: 15_000,
+    });
+    await page.goto(`/spaces/${ctx.spaceId}/settlements`);
     await expect(page.getByText(/Tu movimiento personal está vinculado/i)).toBeVisible({
       timeout: 15_000,
     });
