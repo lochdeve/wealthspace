@@ -30,3 +30,34 @@ Correr **Playwright E2E** en el job de CI `quality` (o job hermano `e2e`) contra
 1. **DevOps/Frontend:** workflow + script `pnpm --filter @wealthspace/web test:e2e` con API levantada en background en CI.
 2. **Backend:** asegurar que el seed E2E sigue alineado con contratos (sin cambios de negocio).
 3. **Coordinación:** ampliar fase 10 con siguientes slices solo tras verde estable.
+
+---
+
+## Slice 2 — confianza en regresiones (E2E ampliado)
+
+**Estado:** planificado en repo (workflow ejecuta **todos** los specs bajo `apps/web/e2e/`).
+
+### Objetivo
+
+Que un PR no pueda romper flujos **6–7**, **8 (cuentas personales vinculadas)** ni humo **auth/home** sin que falle el job `e2e`.
+
+### Alcance CI
+
+| Spec | Flujo |
+| ---- | ----- |
+| `shared-expenses-balances-settlements.spec.ts` | Gasto compartido, saldos, liquidación parcial, anular |
+| `phase8-personal-cash-flow.spec.ts` | P-02 / P-07: gasto con cuenta personal, liquidación anotada |
+| `auth.spec.ts` | Redirección a login, enlace desde home |
+| `home.spec.ts` | Portada |
+
+### Regla operativa
+
+- En **`CI=true`**, si falla `assertE2EApiReady`, seed HTTP o probe fase 8 → **falla el job** (`abortE2ESeedUnlessLocalDev` en `e2e/helpers/api.ts`). En local sin API, los specs con seed se **saltan** con aviso (desarrollo cómodo).
+- Cada spec nuevo de regresión: añadir bajo `e2e/` y mantener seed autocontenido (como `seedTwoMemberSharedSpace`).
+- **Fuera de slice 2 (hasta decisión):** E2E fase 9 (dashboard/presupuestos), shards paralelos, vídeos obligatorios en artifact.
+
+### Mantener al día
+
+1. Al cerrar una feature con UI crítica, valorar spec E2E o ampliar uno existente en el mismo PR o el siguiente.
+2. Tras cambios en `e2e/helpers/api.ts` o login por defecto (`/dashboard`), ejecutar `pnpm --filter @wealthspace/web test:e2e` con API + BD locales (Chromium: `pnpm exec playwright install chromium` en `apps/web`).
+3. Coordinación documenta aquí cualquier spec **excluido** de CI y el motivo.

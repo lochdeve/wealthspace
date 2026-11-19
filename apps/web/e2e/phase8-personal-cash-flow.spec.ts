@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import {
+  abortE2ESeedUnlessLocalDev,
   assertE2EApiReady,
   assertE2EPhase8ApiReady,
   seedTwoMemberSharedSpace,
@@ -18,6 +19,7 @@ test.describe('Phase 8: P-02 and P-07 personal cash links', () => {
       seed = await seedTwoMemberSharedSpace();
       await assertE2EPhase8ApiReady(seed);
     } catch (error) {
+      abortE2ESeedUnlessLocalDev(error);
       seed = undefined;
       console.warn('[e2e] Skipping phase 8 flow — API seed failed:', error);
     }

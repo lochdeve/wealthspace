@@ -1,6 +1,13 @@
 const DEFAULT_API_URL = 'http://localhost:3001';
 export const E2E_PASSWORD = 'E2eTestPass!1';
 
+/** In CI, seed/API failures must fail the job (no skipped specs with green checks). */
+export function abortE2ESeedUnlessLocalDev(error: unknown): void {
+  if (process.env.CI) {
+    throw error instanceof Error ? error : new Error(String(error));
+  }
+}
+
 export function getE2EApiBaseUrl(): string {
   const raw =
     process.env.PLAYWRIGHT_API_URL?.trim() ||

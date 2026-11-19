@@ -171,7 +171,5 @@ jobs:
           echo "=== Web log ===" && tail -80 /tmp/web.log || true
           exit 1
 
-      - name: Playwright E2E (shared expenses, balances, settlements)
-        run: |
-          pnpm --filter @wealthspace/web exec playwright test \
-            e2e/shared-expenses-balances-settlements.spec.ts
+      - name: Playwright E2E (regression slice)
+        run: pnpm --filter @wealthspace/web exec playwright test

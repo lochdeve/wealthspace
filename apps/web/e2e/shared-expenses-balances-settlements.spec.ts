@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import {
+  abortE2ESeedUnlessLocalDev,
   assertE2EApiReady,
   seedTwoMemberSharedSpace,
   type TwoMemberSharedSeed,
@@ -16,6 +17,7 @@ test.describe('SHARED: expense, balances, partial settlement, void', () => {
       await assertE2EApiReady();
       seed = await seedTwoMemberSharedSpace();
     } catch (error) {
+      abortE2ESeedUnlessLocalDev(error);
       seed = undefined;
       console.warn('[e2e] Skipping shared flow — API seed failed:', error);
     }
