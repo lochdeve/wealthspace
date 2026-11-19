@@ -4,6 +4,8 @@
 
 Aplicar en cada entorno de desarrollo:
 
+Desde la **raíz del monorepo** (necesita `DATABASE_URL` en `.env` raíz o `apps/api/.env`):
+
 ```bash
 pnpm --filter @wealthspace/api exec prisma migrate deploy
 ```

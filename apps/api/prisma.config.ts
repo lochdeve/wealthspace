@@ -1,4 +1,14 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { loadEnvFile } from 'node:process';
 import { defineConfig } from 'prisma/config';
+
+const apiRoot = import.meta.dirname;
+for (const path of [join(apiRoot, '.env'), join(apiRoot, '../../.env')]) {
+  if (existsSync(path)) {
+    loadEnvFile(path);
+  }
+}
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
