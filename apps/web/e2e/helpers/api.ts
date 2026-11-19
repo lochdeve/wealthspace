@@ -108,13 +108,39 @@ export async function assertE2EApiReady(): Promise<void> {
   }
 }
 
-type UserProfile = { id: string; email: string; displayName: string };
+type UserProfile = { id: string; email: string; displayName: string; personalSpaceId: string };
 
 export type TwoMemberSharedSeed = {
   spaceId: string;
-  owner: { id: string; email: string; password: string; displayName: string };
-  member: { id: string; email: string; password: string; displayName: string };
+  owner: {
+    id: string;
+    email: string;
+    password: string;
+    displayName: string;
+    personalSpaceId: string;
+    personalAccountId: string;
+  };
+  member: {
+    id: string;
+    email: string;
+    password: string;
+    displayName: string;
+    personalSpaceId: string;
+    personalAccountId: string;
+  };
 };
+
+async function createPersonalWallet(
+  cookie: string,
+  personalSpaceId: string,
+): Promise<string> {
+  const { data } = await apiJson<{ id: string }>(`/spaces/${personalSpaceId}/accounts`, {
+    method: 'POST',
+    cookie,
+    body: JSON.stringify({ name: 'E2E Wallet', currency: 'EUR' }),
+  });
+  return data.id;
+}
 
 export async function seedTwoMemberSharedSpace(): Promise<TwoMemberSharedSeed> {
   const suffix = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -187,6 +213,12 @@ export async function seedTwoMemberSharedSpace(): Promise<TwoMemberSharedSeed> {
     cookie: memberCookie,
   });
 
+  const ownerPersonalAccountId = await createPersonalWallet(ownerCookie, owner.personalSpaceId);
+  const memberPersonalAccountId = await createPersonalWallet(
+    memberCookie,
+    member.personalSpaceId,
+  );
+
   return {
     spaceId: space.id,
     owner: {
@@ -194,12 +226,16 @@ export async function seedTwoMemberSharedSpace(): Promise<TwoMemberSharedSeed> {
       email: ownerEmail,
       password: E2E_PASSWORD,
       displayName: ownerName,
+      personalSpaceId: owner.personalSpaceId,
+      personalAccountId: ownerPersonalAccountId,
     },
     member: {
       id: member.id,
       email: memberEmail,
       password: E2E_PASSWORD,
       displayName: memberName,
+      personalSpaceId: member.personalSpaceId,
+      personalAccountId: memberPersonalAccountId,
     },
   };
 }

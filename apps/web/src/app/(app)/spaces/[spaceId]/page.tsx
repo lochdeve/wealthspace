@@ -111,7 +111,12 @@ export default async function SpaceDetailPage({ params }: PageProps) {
           ) : null}
 
           {user ? (
-            <LeaveSpaceButton spaceId={spaceId} spaceName={space.name} currentUserId={user.id} />
+            <LeaveSpaceButton
+              spaceId={spaceId}
+              spaceName={space.name}
+              currentUserId={user.id}
+              activeMemberCount={members.length}
+            />
           ) : null}
         </>
       ) : null}

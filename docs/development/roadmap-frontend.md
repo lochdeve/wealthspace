@@ -49,7 +49,7 @@ Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · 
 
 Copy: «Registrar pago» o «Liquidar», nunca «Confirmar». Mensaje fijo: «Wealthspace no realiza ni verifica pagos».
 
-## F-8 — ✨ Cuentas personales vinculadas y aportaciones (B-8.10 ✅)
+## F-8 — ✨ Cuentas personales vinculadas y aportaciones ✅ (B-8.10)
 
 Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (F-8.1…F-8.7, **APROBADO**). F-8.4 aviso acreedor en Saldos **y** liquidaciones.
 
@@ -61,7 +61,8 @@ Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (F-8.1…F-8.7, *
 | F-8.4 ✅ | Aviso acreedor + `link-personal-cash-flow` (Saldos y liquidaciones) |
 | F-8.5 ✅ | Aportaciones a cuenta común (`/accounts/:id/contribute`) |
 | F-8.6 ✅ | Badge `crossSpaceSummary` en listados y detalle tx PERSONAL |
-| C-05 ⬜ | Leave último ACTIVE: confirmación fuerte |
+| F-8.7 ✅ | E2E opcional `phase8-personal-cash-flow.spec.ts` (P-02 + P-07) |
+| C-05 ✅ | Leave último ACTIVE: aviso + doble confirmación |
 
 ## F-9 — ✨ Presupuestos, informes, dashboard y perfil ⛔ (B-9)
 
