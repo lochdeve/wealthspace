@@ -12,7 +12,7 @@ Leyenda de estado: ✅ implementado (API + web) · 🟡 parcial · ⬜ no implem
 | --------------------------------------------------------------- | ------------------------------------ |
 | Alta atómica: usuario + espacio PERSONAL + membresía OWNER      | ✅                                   |
 | Login/logout con cookie HttpOnly; perfil `GET /auth/me`         | ✅                                   |
-| Editar perfil y zona horaria                                    | ⬜ (necesario antes de los informes) |
+| Editar perfil y zona horaria (`PATCH /auth/me`, `/settings`)      | ✅                                   |
 | Sin borrado físico de usuarios con historial; sin anonimización | Regla (RESTRICT en BD)               |
 
 ## 2. Espacios y membresía
@@ -25,7 +25,7 @@ Fuente: [spaces-membership-mvp.md](./spaces-membership-mvp.md).
 | Invitaciones (crear, revocar, aceptar, rechazar; TTL 7 días) | ✅                         |
 | Leave/remove con único OWNER protegido (409)                 | ✅                         |
 | Transferencia de ownership (4.1)                             | ✅                         |
-| Último miembro ACTIVE (4.2, C-05)                            | 🟡 decisión ✅; UI pendiente |
+| Último miembro ACTIVE (4.2, C-05)                            | ✅                         |
 | Aviso saldo ≠ 0 al leave/remove (P-19)                       | ✅                         |
 
 ## 3. Cuentas y movimientos
@@ -63,15 +63,16 @@ Fuente única: [shared-expenses.md](./shared-expenses.md). **✅ Implementado** 
 
 ## 5. Cuentas personales en gastos compartidos y cuentas comunes
 
-Fuente: [accounts-model.md](./accounts-model.md) — **en análisis**. Sin requisitos aprobados todavía.
+Fuente: [accounts-model.md](./accounts-model.md). **✅ Implementado** (fase 8, P-02 y P-05–P-07).
 
 ## 6. Presupuestos, informes y dashboard
 
-🟡 API inicial (B-9.1–9.3): edición de perfil/timezone, CRUD presupuestos, informe mensual de consumo (**P-17**). Pendiente UI y dashboard agregado.
+**✅ MVP** (fase 9, 2026-11-19): perfil/timezone, presupuestos por espacio, informe mensual de consumo (**P-17**), panel `/dashboard`.
 
 - Periodo mensual en `User.timezone` del consultante; datos filtrados por `occurredAt` (UTC); solo espacios con membresía ACTIVE.
 - Presupuestos en una sola moneda, sin conversión.
-- Consumo vs flujo de caja: **P-17** (implementado en informe de consumo; sin conversión FX).
+- Consumo vs flujo de caja: **P-17** en informe de consumo (excluye vínculos de caja personal según reglas del servicio).
+- Opcional: comparativa presupuesto vs real en UI; endpoint API dashboard agregado.
 
 ## 7. Historial y concurrencia
 

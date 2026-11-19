@@ -1,6 +1,6 @@
 # Roadmap de Wealthspace
 
-Estado real del proyecto (verificado contra el código el **2026-11-18**) y plan de fases. Detalle por área: [roadmap-backend.md](./roadmap-backend.md) · [roadmap-frontend.md](./roadmap-frontend.md). Estado operativo: [current-status.md](./current-status.md). Decisiones: [decisions.md](../product/decisions.md).
+Estado real del proyecto (verificado contra el código el **2026-11-19**) y plan de fases. Detalle por área: [roadmap-backend.md](./roadmap-backend.md) · [roadmap-frontend.md](./roadmap-frontend.md). Estado operativo: [current-status.md](./current-status.md). Decisiones: [decisions.md](../product/decisions.md).
 
 Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · ✨ funcionalidad nueva.
 
@@ -12,34 +12,33 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 | ---- | -------------------------------------------------------------- | --- | --- | --------------------------------------------------------- |
 | 0    | Monorepo, CI, esquema y migración inicial, tests de integridad | ✅  | ✅  | E2E Playwright **no** en CI (fase 10).                    |
 | 1    | Fundación backend                                              | ✅  | —   |                                                           |
-| 2    | Autenticación API                                              | ✅  | —   | Sin `PATCH` perfil/zona horaria.                          |
+| 2    | Autenticación API                                              | ✅  | —   | `PATCH /auth/me` (B-9.1).                                 |
 | 3    | Autenticación web                                              | —   | ✅  | E2E auth local.                                           |
-| 4    | Espacios, invitaciones, membresía                              | ✅  | 🟡  | **4.2 C-05** aprobado; UI confirmación fuerte pendiente.  |
+| 4    | Espacios, invitaciones, membresía                              | ✅  | ✅  | C-05 leave último ACTIVE (F-8).                           |
 | 5    | Cuentas, categorías, movimientos                               | ✅  | ✅  | Gasto individual + compartido en rutas distintas.         |
 | R1   | Cierre decisiones producto fases 6–7                           | ✅  | ✅  | P-03…P-16 y P-10…P-19 aprobados.                          |
 | R2   | Alineación fase 5 (F-R2, C-01…C-04)                            | ✅  | ✅  |                                                           |
 | 6    | Gastos compartidos con reparto                                 | ✅  | ✅  | Migraciones `20261115183000`.                             |
 | 7    | Saldos y liquidaciones                                         | ✅  | ✅  | Migración `20261117160000`; E2E SHARED local.             |
 | 4.1  | Transferencia de ownership                                     | ✅  | ✅  | B-4.1 + F-4.1.                                            |
-| 8    | Cuentas personales vinculadas y aportaciones                   | ✅ | ✅  | B-8.0…B-8.10 + F-8; `migrate deploy` local por máquina. |
-| 9    | Presupuestos, informes y dashboard                             | ⬜  | ⬜  | P-17 aprobado; falta perfil/`Budget`.                     |
-| 10   | Preparación para producción                                    | ⬜  | ⬜  | E2E en CI, hardening, despliegue.                         |
+| 8    | Cuentas personales vinculadas y aportaciones                   | ✅  | ✅  | Migración `20261201120000`; ver README B-8.0.             |
+| 9    | Presupuestos, informes y dashboard                             | ✅  | ✅  | MVP cerrado; mejoras opcionales en roadmaps área.         |
+| 10   | Preparación para producción                                    | 🟡  | 🟡  | **Slice 1:** E2E en CI — [phase-10-slice-e2e-ci.md](./phase-10-slice-e2e-ci.md). |
 
-### Lo que el MVP financiero compartido ya cubre
+### Lo que el MVP (fases 0–9) ya cubre
 
-- Registro, auth, espacios SHARED, invitaciones, cuentas y movimientos por espacio.
-- **Gasto individual** en SHARED (P-14/C-04) y **gasto compartido** con tres métodos de reparto, preview, edición, anulación e historial (P-09, P-13, P-16).
-- **Saldos** netos por par y por miembro; **liquidaciones** parciales/completas con aviso de sobrepago (P-11) y ex-miembros (P-19).
-- Transferencia de ownership; aviso informativo de saldo al leave/remove (P-19).
-- Integridad SQL en migraciones fase 6 y 7; tests de API e integridad BD.
+- Todo lo anterior hasta liquidaciones (fases 6–7) y ownership (4.1).
+- **Cuentas personales vinculadas** (P-02, P-05–P-07): gastos, liquidaciones, aportaciones (fase 8).
+- **Perfil** (`PATCH /auth/me`), **presupuestos**, **informe de consumo** mensual (P-17), **panel** `/dashboard` (fase 9).
+- Integridad SQL migraciones 6–8; CI `quality` + `database-integrity`.
 
-### Parcial o pendiente menor (no bloquea fase 8)
+### Parcial o pendiente menor (post-MVP)
 
 | Tema                                          | Estado                                            |
 | --------------------------------------------- | ------------------------------------------------- |
-| Edición de perfil y `timezone`                | Campo en BD; sin endpoint ni UI                   |
-| Presupuestos (`Budget`)                       | Solo esquema                                      |
-| E2E en CI                                     | Spec fases 6–7 existe; no corre en pipeline       |
+| E2E Playwright en CI                          | Specs locales; slice planificado fase 10          |
+| Dashboard API agregado multi-espacio          | Opcional; web compone en cliente                  |
+| Presupuesto vs consumo en UI                  | Opcional (API informe + budgets listos)           |
 | Deuda técnica API                             | Errores Prisma/trigger sin `code` → 500 ocasional |
 | Paginación cursor, renombrar cuenta/categoría | Fuera de prioridad                                |
 
@@ -86,27 +85,26 @@ Criterios de aceptación: ver [shared-expenses.md](../product/shared-expenses.md
 
 **Aceptación (provisional):** P-02 (salida del pagador al adelantar); P-05/P-06 (aportaciones y personal↔común); P-07 (vínculos de liquidación por lado + UX que facilite entrada al acreedor); tests de no filtración en respuestas SHARED.
 
-### Fase 9 — ✨ Presupuestos, informes y dashboard
+### Fase 9 — ✅ Presupuestos, informes y dashboard (MVP 2026-11-19)
 
-**Gate:** P-17 + `PATCH` perfil/timezone. Consumo vs flujo de caja según decisión.
+**Gate cumplido:** P-17 + B-9.1 perfil/timezone. Detalle: roadmaps B-9 / F-9. Mejoras opcionales documentadas en `current-status.md`.
 
-### Fase 10 — Producción
+### Fase 10 — Preparación para producción
 
-E2E en CI, rate limiting, revisión de seguridad, backups, políticas.
+**Primer slice aprobado:** [phase-10-slice-e2e-ci.md](./phase-10-slice-e2e-ci.md) (Playwright spec fases 6–7 en CI). Resto (rate limiting, backups, despliegue) pendiente de priorización.
 
-### 4.2 — Último miembro ACTIVE
+### 4.2 — ✅ Último miembro ACTIVE
 
-**C-05 aprobado:** leave permitido con confirmación fuerte (no 409 `LAST_ACTIVE_MEMBER`). Pendiente implementación en web.
+**C-05** implementado en web (F-8).
 
 ## 4. Riesgos activos
 
 | Riesgo                                           | Mitigación                                          |
 | ------------------------------------------------ | --------------------------------------------------- |
-| Migración B-8.0 sin revisión                     | Borrador → coordinación → aprobar → aplicar           |
-| Fuga de datos al vincular cuentas personales     | Tests de no filtración obligatorios en B-8          |
-| Informes sin P-17                                | No iniciar presupuestos/dashboard                   |
+| Entornos sin migración 8                         | README B-8.0 + checklist Release                    |
+| Fuga de datos al vincular cuentas personales     | Tests de no filtración en B-8 (entregados)          |
+| Regresiones flujo SHARED sin E2E en CI           | Fase 10 slice E2E; specs locales mantenidos        |
 | Drift de migraciones                             | `test:db` en CI; borrador → aprobación coordinación |
-| Regresiones flujo SHARED                         | Mantener E2E local; incorporar a CI en fase 10      |
 
 ## 5. Reglas de ejecución
 

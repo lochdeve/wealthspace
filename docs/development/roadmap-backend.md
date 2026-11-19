@@ -1,6 +1,6 @@
 # Roadmap backend (`apps/api`)
 
-Entregas del chat de backend. Las fases, sus dependencias y los criterios globales están en [roadmap.md](./roadmap.md); aquí solo el detalle del API. Estado verificado el 2026-11-18.
+Entregas del chat de backend. Las fases, sus dependencias y los criterios globales están en [roadmap.md](./roadmap.md); aquí solo el detalle del API. Estado verificado el 2026-11-19.
 
 Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · ✨ nueva · ⛔ bloqueada por una decisión.
 
@@ -11,7 +11,7 @@ Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · 
 | Área          | Implementado                                                                                                               | Tests                              |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
 | Fundación     | Config validada, `PrismaService`, health/readiness, Swagger                                                                | Unit (env, health)                 |
-| Auth          | Registro atómico, login/logout con cookie JWT, `GET /auth/me`, `JwtAuthGuard`                                              | Integración                        |
+| Auth          | Registro atómico, login/logout con cookie JWT, `GET/PATCH /auth/me`, `JwtAuthGuard`                                        | Integración                        |
 | Espacios      | Listar, crear SHARED, detalle, miembros, `SpaceMembershipGuard`                                                            | Integración + IDOR                 |
 | Invitaciones  | Crear, listar, revocar, aceptar, rechazar; TTL de 7 días                                                                   | Integración                        |
 | Membresía     | Leave/remove con reglas de rol y del único OWNER                                                                           | Integración                        |
@@ -85,8 +85,13 @@ Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (B-8.0…B-8.10).
 | B-9.1 | `PATCH /auth/me` (`displayName`, `timezone` IANA) | ✅ |
 | B-9.2 | CRUD presupuestos por espacio | ✅ |
 | B-9.3 | `GET …/reports/consumption` (mes local del usuario, P-17) | ✅ |
+| B-9.4 | (Opcional) `GET /dashboard/summary` multi-espacio          | ⬜ no MVP |
 
-Pendiente producto/UI: dashboard agregado, vista presupuesto vs real en un endpoint compuesto.
+**Fase 9 API:** ✅ cerrada MVP (B-9.1–9.3). Opcional B-9.4 no bloquea fase 10.
+
+## B-10 — Preparación producción
+
+Soporte a [phase-10-slice-e2e-ci.md](./phase-10-slice-e2e-ci.md): mantener seed/contratos E2E; deuda menor códigos Prisma. Sin reglas de negocio nuevas.
 
 ## B-4.1 — ✅ Transferencia de ownership (paralela, no bloqueante)
 

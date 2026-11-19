@@ -115,7 +115,7 @@ Prioridad: **Alta** = bloquea la siguiente fase de implementación; **Media** = 
 | -------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------ |
 | Transferencia de ownership (entrega 4.1)     | ✅ Implementada API + web                                          | [spaces-membership-mvp.md](./spaces-membership-mvp.md) |
 | Último miembro ACTIVE hace leave (4.2)       | ✅ Aprobado **C-05**: permitir con confirmación fuerte (no 409)    | [spaces-membership-mvp.md](./spaces-membership-mvp.md) |
-| Edición de perfil y zona horaria del usuario | Sin endpoint; necesaria antes de los informes mensuales (fase 9)   | [functional-scope.md](./functional-scope.md)           |
+| Edición de perfil y zona horaria del usuario | ✅ B-9.1 / F-9.1                                             | [functional-scope.md](./functional-scope.md)           |
 | Tipos compartidos web/api                    | Herramienta pendiente (openapi-typescript o tipos escritos a mano) | [contracts README](../../packages/contracts/README.md) |
 | Rebase frente a merge; aprobaciones de PR    | Pendiente de equipo                                                | [git-workflow.md](../development/git-workflow.md)      |
 

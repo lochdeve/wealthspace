@@ -1,6 +1,6 @@
 # Roadmap frontend (`apps/web`)
 
-Entregas del chat de frontend. Las fases, sus dependencias y los criterios globales están en [roadmap.md](./roadmap.md); aquí solo el detalle de la web. Estado verificado el 2026-11-18.
+Entregas del chat de frontend. Las fases, sus dependencias y los criterios globales están en [roadmap.md](./roadmap.md); aquí solo el detalle de la web. Estado verificado el 2026-11-19.
 
 Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · ✨ nueva · ⛔ bloqueada (por la API o por una decisión).
 
@@ -15,7 +15,7 @@ Leyenda: ✅ hecho · 🟡 parcial · ⬜ pendiente · 🔧 refactorización · 
 | Finanzas | Cuentas, categorías, movimientos; gasto compartido `/expenses/new`; gasto individual `/expenses/individual/new`; saldos y liquidaciones | `main` |
 | Tests    | Vitest para helpers (`lib/api`, `lib/spaces`, `lib/finance`); Playwright `e2e/auth.spec.ts`, `e2e/home.spec.ts` (fuera de la CI)        | —      |
 
-`/dashboard` redirige a `/spaces`; no hay dashboard financiero.
+`/dashboard` panel fase 9 (F-9.4); consume espacios + informes por espacio.
 
 ---
 
@@ -73,7 +73,13 @@ Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (F-8.1…F-8.7, *
 | F-9.3 | `/spaces/:id/reports/consumption` — informe mensual | ✅ |
 | F-9.4 | `/dashboard` — panel (consumo personal + enlaces por espacio) | ✅ |
 
-Pendiente opcional: edición inline de presupuestos (`PATCH`), comparativa presupuesto vs consumo en UI, E2E fase 9.
+**Fase 9 web:** ✅ MVP cerrada. Opcional: edición presupuestos (`PATCH`), comparativa presupuesto vs consumo, E2E fase 9.
+
+## F-10 — Preparación para producción
+
+| Entrega | Contenido |
+| ------- | --------- |
+| F-10.1 ⬜ | Playwright en CI — spec `shared-expenses-balances-settlements.spec.ts` ([phase-10-slice-e2e-ci.md](./phase-10-slice-e2e-ci.md)) |
 
 ## F-4.1 — ✨ Transferencia de ownership (paralela) ✅ (B-4.1)
 
