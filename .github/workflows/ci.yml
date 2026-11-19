@@ -24,6 +24,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate Prisma client (API typed ESLint)
+        run: pnpm --filter @wealthspace/api exec prisma generate
+
       - name: Format check
         run: pnpm run format:check
 

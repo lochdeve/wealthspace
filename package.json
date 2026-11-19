@@ -8,6 +8,7 @@
     "dev": "concurrently -n web,api -c blue,green \"pnpm --filter @wealthspace/web dev\" \"pnpm --filter @wealthspace/api dev\"",
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
+    "prelint": "pnpm --filter @wealthspace/api exec prisma generate",
     "lint": "pnpm -r run lint",
     "typecheck": "pnpm -r run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yml,yaml,mdc}\"",
