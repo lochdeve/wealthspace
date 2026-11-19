@@ -5,6 +5,7 @@ import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { listCategoriesWithCookie } from '@/lib/api/categories';
 import { getTransactionWithCookie } from '@/lib/api/transactions';
 import { categoryOptionLabel } from '@/lib/finance/category-options';
+import { CrossSpaceSummaryBadge } from '@/components/finance/cross-space-summary-badge';
 import { EditTransactionForm } from '@/components/finance/edit-transaction-form';
 import { formatMoneyAmount } from '@/lib/finance/format-money';
 import { transactionTypeLabel } from '@/lib/finance/labels';
@@ -79,6 +80,9 @@ export default async function TransactionDetailPage({ params }: PageProps) {
             <p className={styles.lead}>Categoría: {categoryLabel}</p>
           ) : transaction.type === 'INCOME' || transaction.type === 'EXPENSE' ? (
             <p className={styles.lead}>Sin categoría asignada</p>
+          ) : null}
+          {transaction.crossSpaceSummary ? (
+            <CrossSpaceSummaryBadge summary={transaction.crossSpaceSummary} />
           ) : null}
         </div>
         <Link href={backHref}>← Cuenta</Link>

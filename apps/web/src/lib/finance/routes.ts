@@ -65,3 +65,7 @@ export function registerSettlementHref(
     currency: prefill?.currency,
   })}`;
 }
+
+export function contributeToAccountHref(spaceId: string, accountId: string): string {
+  return `/spaces/${spaceId}/accounts/${accountId}/contribute`;
+}

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Account, Category } from '@/lib/api/finance-types';
 import type { SpaceType } from '@/lib/api/space-types';
-import { individualExpenseHref } from '@/lib/finance/routes';
+import { contributeToAccountHref, individualExpenseHref } from '@/lib/finance/routes';
 import { ArchiveAccountButton } from '@/components/finance/archive-account-button';
 import { OpeningBalanceForm } from '@/components/finance/opening-balance-form';
 import { RecordCashflowForm } from '@/components/finance/record-cashflow-form';
@@ -53,12 +53,26 @@ export function AccountDetailOperations({
           </div>
           <div>
             <h3 className={financeStyles.legend}>Ingreso</h3>
-            <RecordCashflowForm
-              spaceId={spaceId}
-              accountId={account.id}
-              kind="INCOME"
-              categories={incomeCategories}
-            />
+            {spaceType === 'SHARED' ? (
+              <section className={financeStyles.form} aria-labelledby="account-contribution-title">
+                <p id="account-contribution-title" className={financeStyles.meta}>
+                  Para ingresar dinero en la caja común con tu nombre como aportante, usa
+                  aportaciones (P-05). No genera deudas entre miembros.
+                </p>
+                <p>
+                  <Link href={contributeToAccountHref(spaceId, account.id)}>
+                    Aportar a esta cuenta común
+                  </Link>
+                </p>
+              </section>
+            ) : (
+              <RecordCashflowForm
+                spaceId={spaceId}
+                accountId={account.id}
+                kind="INCOME"
+                categories={incomeCategories}
+              />
+            )}
           </div>
           <div>
             <h3 className={financeStyles.legend}>Gasto</h3>

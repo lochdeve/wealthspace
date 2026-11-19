@@ -15,6 +15,21 @@ export type CreateAccountInput = {
 
 export type TransactionType = 'INCOME' | 'EXPENSE' | 'TRANSFER' | 'OPENING_BALANCE';
 
+export type CrossSpaceLinkKind =
+  | 'SHARED_EXPENSE_MEMBER_PAYMENT'
+  | 'SETTLEMENT_FROM_OUT'
+  | 'SETTLEMENT_TO_IN'
+  | 'CONTRIBUTION_PAIR';
+
+export type CrossSpaceSummary = {
+  kind: CrossSpaceLinkKind;
+  sharedSpaceId: string;
+  sharedSpaceName: string;
+  sharedExpenseId?: string;
+  settlementId?: string;
+  contributionGroupId?: string;
+};
+
 export type FinancialTransaction = {
   id: string;
   type: TransactionType;
@@ -31,6 +46,7 @@ export type FinancialTransaction = {
   version: number;
   createdAt: string;
   updatedAt: string;
+  crossSpaceSummary?: CrossSpaceSummary;
 };
 
 export type CreateOpeningBalanceInput = {

@@ -59,7 +59,8 @@ Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (F-8.1…F-8.7, *
 | F-8.2 ✅ | CTA «Vincular pago personal» en detalle (`link-personal-payment`) |
 | F-8.3 ✅ | P-07 `personalCashFlow` al registrar (mi lado) |
 | F-8.4 ✅ | Aviso acreedor + `link-personal-cash-flow` (Saldos y liquidaciones) |
-| F-8.5–6 ⬜ | Aportaciones + badge movimientos PERSONAL |
+| F-8.5 ✅ | Aportaciones a cuenta común (`/accounts/:id/contribute`) |
+| F-8.6 ✅ | Badge `crossSpaceSummary` en listados y detalle tx PERSONAL |
 | C-05 ⬜ | Leave último ACTIVE: confirmación fuerte |
 
 ## F-9 — ✨ Presupuestos, informes, dashboard y perfil ⛔ (B-9)

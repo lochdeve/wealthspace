@@ -3,6 +3,7 @@ import type { Account, FinancialTransaction, TransactionType } from '@/lib/api/f
 import type { SpaceMember } from '@/lib/api/space-types';
 import { formatMoneyAmount } from '@/lib/finance/format-money';
 import { transactionTypeLabel } from '@/lib/finance/labels';
+import { CrossSpaceSummaryBadge } from '@/components/finance/cross-space-summary-badge';
 import { transactionContextLine } from '@/lib/finance/transaction-summary';
 import styles from './finance-forms.module.css';
 
@@ -71,6 +72,9 @@ export function SpaceTransactionsPanel({
               </div>
               {tx.description ? <p className={styles.meta}>{tx.description}</p> : null}
               {context ? <p className={styles.meta}>{context}</p> : null}
+              {tx.crossSpaceSummary ? (
+                <CrossSpaceSummaryBadge summary={tx.crossSpaceSummary} />
+              ) : null}
               <p className={styles.meta}>
                 Fecha: {new Date(tx.occurredAt).toLocaleString('es')}
                 {tx.createdAt !== tx.occurredAt
