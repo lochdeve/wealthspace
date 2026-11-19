@@ -2,6 +2,7 @@ import { apiRequest } from '@/lib/api/client';
 import { toQueryString } from '@/lib/api/query';
 import type {
   CreateSettlementInput,
+  LinkSettlementPersonalCashFlowInput,
   ListSettlementsQuery,
   Settlement,
   VoidSettlementInput,
@@ -43,6 +44,20 @@ export function createSettlement(
     method: 'POST',
     body: data,
   });
+}
+
+export function linkSettlementPersonalCashFlow(
+  spaceId: string,
+  settlementId: string,
+  data: LinkSettlementPersonalCashFlowInput,
+): Promise<Settlement> {
+  return apiRequest<Settlement>(
+    `/spaces/${spaceId}/settlements/${settlementId}/link-personal-cash-flow`,
+    {
+      method: 'POST',
+      body: data,
+    },
+  );
 }
 
 export function voidSettlement(

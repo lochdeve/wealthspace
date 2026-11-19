@@ -1,3 +1,9 @@
+export type SettlementPersonalCashLink = {
+  linked: boolean;
+  canLink: boolean;
+  side: 'from' | 'to';
+};
+
 export type Settlement = {
   id: string;
   fromUserId: string;
@@ -9,6 +15,7 @@ export type Settlement = {
   voidedAt?: string | null;
   version: number;
   warnings?: string[];
+  myPersonalCashLink?: SettlementPersonalCashLink;
 };
 
 export type CreateSettlementInput = {
@@ -17,6 +24,12 @@ export type CreateSettlementInput = {
   amount: string;
   currency: string;
   occurredAt?: string;
+  personalCashFlow?: { accountId: string };
+};
+
+export type LinkSettlementPersonalCashFlowInput = {
+  accountId: string;
+  expectedVersion: number;
 };
 
 export type VoidSettlementInput = {

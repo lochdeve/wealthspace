@@ -1,6 +1,6 @@
 # Estado actual del desarrollo
 
-**Última actualización:** 2026-11-19 — **F-8.1/F-8.2** web (P-02 vínculo pagador); siguiente **F-8.3–4** (P-07).
+**Última actualización:** 2026-11-19 — **F-8.3/F-8.4** (P-07 liquidaciones); siguiente **F-8.5–6**.
 
 Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/decisions.md) · Contratos: [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 
@@ -20,7 +20,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Espacios                          | ✅ 4.1; **4.2 C-05** pendiente UI | ✅ F-4.1                        |
 | Finanzas base                     | ✅                                | ✅ F-R2                         |
 | Gastos / saldos / liquidaciones   | ✅ B-6, B-7                       | ✅ F-6, F-7                     |
-| Cuentas vinculadas (fase 8)       | ✅ B-8.1–B-8.10; **B-8.0** SQL (deploy local por máquina) | 🟡 F-8.1–2 ✅; F-8.3–7 ⬜      |
+| Cuentas vinculadas (fase 8)       | ✅ B-8.1–B-8.10; **B-8.0** SQL (deploy local por máquina) | 🟡 F-8.1–4 ✅; F-8.5–7 ⬜    |
 | Presupuestos / dashboard (fase 9) | ⬜                                | ⬜                              |
 
 ## Decisiones
@@ -35,7 +35,7 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | ---------------- | ----------------------------------------------------------------- | -------- |
 | **Coordinación** | — (fase 8 código cerrado salvo bugs)                              | —        |
 | **Backend**      | Deuda menor API; soporte F-8; **no** fase 9 hasta acuerdo           | —        |
-| **Frontend**     | **F-8.3–4** (liquidación P-07); luego F-8.5–6; **C-05** en paralelo | `migrate deploy` fase 8 en local |
+| **Frontend**     | **F-8.5–6** (aportaciones + badge PERSONAL); **C-05** en paralelo   | `migrate deploy` fase 8 en local |
 | **Release**      | Incluir **migrate deploy** fase 8 en entornos compartidos / CI      | —        |
 
 ## Notas operativas

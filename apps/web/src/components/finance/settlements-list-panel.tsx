@@ -13,7 +13,11 @@ import {
   settlementActionErrorMessage,
   settlementWarningMessage,
 } from '@/lib/finance/settlement-messages';
+import type { Account } from '@/lib/api/finance-types';
+import { settlementNeedsPersonalCashLink } from '@/lib/finance/personal-cash-link';
 import { canVoidSettlement } from '@/lib/finance/settlement-permissions';
+import { LinkSettlementPersonalCashFlowForm } from '@/components/finance/link-settlement-personal-cash-flow-form';
+import { SettlementCreditorLinkBanners } from '@/components/finance/settlement-creditor-link-banners';
 import { Button } from '@/components/ui/button';
 import styles from './finance-forms.module.css';
 import ui from '@/components/ui/ui.module.css';
@@ -26,6 +30,7 @@ type SettlementsListPanelProps = {
   actorRole: MembershipRole;
   includeVoided: boolean;
   warningCode?: string;
+  personalAccounts?: Account[];
 };
 
 function memberName(members: SpaceMember[], userId: string): string {
@@ -40,6 +45,7 @@ export function SettlementsListPanel({
   actorRole,
   includeVoided,
   warningCode,
+  personalAccounts = [],
 }: SettlementsListPanelProps) {
   const router = useRouter();
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -80,6 +86,13 @@ export function SettlementsListPanel({
           {settlementWarningMessage(warningCode)}
         </p>
       ) : null}
+      <SettlementCreditorLinkBanners
+        spaceId={spaceId}
+        currentUserId={viewerUserId}
+        settlements={settlements}
+        members={members}
+        personalAccounts={personalAccounts}
+      />
       <nav className={styles.inlineActions} aria-label="Filtros">
         <Link
           href={settlementsHref(spaceId)}
@@ -111,6 +124,10 @@ export function SettlementsListPanel({
             const toName = memberName(members, row.toUserId);
             const voided = Boolean(row.voidedAt);
             const canVoid = !voided && canVoidSettlement(actorRole, viewerUserId, row);
+            const showPersonalLink =
+              !voided &&
+              personalAccounts.length > 0 &&
+              settlementNeedsPersonalCashLink(row, viewerUserId);
             return (
               <li key={row.id} className={styles.listItem}>
                 <div className={styles.listItemHeader}>
@@ -125,6 +142,22 @@ export function SettlementsListPanel({
                     <strong>Anulada</strong>
                     {row.voidedAt ? ` · ${new Date(row.voidedAt).toLocaleString('es')}` : ''}
                   </p>
+                ) : null}
+                {row.myPersonalCashLink?.linked ? (
+                  <p className={styles.meta} role="status">
+                    Tu movimiento personal está vinculado a esta liquidación.
+                  </p>
+                ) : null}
+                {showPersonalLink ? (
+                  <LinkSettlementPersonalCashFlowForm
+                    spaceId={spaceId}
+                    settlement={row}
+                    personalAccounts={personalAccounts}
+                    currentUserId={viewerUserId}
+                    counterpartyName={
+                      viewerUserId === row.toUserId ? fromName : toName
+                    }
+                  />
                 ) : null}
                 {canVoid ? (
                   <Button

@@ -15,6 +15,15 @@ vi.mock('@/lib/api/settlements', () => ({
 
 const createMock = vi.mocked(createSettlement);
 
+const personalAccount = {
+  id: 'personal-1',
+  name: 'Wallet',
+  currency: 'EUR',
+  balance: '0',
+  createdAt: '',
+  updatedAt: '',
+};
+
 const members = [
   {
     userId: 'carlos',
@@ -55,6 +64,7 @@ describe('RegisterSettlementForm', () => {
         currentUserId="carlos"
         actorRole="MEMBER"
         members={members}
+        personalAccounts={[personalAccount]}
         defaultFromUserId="carlos"
         defaultToUserId="ana"
         defaultAmount="20"
@@ -68,5 +78,39 @@ describe('RegisterSettlementForm', () => {
     expect(push).toHaveBeenCalledWith(
       '/spaces/space-1/settlements?warning=SETTLEMENT_EXCEEDS_PENDING_DEBT',
     );
+  });
+
+  it('sends personalCashFlow when debtor annotates personal account', async () => {
+    createMock.mockResolvedValueOnce({
+      id: 'stl-2',
+      fromUserId: 'carlos',
+      toUserId: 'ana',
+      amount: '15.0000',
+      currency: 'EUR',
+      occurredAt: '',
+      recordedByUserId: 'carlos',
+      version: 1,
+    });
+    render(
+      <RegisterSettlementForm
+        spaceId="space-1"
+        currentUserId="carlos"
+        actorRole="MEMBER"
+        members={members}
+        personalAccounts={[personalAccount]}
+        defaultFromUserId="carlos"
+        defaultToUserId="ana"
+        defaultAmount="15"
+        defaultCurrency="EUR"
+      />,
+    );
+
+    fireEvent.click(screen.getByLabelText(/Anotar en mi cuenta personal/i));
+    fireEvent.click(screen.getByRole('button', { name: 'Registrar pago' }));
+
+    await waitFor(() => expect(createMock).toHaveBeenCalled());
+    expect(createMock.mock.calls[0]?.[1]).toMatchObject({
+      personalCashFlow: { accountId: 'personal-1' },
+    });
   });
 });

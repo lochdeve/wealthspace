@@ -11,6 +11,12 @@ const SETTLEMENT_ERROR_MESSAGES: Record<string, string> = {
   ALREADY_VOIDED: 'Esta liquidación ya está anulada.',
   AMOUNT_PRECISION_INVALID: 'El importe tiene más decimales de los que admite la moneda.',
   CURRENCY_NOT_SUPPORTED: 'Moneda no válida.',
+  PERSONAL_LINK_NOT_ALLOWED: 'No puedes vincular tu cuenta en esta liquidación.',
+  PERSONAL_LINK_ALREADY_EXISTS: 'Tu lado de esta liquidación ya está vinculado.',
+  PERSONAL_ACCOUNT_NOT_OWNED: 'La cuenta no pertenece a tu espacio personal.',
+  CROSS_SPACE_CURRENCY_MISMATCH: 'La moneda de la cuenta debe coincidir con la de la liquidación.',
+  ACCOUNT_NOT_FOUND: 'No se encontró la cuenta.',
+  ACCOUNT_ARCHIVED: 'No puedes usar una cuenta archivada.',
 };
 
 const SETTLEMENT_WARNING_MESSAGES: Record<string, string> = {

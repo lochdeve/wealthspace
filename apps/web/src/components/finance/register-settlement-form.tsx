@@ -1,10 +1,21 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import type { Account } from '@/lib/api/finance-types';
 import type { MembershipRole, SpaceMember } from '@/lib/api/space-types';
 import { createSettlement } from '@/lib/api/settlements';
 import { isPositiveAmount, normalizeAmountInput } from '@/lib/finance/amount';
+import {
+  readLastPersonalAccountId,
+  writeLastPersonalAccountId,
+} from '@/lib/finance/last-personal-account';
+import {
+  activeAccountsMatchingCurrency,
+  canRegisterSettlementPersonalCashFlow,
+  settlementActorSide,
+  settlementPersonalCashFlowHint,
+} from '@/lib/finance/personal-cash-link';
 import { settlementActionErrorMessage } from '@/lib/finance/settlement-messages';
 import { canRegisterSettlement } from '@/lib/finance/settlement-permissions';
 import { settlementsHref } from '@/lib/finance/routes';
@@ -18,6 +29,7 @@ type RegisterSettlementFormProps = {
   currentUserId: string;
   actorRole: MembershipRole;
   members: SpaceMember[];
+  personalAccounts: Account[];
   defaultFromUserId?: string;
   defaultToUserId?: string;
   defaultAmount?: string;
@@ -29,6 +41,7 @@ export function RegisterSettlementForm({
   currentUserId,
   actorRole,
   members,
+  personalAccounts,
   defaultFromUserId = '',
   defaultToUserId = '',
   defaultAmount = '',
@@ -40,8 +53,45 @@ export function RegisterSettlementForm({
   const [amount, setAmount] = useState(defaultAmount);
   const [currency, setCurrency] = useState(defaultCurrency.toUpperCase());
   const [occurredAt, setOccurredAt] = useState('');
+  const [annotatePersonalCash, setAnnotatePersonalCash] = useState(false);
+  const [personalAccountId, setPersonalAccountId] = useState('');
   const [pending, setPending] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+
+  const actorSide = settlementActorSide(fromUserId, toUserId, currentUserId);
+  const showPersonalCashFlow =
+    actorSide !== null && canRegisterSettlementPersonalCashFlow(fromUserId, toUserId, currentUserId);
+
+  const personalAccountOptions = useMemo(
+    () => activeAccountsMatchingCurrency(personalAccounts, currency),
+    [personalAccounts, currency],
+  );
+
+  useEffect(() => {
+    if (!showPersonalCashFlow) {
+      setAnnotatePersonalCash(false);
+      setPersonalAccountId('');
+      return;
+    }
+    if (!annotatePersonalCash) {
+      return;
+    }
+    const remembered = readLastPersonalAccountId(currentUserId);
+    const initial =
+      (remembered && personalAccountOptions.some((row) => row.id === remembered)
+        ? remembered
+        : null) ?? personalAccountOptions[0]?.id ?? '';
+    setPersonalAccountId((current) =>
+      current && personalAccountOptions.some((row) => row.id === current) ? current : initial,
+    );
+  }, [
+    showPersonalCashFlow,
+    annotatePersonalCash,
+    currentUserId,
+    personalAccountOptions,
+    fromUserId,
+    toUserId,
+  ]);
 
   const maySubmit =
     fromUserId &&
@@ -65,6 +115,10 @@ export function RegisterSettlementForm({
       setFormError('No puedes registrar este pago con tu rol en el espacio.');
       return;
     }
+    if (annotatePersonalCash && !personalAccountId) {
+      setFormError('Selecciona una cuenta personal o desmarca la anotación.');
+      return;
+    }
 
     setPending(true);
     try {
@@ -74,7 +128,13 @@ export function RegisterSettlementForm({
         amount: normalized,
         currency: currency.trim().toUpperCase(),
         occurredAt: occurredAt ? new Date(occurredAt).toISOString() : undefined,
+        ...(annotatePersonalCash && personalAccountId
+          ? { personalCashFlow: { accountId: personalAccountId } }
+          : {}),
       });
+      if (annotatePersonalCash && personalAccountId) {
+        writeLastPersonalAccountId(currentUserId, personalAccountId);
+      }
       const warning = result.warnings?.[0];
       router.push(settlementsHref(spaceId, warning ? { warning } : undefined));
       router.refresh();
@@ -156,6 +216,47 @@ export function RegisterSettlementForm({
           disabled={pending}
         />
       </Field>
+      {showPersonalCashFlow && actorSide ? (
+        <fieldset className={styles.fieldset}>
+          <legend className={styles.legend}>Mi cuenta personal (opcional)</legend>
+          <p className={styles.meta}>{settlementPersonalCashFlowHint(actorSide)}</p>
+          <label className={styles.checkRow} htmlFor="settlement-annotate-personal">
+            <input
+              id="settlement-annotate-personal"
+              type="checkbox"
+              checked={annotatePersonalCash}
+              onChange={(event) => setAnnotatePersonalCash(event.target.checked)}
+              disabled={pending}
+            />
+            <span>Anotar en mi cuenta personal al registrar</span>
+          </label>
+          {annotatePersonalCash ? (
+            personalAccountOptions.length === 0 ? (
+              <p className={styles.meta} role="status">
+                No tienes cuentas personales activas en{' '}
+                {currency.trim().toUpperCase() || 'esta moneda'}.
+              </p>
+            ) : (
+              <Field id="settlement-personal-account" label="Cuenta personal">
+                <select
+                  id="settlement-personal-account"
+                  className={styles.selectNative}
+                  value={personalAccountId}
+                  onChange={(event) => setPersonalAccountId(event.target.value)}
+                  disabled={pending}
+                  required
+                >
+                  {personalAccountOptions.map((row) => (
+                    <option key={row.id} value={row.id}>
+                      {row.name} ({row.currency})
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            )
+          ) : null}
+        </fieldset>
+      ) : null}
       <Button type="submit" disabled={pending || !maySubmit}>
         {pending ? 'Guardando…' : 'Registrar pago'}
       </Button>

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getSessionCookieHeader, getCurrentUser, requireUser } from '@/lib/auth/session.server';
 import { rethrowUnlessSpaceFound } from '@/lib/api/page-errors.server';
+import { listAccountsWithCookie } from '@/lib/api/accounts';
 import { listSpaceMembersWithCookie } from '@/lib/api/memberships';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { RegisterSettlementForm } from '@/components/finance/register-settlement-form';
@@ -41,7 +42,10 @@ export default async function NewSettlementPage({ params, searchParams }: PagePr
     redirect(`/spaces/${spaceId}/accounts`);
   }
 
-  const members = await listSpaceMembersWithCookie(spaceId, cookieHeader);
+  const [members, personalAccounts] = await Promise.all([
+    listSpaceMembersWithCookie(spaceId, cookieHeader),
+    listAccountsWithCookie(user.personalSpaceId, cookieHeader),
+  ]);
 
   return (
     <article aria-labelledby="new-settlement-title">
@@ -66,6 +70,7 @@ export default async function NewSettlementPage({ params, searchParams }: PagePr
         currentUserId={user.id}
         actorRole={space.role}
         members={members}
+        personalAccounts={personalAccounts}
         defaultFromUserId={query.fromUserId}
         defaultToUserId={query.toUserId}
         defaultAmount={query.amount}

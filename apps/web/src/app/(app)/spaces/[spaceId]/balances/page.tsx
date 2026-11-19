@@ -2,8 +2,11 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getSessionCookieHeader, getCurrentUser, requireUser } from '@/lib/auth/session.server';
 import { rethrowUnlessSpaceFound } from '@/lib/api/page-errors.server';
+import { listAccountsWithCookie } from '@/lib/api/accounts';
 import { getSpaceBalancesWithCookie } from '@/lib/api/balances';
 import { listSpaceMembersWithCookie } from '@/lib/api/memberships';
+import { listSettlementsWithCookie } from '@/lib/api/settlements';
+import { SettlementCreditorLinkBanners } from '@/components/finance/settlement-creditor-link-banners';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { SpaceBalancesPanel } from '@/components/finance/space-balances-panel';
 import { SpaceFinanceNav } from '@/components/finance/space-finance-nav';
@@ -35,9 +38,11 @@ export default async function SpaceBalancesPage({ params }: PageProps) {
     redirect(`/spaces/${spaceId}/accounts`);
   }
 
-  const [balances, members] = await Promise.all([
+  const [balances, members, settlements, personalAccounts] = await Promise.all([
     getSpaceBalancesWithCookie(spaceId, cookieHeader),
     listSpaceMembersWithCookie(spaceId, cookieHeader),
+    listSettlementsWithCookie(spaceId, cookieHeader, { limit: 100 }),
+    listAccountsWithCookie(user.personalSpaceId, cookieHeader),
   ]);
 
   return (
@@ -57,6 +62,13 @@ export default async function SpaceBalancesPage({ params }: PageProps) {
         </nav>
       </header>
       <SpaceFinanceNav spaceId={spaceId} spaceType={space.type} />
+      <SettlementCreditorLinkBanners
+        spaceId={spaceId}
+        currentUserId={user.id}
+        settlements={settlements}
+        members={members}
+        personalAccounts={personalAccounts}
+      />
       <SpaceBalancesPanel
         spaceId={spaceId}
         balances={balances}

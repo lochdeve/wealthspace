@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getSessionCookieHeader, getCurrentUser, requireUser } from '@/lib/auth/session.server';
 import { rethrowUnlessSpaceFound } from '@/lib/api/page-errors.server';
+import { listAccountsWithCookie } from '@/lib/api/accounts';
 import { listSpaceMembersWithCookie } from '@/lib/api/memberships';
 import { getSpaceWithCookie } from '@/lib/api/spaces';
 import { listSettlementsWithCookie } from '@/lib/api/settlements';
@@ -38,9 +39,10 @@ export default async function SettlementsPage({ params, searchParams }: PageProp
     redirect(`/spaces/${spaceId}/accounts`);
   }
 
-  const [settlements, members] = await Promise.all([
+  const [settlements, members, personalAccounts] = await Promise.all([
     listSettlementsWithCookie(spaceId, cookieHeader, { includeVoided, limit: 100 }),
     listSpaceMembersWithCookie(spaceId, cookieHeader),
+    listAccountsWithCookie(user.personalSpaceId, cookieHeader),
   ]);
 
   return (
@@ -68,6 +70,7 @@ export default async function SettlementsPage({ params, searchParams }: PageProp
         actorRole={space.role}
         includeVoided={includeVoided}
         warningCode={warning}
+        personalAccounts={personalAccounts}
       />
     </section>
   );

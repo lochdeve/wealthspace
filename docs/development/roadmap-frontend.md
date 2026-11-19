@@ -57,7 +57,8 @@ Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (F-8.1…F-8.7, *
 | ------- | ------- |
 | F-8.1 ✅ | P-02 selector «Pagado desde mi cuenta» en alta (solo pagador = yo) |
 | F-8.2 ✅ | CTA «Vincular pago personal» en detalle (`link-personal-payment`) |
-| F-8.3–4 ⬜ | P-07 liquidación + aviso acreedor «anotar cobro» |
+| F-8.3 ✅ | P-07 `personalCashFlow` al registrar (mi lado) |
+| F-8.4 ✅ | Aviso acreedor + `link-personal-cash-flow` (Saldos y liquidaciones) |
 | F-8.5–6 ⬜ | Aportaciones + badge movimientos PERSONAL |
 | C-05 ⬜ | Leave último ACTIVE: confirmación fuerte |
 
