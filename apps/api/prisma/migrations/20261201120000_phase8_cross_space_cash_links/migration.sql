@@ -1,6 +1,5 @@
 -- B-8.0 (fase 8): cross_space_cash_links + P-05 SHARED INCOME with contributor (attributed_to_user_id).
--- DRAFT — apply only after coordination review. Do NOT `migrate deploy` in dev until approved.
--- After apply: sync manual integrity in prisma/sql/custom-integrity.sql (source of truth).
+-- Approved 2026-11-19 (coordination). custom-integrity.sql synchronized.
 
 CREATE TYPE "CrossSpaceCashLinkKind" AS ENUM (
   'SHARED_EXPENSE_MEMBER_PAYMENT',

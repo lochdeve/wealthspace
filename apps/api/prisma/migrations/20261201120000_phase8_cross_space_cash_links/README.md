@@ -1,7 +1,13 @@
-# B-8.0 — Phase 8 cross-space cash links (DRAFT)
+# B-8.0 — Phase 8 cross-space cash links
 
-**Do not run `prisma migrate deploy` in dev/prod until coordination approves this SQL.**
+**Estado:** ✅ aprobada por coordinación (2026-11-19).
 
-After approval: `pnpm --filter @wealthspace/api exec prisma migrate deploy` and sync `prisma/sql/custom-integrity.sql`.
+Aplicar en cada entorno de desarrollo:
 
-Tests: `pnpm --filter @wealthspace/api test:db` (applies this migration in the disposable test DB via `resetSchema`).
+```bash
+pnpm --filter @wealthspace/api exec prisma migrate deploy
+```
+
+`prisma/sql/custom-integrity.sql` ya debe estar alineado (fuente de verdad post-migración).
+
+Tests: `pnpm --filter @wealthspace/api test:db` (incl. `phase8-cross-space-integrity.integration.spec.ts`).

@@ -1,6 +1,6 @@
 # Estado actual del desarrollo
 
-**Última actualización:** 2026-11-19 — **B-8.10** catálogo cerrado; **B-8.0** migración pendiente de revisión/deploy.
+**Última actualización:** 2026-11-19 — **B-8.0** migración **aprobada**; aplicar `migrate deploy` en cada dev local; **F-8** desbloqueado (contrato + BD local).
 
 Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/decisions.md) · Contratos: [frontend-api-dependencies.md](./frontend-api-dependencies.md).
 
@@ -20,23 +20,23 @@ Roadmap: [roadmap.md](./roadmap.md) · Decisiones: [decisions.md](../product/dec
 | Espacios                          | ✅ 4.1; **4.2 C-05** pendiente UI | ✅ F-4.1                        |
 | Finanzas base                     | ✅                                | ✅ F-R2                         |
 | Gastos / saldos / liquidaciones   | ✅ B-6, B-7                       | ✅ F-6, F-7                     |
-| Cuentas vinculadas (fase 8)       | ✅ B-8.1–B-8.10 código; 🟡 B-8.0 deploy | ⬜ F-8 puede arrancar (con `test:db` / migración local) |
+| Cuentas vinculadas (fase 8)       | ✅ B-8.1–B-8.10; **B-8.0** SQL ✅ (deploy local pendiente por máquina) | ⬜ **F-8.1+** |
 | Presupuestos / dashboard (fase 9) | ⬜                                | ⬜                              |
 
 ## Decisiones
 
 **Aprobadas hoy:** P-01…P-07, P-17, C-05 (4.2). Detalle: [decisions.md §2e](../product/decisions.md#2e-decisiones-aprobadas--fase-8-cuentas-vinculadas-2026-11-18).
 
-**Gate fase 8:** ✅ plan aprobado; migración aún requiere **revisión explícita** del SQL de B-8.0 antes de aplicar.
+**Gate fase 8:** ✅ plan + **B-8.0 SQL** aprobados. Cada dev: `prisma migrate deploy` (ver README migración fase 8).
 
 ## Siguiente tarea por chat
 
 | Chat             | Tarea                                                             | Bloqueos |
 | ---------------- | ----------------------------------------------------------------- | -------- |
-| **Coordinación** | **Revisar SQL** `20261201120000_phase8_cross_space_cash_links`     | —        |
-| **Backend**      | **B-8.10** ✅; soporte a **revisión SQL** B-8.0; sin fase 9 hasta migración aprobada | —        |
-| **Frontend**     | **F-8.1** (gasto + cuenta personal pagador); **C-05** en paralelo si aplica | Catálogo B-8.10 |
-| **Release**      | `migrate deploy` 6+7 en cada entorno                              | —        |
+| **Coordinación** | — (fase 8 código cerrado salvo bugs)                              | —        |
+| **Backend**      | Deuda menor API; soporte F-8; **no** fase 9 hasta acuerdo           | —        |
+| **Frontend**     | **F-8.1** → F-8.7; **C-05** en paralelo                           | `migrate deploy` local para probar vínculos |
+| **Release**      | Incluir **migrate deploy** fase 8 en entornos compartidos / CI      | —        |
 
 ## Notas operativas
 
