@@ -79,7 +79,7 @@ Plan: [phase-8-technical-plan.md](./phase-8-technical-plan.md) (F-8.1…F-8.7, *
 
 | Entrega | Contenido |
 | ------- | --------- |
-| F-10.1 ⬜ | Playwright en CI — spec `shared-expenses-balances-settlements.spec.ts` ([phase-10-slice-e2e-ci.md](./phase-10-slice-e2e-ci.md)) |
+| F-10.1 ✅ | Playwright en CI — spec `shared-expenses-balances-settlements.spec.ts` ([phase-10-slice-e2e-ci.md](./phase-10-slice-e2e-ci.md)) |
 
 ## F-4.1 — ✨ Transferencia de ownership (paralela) ✅ (B-4.1)
 
@@ -87,7 +87,7 @@ UI en el detalle del espacio para el OWNER; actualizar los mensajes de `CANNOT_L
 
 ## Transversal
 
-- E2E Playwright fases 6–7: spec `e2e/shared-expenses-balances-settlements.spec.ts` (gasto igual → saldos → liquidación parcial → anular); seed HTTP en `e2e/helpers/api.ts`. CI en fase 10.
+- E2E Playwright fases 6–7: spec `e2e/shared-expenses-balances-settlements.spec.ts` (gasto igual → saldos → liquidación parcial → anular); seed HTTP en `e2e/helpers/api.ts`. **En CI** (job `e2e`); `phase8-personal-cash-flow.spec.ts` solo local.
 - P-19 ✅ aviso informativo (no bloquea) en leave/remove si el saldo neto del usuario ≠ 0 (`GET /balances` antes del confirm).
 - Estados de carga, vacío y error en todas las vistas nuevas; accesibilidad de formularios con varios inputs por participante.
 

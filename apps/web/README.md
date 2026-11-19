@@ -26,7 +26,7 @@ Desde la raíz: `pnpm --filter @wealthspace/web dev`.
 
 - **Requisitos:** API Nest en `NEXT_PUBLIC_API_URL` (p. ej. `http://localhost:3001`) con PostgreSQL; web en `3000`. `test:e2e` arranca solo Next (`webServer`) salvo en CI (`CI=true` desactiva el servidor embebido) — la API debe estar ya levantada.
 - Specs que mutan datos (`e2e/shared-expenses-balances-settlements.spec.ts`, `e2e/phase8-personal-cash-flow.spec.ts`) crean usuarios vía `POST /auth/register` y un espacio SHARED por HTTP (`e2e/helpers/api.ts`); requieren migraciones fase 7 y 8 en la API y un proceso `apps/api` en el **mismo `main`** (si la API es antigua, `phase8-personal-cash-flow.spec.ts` falla al arrancar con un mensaje sobre `personalAccountId`).
-- El workflow actual de GitHub Actions **no** ejecuta E2E; solo calidad unitaria y el job `database-integrity`.
+- **CI** (job `e2e` en `.github/workflows/ci.yml`): Postgres 17, `prisma migrate deploy`, API `start:prod` en `3001`, Next `start` en `3000`, spec obligatorio `shared-expenses-balances-settlements.spec.ts`. Variables en el job: `DATABASE_URL`, `JWT_SECRET`, `NEXT_PUBLIC_API_URL`, `PLAYWRIGHT_BASE_URL`, `PLAYWRIGHT_API_URL`, `WEB_ORIGIN` (sin secretos en repo; JWT de prueba solo en CI).
 
 ## Variables de entorno
 

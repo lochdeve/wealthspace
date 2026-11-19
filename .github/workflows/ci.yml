@@ -88,3 +88,86 @@ jobs:
 
       - name: PostgreSQL integrity tests
         run: pnpm --filter @wealthspace/api test:db
+
+  e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: wealthspace_ci
+          POSTGRES_PASSWORD: wealthspace_ci_secret
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U wealthspace_ci -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      CI: true
+      DATABASE_URL: postgresql://wealthspace_ci:wealthspace_ci_secret@127.0.0.1:5432/wealthspace_e2e?schema=public
+      JWT_SECRET: wealthspace-ci-e2e-jwt-secret-min-32-chars
+      API_PORT: '3001'
+      WEB_ORIGIN: http://localhost:3000
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      PLAYWRIGHT_BASE_URL: http://localhost:3000
+      PLAYWRIGHT_API_URL: http://localhost:3001
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.16.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create disposable E2E database
+        env:
+          PGPASSWORD: wealthspace_ci_secret
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y postgresql-client
+          psql -h 127.0.0.1 -U wealthspace_ci -d postgres -v ON_ERROR_STOP=1 \
+            -c "CREATE DATABASE wealthspace_e2e;"
+
+      - name: Apply Prisma migrations
+        run: pnpm --filter @wealthspace/api exec prisma migrate deploy
+
+      - name: Build API and web
+        run: |
+          pnpm --filter @wealthspace/api build
+          pnpm --filter @wealthspace/web build
+
+      - name: Install Playwright Chromium
+        working-directory: apps/web
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Start API and web for E2E
+        run: |
+          pnpm --filter @wealthspace/api start:prod > /tmp/api.log 2>&1 &
+          echo $! > /tmp/api.pid
+          pnpm --filter @wealthspace/web exec next start -p 3000 > /tmp/web.log 2>&1 &
+          echo $! > /tmp/web.pid
+          for i in $(seq 1 90); do
+            if curl -sf http://127.0.0.1:3001/api/v1/health >/dev/null && curl -sf -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/ | grep -qE '^(200|307|308)$'; then
+              echo "API and web are ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "=== API log ===" && tail -80 /tmp/api.log || true
+          echo "=== Web log ===" && tail -80 /tmp/web.log || true
+          exit 1
+
+      - name: Playwright E2E (shared expenses, balances, settlements)
+        run: |
+          pnpm --filter @wealthspace/web exec playwright test \
+            e2e/shared-expenses-balances-settlements.spec.ts

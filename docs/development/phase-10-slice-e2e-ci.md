@@ -1,6 +1,6 @@
 # Fase 10 — primer slice (aprobado para planificación)
 
-**Estado:** esbozo operativo (2026-11-19). No cambia reglas de producto; solo CI y documentación de ejecución.
+**Estado:** slice 1 implementado en `.github/workflows/ci.yml` (job `e2e`, 2026-11-19). No cambia reglas de producto; solo CI y documentación de ejecución.
 
 **Gate fase 10 global:** los criterios amplios (rate limiting, backups, despliegue) siguen en [roadmap.md](./roadmap.md). Este slice es el **primer entregable acotado**.
 

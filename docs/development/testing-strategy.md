@@ -46,7 +46,7 @@ Implementación automatizada: `apps/api/test/database/*.integration.spec.ts` (`p
 
 - **API:** `pnpm --filter @wealthspace/api test:cov` — Jest ESM sobre `env` y `health.controller` (umbrales en `jest.config.mjs`). Lógica HTTP de espacios/invitaciones: **`pnpm test:db`**, sin informe de líneas.
 - **Web:** `pnpm --filter @wealthspace/web test:cov` — Vitest + v8 sobre helpers (`lib/spaces/*`, `lib/api/*`, `lib/finance/*`); excluye Server Actions (`*.server.ts`) y UI.
-- **E2E:** Playwright (`apps/web/e2e/`) solo en local; no forma parte de la CI hasta la fase 10.
+- **E2E:** Playwright (`apps/web/e2e/`). CI (fase 10 slice 1): job `e2e` ejecuta `shared-expenses-balances-settlements.spec.ts`; resto de specs en local.
 
 Los directorios `coverage/` están en `.gitignore`.
 

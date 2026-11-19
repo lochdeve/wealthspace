@@ -10,7 +10,7 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 
 | Fase | Contenido                                                      | API | Web | Notas                                                     |
 | ---- | -------------------------------------------------------------- | --- | --- | --------------------------------------------------------- |
-| 0    | Monorepo, CI, esquema y migración inicial, tests de integridad | ✅  | ✅  | E2E Playwright **no** en CI (fase 10).                    |
+| 0    | Monorepo, CI, esquema y migración inicial, tests de integridad | ✅  | ✅  | E2E slice: spec 6–7 en job `e2e`.                        |
 | 1    | Fundación backend                                              | ✅  | —   |                                                           |
 | 2    | Autenticación API                                              | ✅  | —   | `PATCH /auth/me` (B-9.1).                                 |
 | 3    | Autenticación web                                              | —   | ✅  | E2E auth local.                                           |
@@ -36,7 +36,7 @@ Leyenda: ✅ hecho y verificado · 🟡 parcial · ⬜ pendiente · 🔧 refacto
 
 | Tema                                          | Estado                                            |
 | --------------------------------------------- | ------------------------------------------------- |
-| E2E Playwright en CI                          | Specs locales; slice planificado fase 10          |
+| E2E Playwright en CI                          | ✅ spec fases 6–7; fase 8 spec local             |
 | Dashboard API agregado multi-espacio          | Opcional; web compone en cliente                  |
 | Presupuesto vs consumo en UI                  | Opcional (API informe + budgets listos)           |
 | Deuda técnica API                             | Errores Prisma/trigger sin `code` → 500 ocasional |
