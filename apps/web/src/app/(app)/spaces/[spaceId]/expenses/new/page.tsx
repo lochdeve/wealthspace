@@ -35,10 +35,11 @@ export default async function NewSharedExpensePage({ params }: PageProps) {
     redirect(`/spaces/${spaceId}/accounts`);
   }
 
-  const [members, accounts, categories] = await Promise.all([
+  const [members, accounts, categories, personalAccounts] = await Promise.all([
     listSpaceMembersWithCookie(spaceId, cookieHeader),
     listAccountsWithCookie(spaceId, cookieHeader),
     listCategoriesWithCookie(spaceId, cookieHeader, 'EXPENSE'),
+    listAccountsWithCookie(user.personalSpaceId, cookieHeader),
   ]);
 
   return (
@@ -66,6 +67,7 @@ export default async function NewSharedExpensePage({ params }: PageProps) {
         actorRole={space.role}
         members={members}
         accounts={accounts}
+        personalAccounts={personalAccounts}
         categories={categories}
         displayCurrency={space.displayCurrency}
       />

@@ -13,7 +13,9 @@ import {
 import { CreateSharedExpenseForm } from '@/components/finance/create-shared-expense-form';
 import { SharedExpenseDetailPanel } from '@/components/finance/shared-expense-detail-panel';
 import { SharedExpenseRevisionsPanel } from '@/components/finance/shared-expense-revisions-panel';
+import { LinkSharedExpensePersonalPaymentForm } from '@/components/finance/link-shared-expense-personal-payment-form';
 import { VoidSharedExpenseForm } from '@/components/finance/void-shared-expense-form';
+import { canLinkPersonalPaymentAsPayer } from '@/lib/finance/personal-cash-link';
 import { canMutateSharedExpense } from '@/lib/finance/shared-expense-permissions';
 import { sharedExpensesHref } from '@/lib/finance/routes';
 import { SyncActiveSpace } from '@/components/spaces/sync-active-space';
@@ -50,14 +52,22 @@ export default async function SharedExpenseDetailPage({ params }: PageProps) {
     rethrowUnlessSpaceFound(error);
   }
 
-  const [members, accounts, categories, revisions] = await Promise.all([
+  const [members, accounts, categories, revisions, personalAccounts] = await Promise.all([
     listSpaceMembersWithCookie(spaceId, cookieHeader),
     listAccountsWithCookie(spaceId, cookieHeader),
     listCategoriesWithCookie(spaceId, cookieHeader, 'EXPENSE'),
     listSharedExpenseRevisionsWithCookie(spaceId, expenseId, cookieHeader),
+    listAccountsWithCookie(user.personalSpaceId, cookieHeader),
   ]);
 
   const canMutate = canMutateSharedExpense(space.role, user.id, expense);
+  const showLinkPersonalPayment = canLinkPersonalPaymentAsPayer(
+    expense.payment.source,
+    expense.payment.source === 'MEMBER' ? expense.payment.paidByUserId : '',
+    user.id,
+    Boolean(expense.voidedAt),
+    expense.myPersonalCashLink,
+  );
 
   return (
     <article aria-labelledby="shared-expense-detail-page-title">
@@ -84,6 +94,13 @@ export default async function SharedExpenseDetailPage({ params }: PageProps) {
         members={members}
         accounts={accounts}
       />
+      {showLinkPersonalPayment ? (
+        <LinkSharedExpensePersonalPaymentForm
+          spaceId={spaceId}
+          expense={expense}
+          personalAccounts={personalAccounts}
+        />
+      ) : null}
       {canMutate && !expense.voidedAt ? (
         <>
           <section className={styles.section} aria-labelledby="edit-shared-expense-heading">
@@ -96,6 +113,7 @@ export default async function SharedExpenseDetailPage({ params }: PageProps) {
               actorRole={space.role}
               members={members}
               accounts={accounts}
+              personalAccounts={personalAccounts}
               categories={categories}
               displayCurrency={space.displayCurrency}
               edit={{ expenseId, expense }}

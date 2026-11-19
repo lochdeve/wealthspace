@@ -45,6 +45,7 @@ function renderForm(props: Partial<Parameters<typeof CreateSharedExpenseForm>[0]
       actorRole="OWNER"
       members={members}
       accounts={[account('acc-1')]}
+      personalAccounts={[account('personal-1')]}
       categories={[]}
       displayCurrency="EUR"
       {...props}
@@ -168,6 +169,32 @@ describe('CreateSharedExpenseForm', () => {
     expect(updateMock.mock.calls[0]?.[2].totalAmount).toBe('90');
     expect(push).not.toHaveBeenCalled();
     expect(refresh).toHaveBeenCalled();
+  });
+
+  it('includes personalAccountId when payer selects a personal account', async () => {
+    createMock.mockResolvedValueOnce({ id: 'exp-p' } as Awaited<
+      ReturnType<typeof createSharedExpense>
+    >);
+    renderForm({ personalAccounts: [account('personal-1')] });
+
+    fireEvent.change(screen.getByLabelText('Importe total'), { target: { value: '120' } });
+    fireEvent.change(screen.getByLabelText('Pagado desde mi cuenta (opcional)'), {
+      target: { value: 'personal-1' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Registrar gasto compartido' }));
+
+    await waitFor(() => expect(createMock).toHaveBeenCalled());
+    expect(createMock.mock.calls[0]?.[1].payment).toEqual({
+      source: 'MEMBER',
+      paidByUserId: 'ana',
+      personalAccountId: 'personal-1',
+    });
+  });
+
+  it('hides personal account selector when payer is not the current user', () => {
+    renderForm({ currentUserId: 'ana', actorRole: 'OWNER' });
+    fireEvent.change(screen.getByLabelText('Pagador'), { target: { value: 'carlos' } });
+    expect(screen.queryByLabelText('Pagado desde mi cuenta (opcional)')).not.toBeInTheDocument();
   });
 
   it('sends SPACE_ACCOUNT payment when selected', async () => {

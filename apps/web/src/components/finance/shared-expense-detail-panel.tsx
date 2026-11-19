@@ -43,6 +43,11 @@ export function SharedExpenseDetailPanel({
       ? `Pagado por ${memberName(members, expense.payment.paidByUserId)}`
       : `Pagado desde la cuenta ${accountName(accounts, expense.payment.accountId)}`;
 
+  const personalLinkStatus =
+    expense.payment.source === 'MEMBER' && viewerUserId === expense.payment.paidByUserId
+      ? expense.myPersonalCashLink
+      : undefined;
+
   return (
     <section aria-labelledby="shared-expense-detail-title">
       {voided ? (
@@ -62,6 +67,16 @@ export function SharedExpenseDetailPanel({
       <p className={styles.meta}>
         {paymentLabel} · {splitModeLabel(expense.splitMode)}
       </p>
+      {personalLinkStatus?.linked ? (
+        <p className={styles.meta} role="status">
+          Tu pago personal está vinculado a una cuenta de tu espacio personal.
+        </p>
+      ) : null}
+      {personalLinkStatus && !personalLinkStatus.linked && personalLinkStatus.canLink ? (
+        <p className={styles.meta} role="status">
+          Aún no has vinculado este pago a tu cuenta personal. Puedes hacerlo más abajo.
+        </p>
+      ) : null}
 
       {yourShare ? (
         <div className={styles.metaBox}>

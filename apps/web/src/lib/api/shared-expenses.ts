@@ -2,6 +2,7 @@ import { apiRequest } from '@/lib/api/client';
 import { toQueryString } from '@/lib/api/query';
 import type {
   CreateSharedExpenseInput,
+  LinkSharedExpensePersonalPaymentInput,
   SharedExpenseDetail,
   SharedExpenseRevision,
   UpdateSharedExpenseInput,
@@ -99,6 +100,20 @@ export function updateSharedExpense(
     method: 'PATCH',
     body: data,
   });
+}
+
+export function linkSharedExpensePersonalPayment(
+  spaceId: string,
+  sharedExpenseId: string,
+  data: LinkSharedExpensePersonalPaymentInput,
+): Promise<SharedExpenseDetail> {
+  return apiRequest<SharedExpenseDetail>(
+    `/spaces/${spaceId}/shared-expenses/${sharedExpenseId}/link-personal-payment`,
+    {
+      method: 'POST',
+      body: data,
+    },
+  );
 }
 
 export function voidSharedExpense(

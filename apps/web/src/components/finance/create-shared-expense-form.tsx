@@ -20,6 +20,10 @@ import { isPositiveAmount, normalizeAmountInput } from '@/lib/finance/amount';
 import { percentsForUserIds } from '@/lib/finance/equal-percent-shares';
 import { fixedAmountSplitHint, percentSplitHint } from '@/lib/finance/split-input-hints';
 import { sharedExpenseActionErrorMessage } from '@/lib/finance/shared-expense-messages';
+import {
+  activeAccountsMatchingCurrency,
+  showPersonalPayerAccountPicker,
+} from '@/lib/finance/personal-cash-link';
 import { sharedExpenseParticipantError } from '@/lib/finance/shared-expense-participants';
 import { sharedExpenseDetailHref } from '@/lib/finance/routes';
 import { SharedExpensePreviewPanel } from '@/components/finance/shared-expense-preview-panel';
@@ -49,12 +53,20 @@ type CreateSharedExpenseFormProps = {
   actorRole: MembershipRole;
   members: MemberOption[];
   accounts: Account[];
+  personalAccounts: Account[];
   categories: Category[];
   displayCurrency: string | null;
   edit?: SharedExpenseEditProps;
 };
 
-type FieldName = 'amount' | 'currency' | 'payer' | 'account' | 'participants' | 'occurredAt';
+type FieldName =
+  | 'amount'
+  | 'currency'
+  | 'payer'
+  | 'account'
+  | 'personalAccount'
+  | 'participants'
+  | 'occurredAt';
 
 const ERROR_FIELD: Partial<Record<string, FieldName>> = {
   PAYER_NOT_ALLOWED: 'payer',
@@ -67,6 +79,9 @@ const ERROR_FIELD: Partial<Record<string, FieldName>> = {
   SPLIT_AMOUNT_SUM_INVALID: 'participants',
   ACCOUNT_NOT_FOUND: 'account',
   ACCOUNT_ARCHIVED: 'account',
+  PERSONAL_ACCOUNT_NOT_OWNED: 'personalAccount',
+  CROSS_SPACE_CURRENCY_MISMATCH: 'personalAccount',
+  PERSONAL_LINK_NOT_ALLOWED: 'personalAccount',
   AMOUNT_PRECISION_INVALID: 'amount',
   CURRENCY_REQUIRED: 'currency',
   CURRENCY_NOT_SUPPORTED: 'currency',
@@ -82,6 +97,7 @@ export function CreateSharedExpenseForm({
   actorRole,
   members,
   accounts,
+  personalAccounts,
   categories,
   displayCurrency,
   edit,
@@ -142,6 +158,33 @@ export function CreateSharedExpenseForm({
   const previewRequestRef = useRef(0);
 
   const showCurrencyField = paymentSource === 'MEMBER' && !displayCurrency && !accountId;
+
+  const expenseCurrency = useMemo(() => {
+    if (paymentSource === 'SPACE_ACCOUNT' && accountId) {
+      const account = activeAccounts.find((row) => row.id === accountId);
+      if (account) {
+        return account.currency;
+      }
+    }
+    if (displayCurrency) {
+      return displayCurrency.toUpperCase();
+    }
+    return currency.trim().toUpperCase() || 'EUR';
+  }, [paymentSource, accountId, activeAccounts, displayCurrency, currency]);
+
+  const personalAccountOptions = useMemo(
+    () => activeAccountsMatchingCurrency(personalAccounts, expenseCurrency),
+    [personalAccounts, expenseCurrency],
+  );
+
+  const showPersonalAccountField = showPersonalPayerAccountPicker(
+    paymentSource,
+    paidByUserId,
+    currentUserId,
+    isEdit,
+  );
+
+  const [personalAccountId, setPersonalAccountId] = useState('');
 
   const canPreview = useMemo(() => {
     const normalized = normalizeAmountInput(amount);
@@ -254,10 +297,27 @@ export function CreateSharedExpenseForm({
     };
   }
 
+  useEffect(() => {
+    if (!showPersonalAccountField) {
+      setPersonalAccountId('');
+      return;
+    }
+    if (
+      personalAccountId &&
+      !personalAccountOptions.some((row) => row.id === personalAccountId)
+    ) {
+      setPersonalAccountId('');
+    }
+  }, [showPersonalAccountField, personalAccountOptions, personalAccountId]);
+
   function buildPayload(normalizedAmount: string): CreateSharedExpenseInput {
     const payment =
       paymentSource === 'MEMBER'
-        ? { source: 'MEMBER' as const, paidByUserId }
+        ? {
+            source: 'MEMBER' as const,
+            paidByUserId,
+            ...(personalAccountId ? { personalAccountId } : {}),
+          }
         : { source: 'SPACE_ACCOUNT' as const, accountId };
     const payload: CreateSharedExpenseInput = {
       totalAmount: normalizedAmount,
@@ -326,6 +386,7 @@ export function CreateSharedExpenseForm({
     percentageShares,
     fixedShares,
     showCurrencyField,
+    personalAccountId,
   ]);
 
   function validate(): boolean {
@@ -491,6 +552,9 @@ export function CreateSharedExpenseForm({
           onChange={(event) => {
             clearParticipantFieldError();
             setPaidByUserId(event.target.value);
+            if (event.target.value !== currentUserId) {
+              setPersonalAccountId('');
+            }
           }}
           disabled={pending || payerOptions.length <= 1}
             aria-invalid={Boolean(fieldErrors.payer) || undefined}
@@ -502,7 +566,38 @@ export function CreateSharedExpenseForm({
             ))}
           </select>
         </Field>
-      ) : (
+      ) : null}
+      {showPersonalAccountField ? (
+        <Field
+          id="shared-personal-account"
+          label="Pagado desde mi cuenta (opcional)"
+          hint={`Salida del importe total en tu espacio personal (${expenseCurrency}).`}
+          error={fieldErrors.personalAccount}
+        >
+          <select
+            id="shared-personal-account"
+            className={styles.selectNative}
+            value={personalAccountId}
+            onChange={(event) => setPersonalAccountId(event.target.value)}
+            disabled={pending}
+            aria-invalid={Boolean(fieldErrors.personalAccount) || undefined}
+          >
+            <option value="">No vincular ahora (puedes hacerlo después)</option>
+            {personalAccountOptions.map((row) => (
+              <option key={row.id} value={row.id}>
+                {row.name} ({row.currency})
+              </option>
+            ))}
+          </select>
+          {personalAccountOptions.length === 0 ? (
+            <p className={styles.meta} role="status">
+              No tienes cuentas personales activas en {expenseCurrency}. Puedes vincular el pago más
+              tarde en el detalle del gasto.
+            </p>
+          ) : null}
+        </Field>
+      ) : null}
+      {paymentSource === 'SPACE_ACCOUNT' ? (
         <Field id="shared-account" label="Cuenta del espacio" error={fieldErrors.account}>
           <select
             id="shared-account"
@@ -523,7 +618,7 @@ export function CreateSharedExpenseForm({
             )}
           </select>
         </Field>
-      )}
+      ) : null}
       {showCurrencyField ? (
         <Field id="shared-currency" label="Moneda" error={fieldErrors.currency}>
           <TextInput

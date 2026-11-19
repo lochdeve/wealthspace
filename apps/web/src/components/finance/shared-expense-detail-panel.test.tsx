@@ -51,6 +51,21 @@ describe('SharedExpenseDetailPanel', () => {
     expect(screen.getByText(/Debes.*45.*Ana/)).toBeInTheDocument();
   });
 
+  it('hints when payer can link personal payment later', () => {
+    render(
+      <SharedExpenseDetailPanel
+        expense={{
+          ...expense,
+          myPersonalCashLink: { linked: false, canLink: true },
+        }}
+        viewerUserId="ana"
+        members={members}
+        accounts={[]}
+      />,
+    );
+    expect(screen.getByText(/Aún no has vinculado este pago/i)).toBeInTheDocument();
+  });
+
   it('shows voided banner', () => {
     render(
       <SharedExpenseDetailPanel

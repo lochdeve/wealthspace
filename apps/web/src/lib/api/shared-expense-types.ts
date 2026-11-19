@@ -2,9 +2,15 @@ export type SplitMode = 'EQUAL' | 'PERCENTAGE' | 'FIXED_AMOUNT';
 
 export type PaymentSource = 'MEMBER' | 'SPACE_ACCOUNT';
 
+export type MyPersonalCashLink = {
+  linked: boolean;
+  canLink: boolean;
+};
+
 export type SharedExpenseMemberPayment = {
   source: 'MEMBER';
   paidByUserId: string;
+  personalAccountId?: string;
 };
 
 export type SharedExpenseAccountPayment = {
@@ -65,6 +71,12 @@ export type SharedExpenseDetail = {
   recordedByUserId: string;
   voidedAt?: string | null;
   version: number;
+  myPersonalCashLink?: MyPersonalCashLink;
+};
+
+export type LinkSharedExpensePersonalPaymentInput = {
+  personalAccountId: string;
+  expectedVersion: number;
 };
 
 export type UpdateSharedExpenseInput = CreateSharedExpenseInput & {

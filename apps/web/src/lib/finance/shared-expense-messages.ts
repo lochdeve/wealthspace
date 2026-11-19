@@ -24,6 +24,11 @@ const SHARED_EXPENSE_ERROR_MESSAGES: Record<string, string> = {
   ALREADY_VOIDED: 'Este gasto ya está anulado.',
   PAYMENT_SOURCE_IMMUTABLE: 'No se puede cambiar quién o qué pagó el gasto al editar.',
   VERSION_CONFLICT: 'Alguien modificó este gasto. Recarga e inténtalo de nuevo.',
+  NOT_PAYER: 'Solo el pagador puede vincular su cuenta personal.',
+  PERSONAL_LINK_NOT_ALLOWED: 'No puedes vincular una cuenta personal en este gasto.',
+  PERSONAL_LINK_ALREADY_EXISTS: 'Este gasto ya tiene un pago personal vinculado.',
+  PERSONAL_ACCOUNT_NOT_OWNED: 'La cuenta no pertenece a tu espacio personal.',
+  CROSS_SPACE_CURRENCY_MISMATCH: 'La moneda de la cuenta debe coincidir con la del gasto.',
 };
 
 export function sharedExpenseActionErrorMessage(error: unknown): string {
