@@ -90,7 +90,8 @@ jobs:
         run: pnpm --filter @wealthspace/api test:db
 
   e2e:
-    runs-on: ubuntu-latest
+    # @playwright/test 1.56 has no chromium on ubuntu26.04; ubuntu-latest may be 26.04.
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:17-alpine
