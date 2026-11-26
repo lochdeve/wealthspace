@@ -282,9 +282,26 @@ Sin `/api/v1` al final. El cliente del front añade las rutas.
 
 ### 8.8 Aviso — login entre `vercel.app` y `railway.app`
 
-La sesión usa cookie en el dominio de la **API**. Con dominios distintos, hoy la API usa `SameSite=Lax`, que **puede impedir** que el login funcione en producción sin dominio propio.
+La sesión es cookie **HttpOnly** (`wealthspace_session`). Next.js (RSC) solo lee cookies del **dominio del front** (Vercel). Si el navegador llama **directo** a Railway, la cookie queda en `*.railway.app`, el login devuelve 200 pero `/dashboard` vuelve a `/login`.
 
-**Antes de dar por bueno staging:** confirmar login tras deploy. Si falla, abrir tarea backend (fase 10): cookie `SameSite=None` + `Secure` cuando `WEB_ORIGIN` sea otro sitio que la API.
+**Solución recomendada (§8.9):** proxy `/api/v1` en Vercel hacia Railway y `NEXT_PUBLIC_API_URL` = URL del **mismo** proyecto Vercel.
+
+Alternativa futura: dominio propio + subdominios + `SameSite=None` (más trabajo).
+
+### 8.9 Vercel — proxy same-origin (obligatorio para sesión)
+
+En `apps/web/next.config.ts`, si existe `API_PROXY_TARGET`, las peticiones a `/api/v1/*` se reescriben al backend Railway.
+
+**Variables en Vercel (Production):**
+
+| Variable | Valor |
+| -------- | ----- |
+| `API_PROXY_TARGET` | `https://TU-URL-RAILWAY.up.railway.app` (privada, sin `/api/v1`) |
+| `NEXT_PUBLIC_API_URL` | `https://TU-PROYECTO.vercel.app` (**misma** URL que abre el usuario) |
+
+**Railway (API):** `WEB_ORIGIN` sigue siendo la URL de Vercel.
+
+Tras deploy: login → cookie en dominio Vercel → panel carga. **Redeploy web** tras cambiar `NEXT_PUBLIC_API_URL` (build).
 
 ---
 
