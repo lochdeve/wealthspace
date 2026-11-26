@@ -290,7 +290,7 @@ Alternativa futura: dominio propio + subdominios + `SameSite=None` (más trabajo
 
 ### 8.9 Vercel — proxy same-origin (obligatorio para sesión)
 
-En `apps/web/next.config.ts`, si existe `API_PROXY_TARGET`, las peticiones a `/api/v1/*` se reescriben al backend Railway.
+Las peticiones a `/api/v1/*` las atiende `apps/web/src/app/api/v1/[...path]/route.ts` (lee `API_PROXY_TARGET` en **runtime**, no hace falta en build).
 
 **Variables en Vercel (Production):**
 
