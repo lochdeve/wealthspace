@@ -139,18 +139,152 @@ Referencia CI E2E: [.github/workflows/ci.yml](../../.github/workflows/ci.yml) jo
 
 ---
 
-## 7. Hosting — decisiones pendientes
+## 7. Hosting — decisión actual (sin dominio propio)
 
-Registrar aquí cuando el equipo elija:
+| Pieza | Proveedor |
+| ----- | --------- |
+| Web (`apps/web`) | **Vercel** (`*.vercel.app`) |
+| API (`apps/api`) | **Railway** (`*.up.railway.app` o similar) |
+| PostgreSQL | **Railway** (plugin Postgres en el mismo proyecto) |
+| Dominio propio | No (URLs del proveedor) |
 
-- [ ] Proveedor Postgres gestionado (RDS, Neon, Supabase, …)
-- [ ] API (Railway, Fly.io, VPS, k8s, …)
-- [ ] Web (Vercel, mismo VPS, …)
-- [ ] DNS + TLS
-- [ ] Almacén de secretos
-- [ ] Estrategia de backups (RPO/RTO)
+Guía paso a paso: **§8**. Pendiente código: cookie cross-origin (`vercel.app` ↔ `railway.app`) — ver §8.8.
 
-Hasta entonces: despliegue manual siguiendo §3 en una VM o dos servicios PaaS con las variables de §2.
+---
+
+## 8. Guía paso a paso — Vercel (web) + Railway (API + Postgres)
+
+### 8.0 Qué significa «pegar secrets / variables»
+
+**No es git, no es un archivo en el repo.**
+
+- En **Railway** y **Vercel**, cada servicio tiene una pantalla **Variables** (a veces llamada *Environment variables* o *Secrets*).
+- Ahí creas filas: **nombre** = `JWT_SECRET`, **valor** = una contraseña larga que tú generas.
+- La plataforma **inyecta** esos pares en `process.env` cuando arranca tu app.
+- Railway/Vercel **encriptan** esos valores en su panel; tú **nunca** los commiteas (`.env` sigue en `.gitignore`).
+
+Ejemplo visual (concepto):
+
+```text
+Nombre          Valor (solo en el panel del proveedor)
+──────────────  ─────────────────────────────────────
+DATABASE_URL    postgresql://user:pass@host:5432/db
+JWT_SECRET      a8f3... (mínimo 32 caracteres)
+WEB_ORIGIN      https://wealthspace-abc123.vercel.app
+NODE_ENV        production
+```
+
+---
+
+### 8.1 Railway — crear proyecto y base de datos
+
+1. Entra en [railway.com](https://railway.com) → **New Project**.
+2. **Add service** → **Database** → **PostgreSQL** (Railway crea un contenedor de Postgres).
+3. Abre el servicio **Postgres** → pestaña **Variables** (o **Connect**):
+   - Verás algo como `DATABASE_URL` (cadena `postgresql://…`). Esa URL es la **BD en la nube**.
+4. (Opcional para migrar desde tu Mac) **Settings** del Postgres → activar **Public networking** / TCP proxy si Railway lo pide, para poder hacer `migrate deploy` desde local. Si no, usa el **Railway CLI** o un one-off shell en el panel.
+
+---
+
+### 8.2 Railway — servicio API (backend)
+
+1. En el **mismo proyecto** → **Add service** → **GitHub Repo** → elige el repo `wealthspace`.
+2. **Settings** del servicio API (ajusta según la UI actual de Railway):
+   - **Root directory:** vacío o `/` (raíz del monorepo).
+   - **Build command** (ejemplo):
+
+     ```bash
+     pnpm install --frozen-lockfile && pnpm --filter @wealthspace/api exec prisma generate && pnpm --filter @wealthspace/api build
+     ```
+
+   - **Start command** (ejemplo):
+
+     ```bash
+     pnpm --filter @wealthspace/api start:prod
+     ```
+
+3. **Networking** → **Generate domain** para la API (te dan `https://algo-production-xxxx.up.railway.app`). Esa URL es tu **`NEXT_PUBLIC_API_URL`** en Vercel.
+
+---
+
+### 8.3 Railway — variables del servicio API («secrets»)
+
+En el servicio **API** (no en Postgres), pestaña **Variables** → **Add variable** o **Raw editor**:
+
+| Variable | Qué pegar | Notas |
+| -------- | --------- | ----- |
+| `DATABASE_URL` | Referencia al Postgres | En Railway suele poder ser **Reference**: elegir variable `DATABASE_URL` del servicio Postgres (recomendado). Si no, copia la cadena completa del servicio Postgres. |
+| `JWT_SECRET` | Texto aleatorio **≥ 32 caracteres** | Genera en 1Password, `openssl rand -base64 32`, etc. **Nueva** por entorno. |
+| `NODE_ENV` | `production` | Activa cookie `Secure`. |
+| `WEB_ORIGIN` | URL **exacta** de tu web en Vercel | Ej. `https://wealthspace.vercel.app` — sin barra final. Es el origen que la API acepta en CORS. |
+| `PORT` | (opcional) | Railway suele inyectar `PORT`; la API lo lee. |
+
+**No hace falta** `NEXT_PUBLIC_*` en Railway (eso va en Vercel).
+
+Guarda → Railway **redeploy** el servicio con las nuevas variables.
+
+---
+
+### 8.4 Migraciones en la BD de Railway (desde tu PC)
+
+Con el repo en local y Node/pnpm instalados:
+
+1. Copia temporalmente la `DATABASE_URL` de Railway Postgres (solo en tu `.env` local, **no** commitear).
+2. Desde la **raíz** del monorepo:
+
+   ```bash
+   pnpm --filter @wealthspace/api exec prisma migrate deploy
+   ```
+
+3. Comprueba la API desplegada:
+
+   ```bash
+   curl -sS "https://TU-URL-RAILWAY.up.railway.app/api/v1/health/ready"
+   ```
+
+   Debe responder OK si la BD está bien y la API arrancó.
+
+---
+
+### 8.5 Vercel — proyecto web
+
+1. [vercel.com](https://vercel.com) → **Add New** → **Project** → importa el mismo repo.
+2. **Framework:** Next.js.
+3. **Root directory:** `apps/web` (importante en monorepo).
+4. Build por defecto de Vercel suele valer; si falla, build: `cd ../.. && pnpm install --frozen-lockfile && pnpm --filter @wealthspace/web build` (ajustar según el asistente de Vercel).
+
+---
+
+### 8.6 Vercel — variables («secrets» de la web)
+
+**Settings** → **Environment Variables** → añade para **Production** (y Preview si quieres probar previews):
+
+| Variable | Valor |
+| -------- | ----- |
+| `NEXT_PUBLIC_API_URL` | `https://TU-URL-RAILWAY.up.railway.app` |
+
+Sin `/api/v1` al final. El cliente del front añade las rutas.
+
+**Redeploy** la web (Deployments → ⋮ → Redeploy) para que el build coja la variable.
+
+---
+
+### 8.7 Orden y comprobación final
+
+1. Postgres en Railway ✅  
+2. Variables API en Railway ✅  
+3. `migrate deploy` ✅  
+4. API en línea (`/api/v1/health/ready`) ✅  
+5. Variable en Vercel + deploy web ✅  
+6. Abrir la URL de Vercel → **Registrarse** / **Iniciar sesión**
+
+---
+
+### 8.8 Aviso — login entre `vercel.app` y `railway.app`
+
+La sesión usa cookie en el dominio de la **API**. Con dominios distintos, hoy la API usa `SameSite=Lax`, que **puede impedir** que el login funcione en producción sin dominio propio.
+
+**Antes de dar por bueno staging:** confirmar login tras deploy. Si falla, abrir tarea backend (fase 10): cookie `SameSite=None` + `Secure` cuando `WEB_ORIGIN` sea otro sitio que la API.
 
 ---
 
