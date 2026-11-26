@@ -296,7 +296,7 @@ Las peticiones a `/api/v1/*` las atiende `apps/web/src/app/api/v1/[...path]/rout
 
 | Variable | Valor |
 | -------- | ----- |
-| `API_PROXY_TARGET` | `https://TU-URL-RAILWAY.up.railway.app` (privada, sin `/api/v1`) |
+| `API_PROXY_TARGET` | `https://TU-URL-RAILWAY.up.railway.app` (privada, sin `/api/v1`). En Vercel marcar **Build** y **Runtime** (los `rewrites` se calculan en el build). |
 | `NEXT_PUBLIC_API_URL` | `https://TU-PROYECTO.vercel.app` (**misma** URL que abre el usuario) |
 
 **Railway (API):** `WEB_ORIGIN` sigue siendo la URL de Vercel.
@@ -308,9 +308,9 @@ Tras deploy: login → cookie en dominio Vercel → panel carga. **Redeploy web*
 1. **Project Settings → General → Root Directory** = `apps/web` (no la raíz del monorepo).
 2. **Framework Preset** = Next.js.
 3. **Deployments** → el deploy en producción debe incluir commit **`5889d7f`** o posterior (proxy `app/api/v1/[...path]`).
-4. En los **build logs**, buscar la línea de rutas: `ƒ /api/v1/[...path]` (si no aparece, el build no incluye el proxy).
-5. `API_PROXY_TARGET` en Vercel: marcada para **Runtime** (y también **Build** si usas rewrites en `next.config`).
-6. Tras corregir root/commit → **Redeploy** (no reutilizar artefacto antiguo).
+4. En **build logs**: arriba de la lista de `/spaces/...` suelen estar `ƒ /login` y `ƒ /api/v1/[...path]`. Si falta `api/v1`, hacer **Redeploy** con **Clear build cache**.
+5. `API_PROXY_TARGET`: **Build + Runtime** obligatorios; sin Build, `/api/v1/health` da 404 de Next aunque Railway responda.
+6. Tras cambiar variables → **Redeploy** nuevo (no promote de build antiguo).
 
 `apps/web/vercel.json` fija `installCommand` desde la raíz del monorepo (pnpm workspace).
 
