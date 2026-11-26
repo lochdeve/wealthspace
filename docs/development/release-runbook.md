@@ -303,6 +303,17 @@ Las peticiones a `/api/v1/*` las atiende `apps/web/src/app/api/v1/[...path]/rout
 
 Tras deploy: login → cookie en dominio Vercel → panel carga. **Redeploy web** tras cambiar `NEXT_PUBLIC_API_URL` (build).
 
+**Si `/api/v1/health` en Vercel devuelve la página 404 de Next** (pero Railway `/api/v1/health` va bien):
+
+1. **Project Settings → General → Root Directory** = `apps/web` (no la raíz del monorepo).
+2. **Framework Preset** = Next.js.
+3. **Deployments** → el deploy en producción debe incluir commit **`5889d7f`** o posterior (proxy `app/api/v1/[...path]`).
+4. En los **build logs**, buscar la línea de rutas: `ƒ /api/v1/[...path]` (si no aparece, el build no incluye el proxy).
+5. `API_PROXY_TARGET` en Vercel: marcada para **Runtime** (y también **Build** si usas rewrites en `next.config`).
+6. Tras corregir root/commit → **Redeploy** (no reutilizar artefacto antiguo).
+
+`apps/web/vercel.json` fija `installCommand` desde la raíz del monorepo (pnpm workspace).
+
 ---
 
 ## Documentación relacionada
