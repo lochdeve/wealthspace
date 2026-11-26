@@ -13,6 +13,38 @@ function isLocalDevOrigin(origin: string): boolean {
   }
 }
 
+function isRailwayHost(hostname: string): boolean {
+  return hostname.endsWith('.railway.app');
+}
+
+function getServerApiBaseUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_API_URL?.trim();
+  if (configured) {
+    try {
+      const { hostname } = new URL(configured);
+      if (!isRailwayHost(hostname)) {
+        return normalizeBase(configured);
+      }
+    } catch {
+      /* invalid NEXT_PUBLIC_API_URL */
+    }
+  }
+
+  const production = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  if (production) {
+    const withScheme = production.startsWith('http') ? production : `https://${production}`;
+    return normalizeBase(withScheme);
+  }
+
+  const vercel = process.env.VERCEL_URL?.trim();
+  if (vercel) {
+    const host = vercel.replace(/^https?:\/\//, '');
+    return `https://${host}`;
+  }
+
+  return normalizeBase(configured || DEFAULT_API_URL);
+}
+
 /** Public API base URL (no trailing slash). */
 export function getPublicApiBaseUrl(): string {
   if (typeof window !== 'undefined') {
@@ -35,12 +67,5 @@ export function getPublicApiBaseUrl(): string {
     return pageOrigin;
   }
 
-  const vercel = process.env.VERCEL_URL?.trim();
-  if (vercel) {
-    const host = vercel.replace(/^https?:\/\//, '');
-    return `https://${host}`;
-  }
-
-  const raw = process.env.NEXT_PUBLIC_API_URL?.trim() || DEFAULT_API_URL;
-  return normalizeBase(raw);
+  return getServerApiBaseUrl();
 }
