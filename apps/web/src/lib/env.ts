@@ -4,6 +4,11 @@ function normalizeBase(raw: string): string {
   return raw.replace(/\/$/, '');
 }
 
+/** API base must be scheme + host (+ port), never a page path like `/login`. */
+function parseApiBaseUrl(raw: string): string {
+  return new URL(raw).origin;
+}
+
 function isLocalDevOrigin(origin: string): boolean {
   try {
     const { hostname } = new URL(origin);
@@ -23,7 +28,7 @@ export function getServerApiBaseUrl(): string {
     try {
       const { hostname } = new URL(configured);
       if (!isRailwayHost(hostname)) {
-        return normalizeBase(configured);
+        return parseApiBaseUrl(configured);
       }
     } catch {
       /* invalid NEXT_PUBLIC_API_URL */
@@ -54,7 +59,7 @@ export function getPublicApiBaseUrl(): string {
       try {
         const confOrigin = new URL(configured).origin;
         if (confOrigin === pageOrigin) {
-          return normalizeBase(configured);
+          return confOrigin;
         }
         if (isLocalDevOrigin(confOrigin) && isLocalDevOrigin(pageOrigin)) {
           return normalizeBase(configured);

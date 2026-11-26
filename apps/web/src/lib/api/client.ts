@@ -29,7 +29,7 @@ async function resolveApiBaseUrl(): Promise<string> {
 async function buildApiUrl(path: string): Promise<string> {
   const normalized = path.startsWith('/') ? path : `/${path}`;
   const base = await resolveApiBaseUrl();
-  return `${base}/api/v1${normalized}`;
+  return new URL(`/api/v1${normalized}`, `${base}/`).href;
 }
 
 function serializeBody(body: ApiRequestOptions['body']): BodyInit | undefined {
