@@ -303,6 +303,18 @@ Las peticiones a `/api/v1/*` las atiende `apps/web/src/app/api/v1/[...path]/rout
 
 Tras deploy: login → cookie en dominio Vercel → panel carga. **Redeploy web** tras cambiar `NEXT_PUBLIC_API_URL` (build).
 
+**URLs que cambian en Vercel**
+
+| Tipo | Ejemplo | ¿Cambia cada deploy? |
+| ---- | ------- | -------------------- |
+| **Producción** | `tu-proyecto.vercel.app` (Settings → Domains) | No — usar esta para uso real y `WEB_ORIGIN` en Railway |
+| **Preview** | `tu-proyecto-git-rama-xyz.vercel.app` | Sí — para probar PRs |
+| **Deployment** | `tu-proyecto-abc123.vercel.app` | Sí — enlace del deploy concreto |
+
+La web **en el navegador** usa siempre `window.location.origin`. El **SSR** usa el host de la petición (`x-forwarded-host`), no `VERCEL_URL`. No hace falta cambiar `NEXT_PUBLIC_API_URL` en cada preview para el proxy.
+
+**Railway `WEB_ORIGIN`:** un solo origen. Producción = dominio estable de Vercel. Previews distintas: login puede fallar CORS en Railway hasta ampliar orígenes en API (pendiente).
+
 **Si `/api/v1/health` en Vercel devuelve la página 404 de Next** (pero Railway `/api/v1/health` va bien):
 
 1. **Project Settings → General → Root Directory** = `apps/web` (no la raíz del monorepo).

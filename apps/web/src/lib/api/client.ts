@@ -1,4 +1,4 @@
-import { getPublicApiBaseUrl } from '@/lib/env';
+import { getPublicApiBaseUrl, getServerApiBaseUrl } from '@/lib/env';
 import { AUTH_ERROR_CODES, parseErrorResponse } from '@/lib/api/errors';
 import { redirectBrowserToLogin } from '@/lib/auth/login-redirect';
 
@@ -8,9 +8,28 @@ export type ApiRequestOptions = Omit<RequestInit, 'body'> & {
   cookieHeader?: string;
 };
 
-function buildApiUrl(path: string): string {
+async function resolveApiBaseUrl(): Promise<string> {
+  if (typeof window !== 'undefined') {
+    return getPublicApiBaseUrl();
+  }
+  try {
+    const { headers } = await import('next/headers');
+    const headerStore = await headers();
+    const host = headerStore.get('x-forwarded-host') ?? headerStore.get('host');
+    if (host) {
+      const proto = headerStore.get('x-forwarded-proto')?.split(',')[0]?.trim() ?? 'https';
+      return `${proto}://${host}`.replace(/\/$/, '');
+    }
+  } catch {
+    /* no request context */
+  }
+  return getServerApiBaseUrl();
+}
+
+async function buildApiUrl(path: string): Promise<string> {
   const normalized = path.startsWith('/') ? path : `/${path}`;
-  return `${getPublicApiBaseUrl()}/api/v1${normalized}`;
+  const base = await resolveApiBaseUrl();
+  return `${base}/api/v1${normalized}`;
 }
 
 function serializeBody(body: ApiRequestOptions['body']): BodyInit | undefined {
@@ -38,7 +57,7 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
     headers.set('Cookie', cookieHeader);
   }
 
-  const response = await fetch(buildApiUrl(path), {
+  const response = await fetch(await buildApiUrl(path), {
     ...init,
     headers,
     body: serialized,

@@ -17,7 +17,7 @@ function isRailwayHost(hostname: string): boolean {
   return hostname.endsWith('.railway.app');
 }
 
-function getServerApiBaseUrl(): string {
+export function getServerApiBaseUrl(): string {
   const configured = process.env.NEXT_PUBLIC_API_URL?.trim();
   if (configured) {
     try {
